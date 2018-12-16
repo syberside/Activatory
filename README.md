@@ -31,4 +31,4 @@ Also, this is my pet project so there are no exact plans and etc.
   - [ ] *coverage reports
 - [ ] Add nice looking readme and github repo info
 - [ ] Add recursion handling (which one strategy should be used?)
-- [ ] Encapsulate all errors inside library (throws just ActivatoryException)
+- [ ] Encapsulate all errors inside library (throws only ActivatoryException)
