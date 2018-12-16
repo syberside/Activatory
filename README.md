@@ -3,7 +3,7 @@
 This project is aimed to bring a test data generator to Dart's ecosystem.
 This will greatly simplify unit testing and especially Test-Driven Development.
 
-This project is inspired by [.NET Autofixture library](https://github.com/AutoFixture/AutoFixture).
+This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/AutoFixture) library.
 
 This is my first Dart project. Actually, this is my "pet-project" so there are no exact plans and etc.
 
