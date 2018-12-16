@@ -30,3 +30,4 @@ Also, this is my pet project so there are no exact plans and etc.
   - [ ] *build and publish to pub
   - [ ] *coverage reports
 - [ ] Add nice looking readme and github repo info
+- [ ] Add recursion handling (which one strategy should be used?)
