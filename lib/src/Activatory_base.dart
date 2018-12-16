@@ -59,7 +59,7 @@ class RandomStringBackent implements GeneratorBackend<String>{
   @override
   String get(ActivationContext context) {
     var uuid = new Uuid();
-    return uuid.toString();
+    return uuid.v1();
   }
 }
 

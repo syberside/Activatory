@@ -17,6 +17,12 @@ void main() {
         ]));
         expect(result.runtimeType, same(type));
       });
+      test('${type} is generated randomly', (){
+        var a = _activatory.get(type);
+        var b = _activatory.get(type);
+
+        expect(a, isNot(equals(b)));
+      });
     }
   });
 
@@ -37,7 +43,30 @@ void main() {
       expect(result.stringField, isNotNull);
       expect(result.intField, isNotNull);
     });
+
+    test('with not only primitives in ctor',(){
+      var result = _activatory.getTyped<NonPrimitiveComplexObject>();
+      expect(result, isNotNull);
+      //TODO: use common method or matcher
+      expect(result.primitiveComplexObject, isNotNull);
+      expect(result.primitiveComplexObject.dateTimeField, isNotNull);
+      expect(result.primitiveComplexObject.boolField, isNotNull);
+      expect(result.primitiveComplexObject.doubleField, isNotNull);
+      expect(result.primitiveComplexObject.stringField, isNotNull);
+      expect(result.primitiveComplexObject.intField, isNotNull);
+      expect(result.intField, isNotNull);
+    });
   });
+
+  test('Cant create class without public ctor', (){
+    expect(()=>_activatory.getTyped<AbstractClass>(), throwsA(isInstanceOf<Exception>()));
+  });
+}
+
+abstract class AbstractClass{
+  int _intField;
+
+  AbstractClass(this._intField);
 }
 
 class NotRegistered{
@@ -63,4 +92,14 @@ class PrimitiveComplexObject{
   PrimitiveComplexObject(
       this._intField, this._stringField, this._doubleField,
       this._boolField, this._dateTimeField);
+}
+
+class NonPrimitiveComplexObject{
+  PrimitiveComplexObject _primitiveComplexObject;
+  PrimitiveComplexObject get primitiveComplexObject => _primitiveComplexObject;
+
+  int _intField;
+  int get intField => _intField;
+
+  NonPrimitiveComplexObject(this._primitiveComplexObject, this._intField);
 }
