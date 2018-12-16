@@ -1,5 +1,4 @@
 import 'dart:mirrors';
-import 'package:activatory/src/activatory.dart';
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 
