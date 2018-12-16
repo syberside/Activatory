@@ -29,4 +29,4 @@ Also, this is my pet project so there are no exact plans and etc.
 - [ ] *Add CI/CD:
   - [ ] *build and publish to pub
   - [ ] *coverage reports
-- Add nice looking readme and github repo info
+- [ ] Add nice looking readme and github repo info
