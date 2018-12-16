@@ -1,21 +1,24 @@
 import 'dart:math';
 
+import 'package:Activatory/src/backends/complex_object_backend.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:mirrors';
 
 class ActivationContext{
 
-  Map<Type, GeneratorBackend> _backends = new Map<Type, GeneratorBackend>();
+  Map<Type, GeneratorBackend> exactBackends = new Map<Type, GeneratorBackend>();
 
   GeneratorBackend find(Type type){
-    assert(type!=null);
-    return _backends[type];
+    var result = exactBackends[type];
+    if(result!=null){
+      return result;
+    }
+    var complexObjectBackend = new ComplexObjectBackend(type);
+    exactBackends[type] = complexObjectBackend;
+    return complexObjectBackend;
   }
 
   void register(Type type, GeneratorBackend backend){
-    assert(type!=null);
-    assert(backend!=null);
-   _backends[type] = backend;
+   exactBackends[type] = backend;
   }
   void registerAll(Map<Type, GeneratorBackend> backends){
     backends.forEach((type,backend)=>register(type, backend));
@@ -36,7 +39,7 @@ class ActivationContext{
 }
 
 abstract class GeneratorBackend<T>{
-  T get();
+  T get(ActivationContext context);
 }
 
 class RandomIntBackent implements GeneratorBackend<int>{
@@ -47,14 +50,14 @@ class RandomIntBackent implements GeneratorBackend<int>{
   RandomIntBackent(this._random);
 
   @override
-  int get() {
+  int get(ActivationContext context) {
     return _random.nextInt(_maxValue);
   }
 }
 
 class RandomStringBackent implements GeneratorBackend<String>{
   @override
-  String get() {
+  String get(ActivationContext context) {
     var uuid = new Uuid();
     return uuid.toString();
   }
@@ -66,7 +69,7 @@ class RandomBoolBackent implements GeneratorBackend<bool>{
   RandomBoolBackent(this._random);
 
   @override
-  bool get() {
+  bool get(ActivationContext context) {
     return _random.nextBool();
   }
 }
@@ -77,7 +80,7 @@ class RandomDoubleBackent implements GeneratorBackend<double>{
   RandomDoubleBackent(this._random);
 
   @override
-  double get() {
+  double get(ActivationContext context) {
     return _random.nextDouble();
   }
 }
@@ -91,7 +94,7 @@ class RandomDateTimeBackent implements GeneratorBackend<DateTime>{
   RandomDateTimeBackent(this._random);
 
   @override
-  DateTime get() {
+  DateTime get(ActivationContext context) {
     var days = _random.nextInt(maxDays);
     var milisseconds = _random.nextInt(maxMilliseconds);
     return DateTime.fromMillisecondsSinceEpoch(0).add(new Duration(days: days, milliseconds: milisseconds));

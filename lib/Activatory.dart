@@ -25,7 +25,7 @@ class Activatory{
     if(backend == null){
       throw new Exception('Backend for type ${type} not found');
     }
-    var value = backend.get();
+    var value = backend.get(_context);
     return value;
   }
 }
