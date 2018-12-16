@@ -5,23 +5,22 @@ import 'dart:core';
 import 'package:Activatory/src/activation_context_factory.dart';
 import 'package:Activatory/src/activation_context.dart';
 
-class Activatory{
+class Activatory {
   ActivationContext _context;
-  Activatory(){
+  Activatory() {
     _context = ActivationContextFactory.createDefault();
   }
 
-  T getTyped<T>(){
+  T getTyped<T>() {
     return get(T);
   }
 
-  Object get(Type type){
+  Object get(Type type) {
     var backend = _context.find(type);
-    if(backend == null){
+    if (backend == null) {
       throw new Exception('Backend for type ${type} not found');
     }
     var value = backend.get(_context);
     return value;
   }
 }
-

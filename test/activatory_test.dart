@@ -9,27 +9,23 @@ void main() {
 
   group('Can generate primitive types', () {
     var types = [String, int, bool, DateTime, double];
-    for(var type in types){
-
+    for (var type in types) {
       test(type, () {
         var result = _activatory.get(type);
-        expect(result, allOf([
-          isNotNull
-        ]));
+        expect(result, allOf([isNotNull]));
         expect(result.runtimeType, same(type));
       });
     }
   });
 
-  group('Can create complex object', (){
-
-    test('with empty ctor',(){
+  group('Can create complex object', () {
+    test('with empty ctor', () {
       var result = _activatory.getTyped<NotRegistered>();
       expect(result, isNotNull);
       expect(result.intField, isNull);
     });
 
-    test('with primitives only in ctor',(){
+    test('with primitives only in ctor', () {
       var result = _activatory.getTyped<PrimitiveComplexObject>();
       expect(result, isNotNull);
       expect(result.dateTimeField, isNotNull);
@@ -39,7 +35,7 @@ void main() {
       expect(result.intField, isNotNull);
     });
 
-    test('with not only primitives in ctor',(){
+    test('with not only primitives in ctor', () {
       var result = _activatory.getTyped<NonPrimitiveComplexObject>();
       expect(result, isNotNull);
       //TODO: use common method or matcher
@@ -53,22 +49,23 @@ void main() {
     });
   });
 
-  test('Cant create class without public ctor', (){
-    expect(()=>_activatory.getTyped<AbstractClass>(), throwsA(isInstanceOf<Exception>()));
+  test('Cant create class without public ctor', () {
+    expect(() => _activatory.getTyped<AbstractClass>(),
+        throwsA(isInstanceOf<Exception>()));
   });
 }
 
-abstract class AbstractClass{
+abstract class AbstractClass {
   int _intField;
 
   AbstractClass(this._intField);
 }
 
-class NotRegistered{
+class NotRegistered {
   int intField;
 }
 
-class PrimitiveComplexObject{
+class PrimitiveComplexObject {
   int _intField;
   int get intField => _intField;
 
@@ -84,12 +81,11 @@ class PrimitiveComplexObject{
   DateTime _dateTimeField;
   DateTime get dateTimeField => _dateTimeField;
 
-  PrimitiveComplexObject(
-      this._intField, this._stringField, this._doubleField,
+  PrimitiveComplexObject(this._intField, this._stringField, this._doubleField,
       this._boolField, this._dateTimeField);
 }
 
-class NonPrimitiveComplexObject{
+class NonPrimitiveComplexObject {
   PrimitiveComplexObject _primitiveComplexObject;
   PrimitiveComplexObject get primitiveComplexObject => _primitiveComplexObject;
 
