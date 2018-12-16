@@ -1,4 +1,4 @@
-import 'package:Activatory/Activatory.dart';
+import 'package:Activatory/src/Activatory.dart';
 
 main() {
   var activatory = new Activatory();

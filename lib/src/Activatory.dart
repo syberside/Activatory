@@ -1,13 +1,10 @@
 /// Support for doing something awesome.
 ///
 /// More dartdocs go here.
-library Activatory;
-
-export 'src/Activatory_base.dart';
-
 import 'dart:core';
 import 'dart:math';
-import 'package:Activatory/Activatory.dart';
+import 'package:Activatory/src/Activatory.dart';
+import 'package:Activatory/src/activation_context.dart';
 import 'package:uuid/uuid.dart';
 
 class Activatory{

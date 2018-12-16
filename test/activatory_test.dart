@@ -1,4 +1,4 @@
-import 'package:Activatory/Activatory.dart';
+import 'package:Activatory/src/Activatory.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -10,6 +10,7 @@ void main() {
   group('Can generate primitive types', () {
     var types = [String, int, bool, DateTime, double];
     for(var type in types){
+
       test(type, () {
         var result = _activatory.get(type);
         expect(result, allOf([
@@ -17,11 +18,11 @@ void main() {
         ]));
         expect(result.runtimeType, same(type));
       });
-      test('${type} is generated randomly', (){
-        var a = _activatory.get(type);
-        var b = _activatory.get(type);
 
-        expect(a, isNot(equals(b)));
+      test('${type} is generated randomly', (){
+        var items = new List.generate(100, (_)=>_activatory.get(type));
+        var distinct = items.toSet().toList();
+        expect(items, equals(distinct));
       });
     }
   });

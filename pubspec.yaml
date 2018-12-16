@@ -1,8 +1,8 @@
 name: Activatory
-description: A starting point for Dart libraries or applications.
-# version: 1.0.0
-# homepage: https://www.example.com
-# author: syberside <email@example.com>
+description: Test data generator aimed to simplify Test-Driven Development with Dart
+version: 0.0.1
+homepage: https://github.com/syberside/Activatory
+author: syberside <syberside@gmail.com>
 
 environment:
   sdk: '>=2.0.0 <3.0.0'

@@ -1,53 +1,14 @@
 import 'dart:math';
-
-import 'package:Activatory/src/backends/complex_object_backend.dart';
+import 'package:Activatory/src/activation_context.dart';
+import 'package:Activatory/src/backends/generator_backend.dart';
 import 'package:uuid/uuid.dart';
 
-class ActivationContext{
-
-  Map<Type, GeneratorBackend> exactBackends = new Map<Type, GeneratorBackend>();
-
-  GeneratorBackend find(Type type){
-    var result = exactBackends[type];
-    if(result!=null){
-      return result;
-    }
-    var complexObjectBackend = new ComplexObjectBackend(type);
-    exactBackends[type] = complexObjectBackend;
-    return complexObjectBackend;
-  }
-
-  void register(Type type, GeneratorBackend backend){
-   exactBackends[type] = backend;
-  }
-  void registerAll(Map<Type, GeneratorBackend> backends){
-    backends.forEach((type,backend)=>register(type, backend));
-  }
-
-  static ActivationContext createDefault(){
-    var random = new Random(DateTime.now().millisecondsSinceEpoch);
-    Map<Type, GeneratorBackend> backends = {
-      String: new RandomStringBackent(),
-      int: new RandomIntBackent(random),
-      double: new RandomDoubleBackent(random),
-      bool: new RandomBoolBackent(random),
-      DateTime: new RandomDateTimeBackent(random),
-    };
-    return new ActivationContext()
-      ..registerAll(backends);
-  }
-}
-
-abstract class GeneratorBackend<T>{
-  T get(ActivationContext context);
-}
-
-class RandomIntBackent implements GeneratorBackend<int>{
+class RandomIntBackend implements GeneratorBackend<int>{
   Random _random;
   //TODO: define better max values (int.Max?!)
   int _maxValue = 100;
 
-  RandomIntBackent(this._random);
+  RandomIntBackend(this._random);
 
   @override
   int get(ActivationContext context) {
