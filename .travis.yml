@@ -4,4 +4,4 @@ dart:
 dart_task:
  - test
  - dartanalyzer
- - dartfmt: -w lib/ test/
+# - dartfmt: -w lib/ test/
