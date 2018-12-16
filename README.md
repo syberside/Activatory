@@ -1,5 +1,7 @@
 # Activatory
 
+[![Build Status](https://travis-ci.com/syberside/Activatory.svg?branch=master)](https://travis-ci.com/syberside/Activatory)
+
 This project is aimed to bring a test data generator to Dart's ecosystem.
 This will greatly simplify unit testing and especially Test-Driven Development.
 
