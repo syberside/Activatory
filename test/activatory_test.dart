@@ -18,12 +18,6 @@ void main() {
         ]));
         expect(result.runtimeType, same(type));
       });
-
-      test('${type} is generated randomly', (){
-        var items = new List.generate(100, (_)=>_activatory.get(type));
-        var distinct = items.toSet().toList();
-        expect(items, equals(distinct));
-      });
     }
   });
 

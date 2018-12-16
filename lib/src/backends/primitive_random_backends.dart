@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 class RandomIntBackend implements GeneratorBackend<int>{
   Random _random;
   //TODO: define better max values (int.Max?!)
-  int _maxValue = 100;
+  int _maxValue = 2^53;
 
   RandomIntBackend(this._random);
 
