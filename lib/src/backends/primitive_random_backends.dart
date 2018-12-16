@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'package:Activatory/src/activation_context.dart';
-import 'package:Activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:uuid/uuid.dart';
 
 class RandomIntBackend implements GeneratorBackend<int> {

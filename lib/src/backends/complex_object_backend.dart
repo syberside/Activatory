@@ -1,7 +1,7 @@
 import 'dart:mirrors';
-import 'package:Activatory/src/activatory.dart';
-import 'package:Activatory/src/activation_context.dart';
-import 'package:Activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/activatory.dart';
+import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/backends/generator_backend.dart';
 
 class ComplexObjectBackend implements GeneratorBackend<Object> {
   Type _type;

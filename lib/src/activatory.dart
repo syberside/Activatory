@@ -2,8 +2,8 @@
 ///
 /// More dartdocs go here.
 import 'dart:core';
-import 'package:Activatory/src/activation_context_factory.dart';
-import 'package:Activatory/src/activation_context.dart';
+import 'package:activatory/src/activation_context_factory.dart';
+import 'package:activatory/src/activation_context.dart';
 
 class Activatory {
   ActivationContext _context;
