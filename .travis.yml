@@ -5,3 +5,13 @@ dart_task:
  - test
  - dartanalyzer
 # - dartfmt: -w lib/ test/
+
+before_install:
+ - chmod +x ./tool/publish.sh
+
+deploy:
+  provider: script
+  script: ./tool/publish.sh
+  on:
+    branch: master
+    tags: true
