@@ -11,7 +11,12 @@ before_install:
 
 deploy:
   provider: script
-  script: ./tool/publish.sh
+  script: bash ./tool/publish.sh
   on:
     branch: master
     tags: true
+
+cache:
+  directories:
+  - $HOME/.pub-cache
+  - .dart_tool/build
