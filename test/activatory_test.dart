@@ -1,4 +1,4 @@
-import 'package:Activatory/src/Activatory.dart';
+import 'package:Activatory/src/activatory.dart';
 import 'package:test/test.dart';
 
 void main() {

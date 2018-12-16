@@ -1,3 +1,3 @@
 library Activatory;
 
-export 'src/Activatory.dart';
+export 'src/activatory.dart';

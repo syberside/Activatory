@@ -2,15 +2,13 @@
 ///
 /// More dartdocs go here.
 import 'dart:core';
-import 'dart:math';
-import 'package:Activatory/src/Activatory.dart';
+import 'package:Activatory/src/activation_context_factory.dart';
 import 'package:Activatory/src/activation_context.dart';
-import 'package:uuid/uuid.dart';
 
 class Activatory{
   ActivationContext _context;
   Activatory(){
-    _context = ActivationContext.createDefault();
+    _context = ActivationContextFactory.createDefault();
   }
 
   T getTyped<T>(){
