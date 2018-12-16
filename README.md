@@ -1,11 +1,11 @@
 # Activatory
 
-This is my first Dart project.
-It's aimed to add test data generator to Dart's ecosystem and to simplify/speedup tests writing.
+This project is aimed to bring a test data generator to Dart's ecosystem.
+This will greatly simplify unit testing and especially Test-Driven Development.
 
-This project is inspired by .NET Autofixture library (because I'm used to using it in my previous work).
+This project is inspired by [.NET Autofixture library](https://github.com/AutoFixture/AutoFixture).
 
-Also, this is my pet project so there are no exact plans and etc.
+This is my first Dart project. Actually, this is my "pet-project" so there are no exact plans and etc.
 
 ## TODO's:
 - [x] Add primitive types support
