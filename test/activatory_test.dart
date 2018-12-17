@@ -19,13 +19,13 @@ void main() {
   });
 
   group('Can create complex object', () {
-    test('with empty ctor', () {
-      var result = _activatory.getTyped<NotRegistered>();
+    test('with default (implicit) ctor', () {
+      var result = _activatory.getTyped<DefaultCtor>();
       expect(result, isNotNull);
       expect(result.intField, isNull);
     });
 
-    test('with primitives only in ctor', () {
+    test('with primitives only in ctor parameters', () {
       var result = _activatory.getTyped<PrimitiveComplexObject>();
       expect(result, isNotNull);
       expect(result.dateTimeField, isNotNull);
@@ -35,7 +35,7 @@ void main() {
       expect(result.intField, isNotNull);
     });
 
-    test('with not only primitives in ctor', () {
+    test('with not only primitives in ctor parameters', () {
       var result = _activatory.getTyped<NonPrimitiveComplexObject>();
       expect(result, isNotNull);
       //TODO: use common method or matcher
@@ -47,11 +47,31 @@ void main() {
       expect(result.primitiveComplexObject.intField, isNotNull);
       expect(result.intField, isNotNull);
     });
+
+    test('with named ctor', () {
+      var result = _activatory.getTyped<NamedCtor>();
+      expect(result, isNotNull);
+      expect(result.stringField, isNotNull);
+    });
+
+    test('with factory ctor', () {
+      var result = _activatory.getTyped<FactoryCtor>();
+      expect(result, isNotNull);
+      expect(result.stringField, isNotNull);
+      expect(result.nonFactoryField, isNull);
+    });
   });
 
-  test('Cant create class without public ctor', () {
-    expect(() => _activatory.getTyped<AbstractClass>(),
-        throwsA(isInstanceOf<Exception>()));
+  group('Cant create', () {
+    test('abstract class', () {
+      expect(() => _activatory.getTyped<AbstractClass>(),
+          throwsA(isInstanceOf<Exception>()));
+    });
+
+    test('class without public ctor', () {
+      expect(() => _activatory.getTyped<NoPublicCtor>(),
+          throwsA(isInstanceOf<Exception>()));
+    });
   });
 }
 
@@ -61,7 +81,7 @@ abstract class AbstractClass {
   AbstractClass(this._intField);
 }
 
-class NotRegistered {
+class DefaultCtor {
   int intField;
 }
 
@@ -93,4 +113,32 @@ class NonPrimitiveComplexObject {
   int get intField => _intField;
 
   NonPrimitiveComplexObject(this._primitiveComplexObject, this._intField);
+}
+
+class NamedCtor {
+  String _stringField;
+  String get stringField => _stringField;
+
+  NamedCtor.nonDefaultName(this._stringField);
+}
+
+class FactoryCtor {
+  String _stringField;
+  String get stringField => _stringField;
+
+  String _nonFactoryField;
+  String get nonFactoryField => _nonFactoryField;
+
+  FactoryCtor._internal(this._stringField, this._nonFactoryField);
+
+  factory FactoryCtor(String stringField) {
+    return new FactoryCtor._internal(stringField, null);
+  }
+}
+
+class NoPublicCtor {
+  String _stringField;
+  String get stringField => _stringField;
+
+  NoPublicCtor._internal(this._stringField);
 }

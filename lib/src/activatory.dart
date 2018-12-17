@@ -1,6 +1,3 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 import 'dart:core';
 import 'package:activatory/src/activation_context_factory.dart';
 import 'package:activatory/src/activation_context.dart';

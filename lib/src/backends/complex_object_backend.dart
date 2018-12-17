@@ -26,7 +26,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
       ClassMirror classMirror, ActivationContext context) {
     var constructors = classMirror.declarations.values;
     for (var method in constructors) {
-      if (method is MethodMirror && method.isConstructor) {
+      if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
         var parameters = method.parameters;
         var positionalArguments = new List<Object>();
         for (var parameter in parameters) {
@@ -36,7 +36,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
         }
 
         var result = classMirror
-            .newInstance(new Symbol(''), positionalArguments)
+            .newInstance(method.constructorName, positionalArguments)
             .reflectee;
         return _ResolveResult.success(result);
       }
