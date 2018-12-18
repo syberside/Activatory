@@ -1,9 +1,10 @@
 language: dart
 dart:
  - stable
+
 dart_task:
  - test
- - dartanalyzer
+# - dartanalyzer
 # - dartfmt: -w lib/ test/
 
 before_install:
