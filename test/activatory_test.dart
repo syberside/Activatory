@@ -1,11 +1,22 @@
 import 'package:activatory/src/activatory.dart';
 import 'package:test/test.dart';
 
+import 'test-classes.dart';
+
 void main() {
   Activatory _activatory;
   setUp(() {
     _activatory = new Activatory();
   });
+
+  assertComplexObjectIsNotNull(PrimitiveComplexObject obj) {
+    expect(obj, isNotNull);
+    expect(obj.dateTimeField, isNotNull);
+    expect(obj.boolField, isNotNull);
+    expect(obj.doubleField, isNotNull);
+    expect(obj.stringField, isNotNull);
+    expect(obj.intField, isNotNull);
+  }
 
   group('Can generate primitive types', () {
     var types = [String, int, bool, DateTime, double];
@@ -27,25 +38,14 @@ void main() {
 
     test('with primitives only in ctor parameters', () {
       var result = _activatory.getTyped<PrimitiveComplexObject>();
-      expect(result, isNotNull);
-      expect(result.dateTimeField, isNotNull);
-      expect(result.boolField, isNotNull);
-      expect(result.doubleField, isNotNull);
-      expect(result.stringField, isNotNull);
-      expect(result.intField, isNotNull);
+      assertComplexObjectIsNotNull(result);
     });
 
     test('with not only primitives in ctor parameters', () {
       var result = _activatory.getTyped<NonPrimitiveComplexObject>();
       expect(result, isNotNull);
-      //TODO: use common method or matcher
-      expect(result.primitiveComplexObject, isNotNull);
-      expect(result.primitiveComplexObject.dateTimeField, isNotNull);
-      expect(result.primitiveComplexObject.boolField, isNotNull);
-      expect(result.primitiveComplexObject.doubleField, isNotNull);
-      expect(result.primitiveComplexObject.stringField, isNotNull);
-      expect(result.primitiveComplexObject.intField, isNotNull);
       expect(result.intField, isNotNull);
+      assertComplexObjectIsNotNull(result.primitiveComplexObject);
     });
 
     test('with named ctor', () {
@@ -73,72 +73,42 @@ void main() {
           throwsA(isInstanceOf<Exception>()));
     });
   });
-}
 
-abstract class AbstractClass {
-  int _intField;
+  group("Default values of", () {
+    group("positional arguments are", () {
+      test("used when they are not nulls", () {
+        var result = _activatory.getTyped<DefaultPositionalNoNullValue>();
+        expect(result, isNotNull);
+        expect(result.stringValue,
+            equals(DefaultPositionalNoNullValue.defaultValue));
+        assertComplexObjectIsNotNull(result.object);
+      });
 
-  AbstractClass(this._intField);
-}
+      test("not used when they are nulls", () {
+        var result = _activatory.getTyped<DefaultPositionalNullValue>();
+        expect(result, isNotNull);
+        expect(result.stringValue, isNotNull);
+        assertComplexObjectIsNotNull(result.notSetObject);
+        assertComplexObjectIsNotNull(result.nullSetObject);
+      });
+    });
 
-class DefaultCtor {
-  int intField;
-}
+    group("named arguments are", () {
+      test("used when they are not nulls", () {
+        var result = _activatory.getTyped<DefaultNamedNoNullValue>();
+        expect(result, isNotNull);
+        expect(
+            result.stringValue, equals(DefaultNamedNoNullValue.defaultValue));
+        assertComplexObjectIsNotNull(result.object);
+      });
 
-class PrimitiveComplexObject {
-  int _intField;
-  int get intField => _intField;
-
-  String _stringField;
-  String get stringField => _stringField;
-
-  double _doubleField;
-  double get doubleField => _doubleField;
-
-  bool _boolField;
-  bool get boolField => _boolField;
-
-  DateTime _dateTimeField;
-  DateTime get dateTimeField => _dateTimeField;
-
-  PrimitiveComplexObject(this._intField, this._stringField, this._doubleField,
-      this._boolField, this._dateTimeField);
-}
-
-class NonPrimitiveComplexObject {
-  PrimitiveComplexObject _primitiveComplexObject;
-  PrimitiveComplexObject get primitiveComplexObject => _primitiveComplexObject;
-
-  int _intField;
-  int get intField => _intField;
-
-  NonPrimitiveComplexObject(this._primitiveComplexObject, this._intField);
-}
-
-class NamedCtor {
-  String _stringField;
-  String get stringField => _stringField;
-
-  NamedCtor.nonDefaultName(this._stringField);
-}
-
-class FactoryCtor {
-  String _stringField;
-  String get stringField => _stringField;
-
-  String _nonFactoryField;
-  String get nonFactoryField => _nonFactoryField;
-
-  FactoryCtor._internal(this._stringField, this._nonFactoryField);
-
-  factory FactoryCtor(String stringField) {
-    return new FactoryCtor._internal(stringField, null);
-  }
-}
-
-class NoPublicCtor {
-  String _stringField;
-  String get stringField => _stringField;
-
-  NoPublicCtor._internal(this._stringField);
+      test("not used when they are nulls", () {
+        var result = _activatory.getTyped<DefaultNamedNullValue>();
+        expect(result, isNotNull);
+        expect(result.stringValue, isNotNull);
+        assertComplexObjectIsNotNull(result.notSetObject);
+        assertComplexObjectIsNotNull(result.nullSetObject);
+      });
+    });
+  });
 }

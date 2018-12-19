@@ -44,33 +44,45 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
 
     for (var method in constructors) {
       if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
-        var parameters = method.parameters;
-        var positionalArguments =
-            parameters.map((p) => p.type.reflectedType).toList();
+        var arguments = method.parameters
+            .map((p) => new _ArgResolveResult(p.type.reflectedType,
+                p.defaultValue?.reflectee, p.isNamed, p.simpleName))
+            .toList();
         yield new _CtorResolveResult(
-            (List<Type> args, ActivationContext ctx) => activateInstance(
-                classMirror, method.constructorName, args, ctx),
-            positionalArguments);
+            (List<_ArgResolveResult> args, ActivationContext ctx) =>
+                activateInstance(
+                    classMirror, method.constructorName, args, ctx),
+            arguments);
       }
     }
   }
 
-  activateInstance(ClassMirror classMirror, Symbol ctor, List<Type> args,
-      ActivationContext context) {
-    var argValues = generateValues(args, context).toList();
-    var result = classMirror.newInstance(ctor, argValues).reflectee;
+  activateInstance(ClassMirror classMirror, Symbol ctor,
+      List<_ArgResolveResult> args, ActivationContext context) {
+    var positionalArguments = args
+        .where((arg) => !arg.isNamed)
+        .map((arg) => generateValues(arg, context))
+        .toList();
+
+    var namedArguments = new Map<Symbol, Object>();
+    args.where((args) => args.isNamed).forEach(
+        (arg) => namedArguments[arg.name] = generateValues(arg, context));
+
+    var result = classMirror
+        .newInstance(ctor, positionalArguments, namedArguments)
+        .reflectee;
     return result;
   }
 
-  Iterable<Object> generateValues(
-      List<Type> args, ActivationContext context) sync* {
-    for (var argType in args) {
-      var backend = context.find(argType);
+  Object generateValues(_ArgResolveResult arg, ActivationContext context) {
+    if (arg.defaultValue != null) {
+      return arg.defaultValue;
+    } else {
+      var backend = context.find(arg.type);
       if (backend == null) {
-        throw new Exception("Backend of type ${argType} not found");
+        throw new Exception("Backend of type ${arg.type} not found");
       }
-      var value = backend.get(context);
-      yield value;
+      return backend.get(context);
     }
   }
 }
@@ -87,11 +99,28 @@ class _ResolveResult {
 }
 
 class _CtorResolveResult {
-  List<Type> _arguments;
-  List<Type> get arguments => _arguments;
+  List<_ArgResolveResult> _arguments;
+  List<_ArgResolveResult> get arguments => _arguments;
 
   Function _factory;
   Function get factory => _factory;
 
   _CtorResolveResult(this._factory, this._arguments);
+}
+
+/// TODO: Add polymorphism?
+class _ArgResolveResult {
+  Type _type;
+  Type get type => _type;
+
+  Object _defaultValue;
+  Object get defaultValue => _defaultValue;
+
+  bool _isNamed;
+  bool get isNamed => _isNamed;
+
+  Symbol _name;
+  Symbol get name => _name;
+
+  _ArgResolveResult(this._type, this._defaultValue, this._isNamed, this._name);
 }

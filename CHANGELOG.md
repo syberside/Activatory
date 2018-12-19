@@ -1,3 +1,10 @@
-## 1.0.0
+## v0.0.1-0.0.4
 
-- Initial version, created by Stagehand
+- Added support for primitive objects activation: int, double, String, bool, DateTime
+- Added support for complex object activation by calling ctors, named ctors, factories and using positional arguments
+
+
+## v0.0.5
+- Named arguments supported
+- Complex object activation now respects default non null values
+  

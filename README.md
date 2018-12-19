@@ -12,13 +12,14 @@ This is my first Dart project. Actually, this is my "pet-project" so there are n
 
 ## Project TODO's:
 - [x] Add primitive types support
-- [ ] Add complex types support
+- [x] Add complex types support
   - [x] using constructor
   - [x] using factory methods
   - [x] using named constructors
-  - [ ] choosing strategy to select factory: random/round robin/first/shortest/longest
-  - [ ] using positional parameters
-  - [ ] using default argument values where can (if can be implemented)
+  - [x] using default argument values for positional arguments
+  - [x] using named arguments
+  - [x] using default argument values for named arguments
+- [ ] Customization of complex object factory strategy selection: random/round robin/first/shortest/longest 
 - [ ] Add ability to explicit register factory
 - [ ] Add fixed (singleton) values support
 - [ ] Add parameter overloading by name
