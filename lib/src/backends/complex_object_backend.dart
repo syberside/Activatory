@@ -4,15 +4,13 @@ import 'package:activatory/src/backends/generator_backend.dart';
 
 class ComplexObjectBackend implements GeneratorBackend<Object> {
   Type _type;
-  List<_CtorResolveResult> _ctors = new List<_CtorResolveResult>();
+  List<_CtorResolveResult> _ctors;
 
   ComplexObjectBackend(this._type);
 
   @override
   Object get(ActivationContext context) {
-    var classMirror = reflectClass(_type);
-
-    var ctorResolutionResult = _resolveByCtor(classMirror, context);
+    var ctorResolutionResult = _resolveByCtor(context);
     if (ctorResolutionResult.resolvedSuccessfully) {
       var factory = ctorResolutionResult.result;
       return factory.factory(factory.arguments, context);
@@ -21,13 +19,14 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
     throw new Exception("Cant find constructor for type ${_type}");
   }
 
-  _ResolveResult _resolveByCtor(
-      ClassMirror classMirror, ActivationContext context) {
+  _ResolveResult _resolveByCtor(ActivationContext context) {
+    var classMirror = reflectClass(_type);
+
     if (classMirror.isAbstract) {
       throw new Exception("Cant create instance of abstract class ${_type}");
     }
 
-    if (_ctors.isEmpty) {
+    if (_ctors == null) {
       _ctors = _extractCtors(classMirror, context).toList();
     }
 

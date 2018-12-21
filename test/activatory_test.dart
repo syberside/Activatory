@@ -111,4 +111,29 @@ void main() {
       });
     });
   });
+
+  group("Can override default factory resolution logic for ", (){
+    tearDown((){
+      _activatory = new Activatory();
+    });
+
+    test("primitive type",(){
+      var expected = _activatory.getTyped<int>();
+      _activatory.override((_)=> expected);
+      var result1 = _activatory.getTyped<int>();
+      var result2 = _activatory.getTyped<int>();
+      expect(result1, equals(expected));
+      expect(result2, equals(expected));
+    });
+
+    test("complex type",(){
+      var expected = new DefaultCtor();
+      _activatory.override((_)=> expected);
+      var result1 = _activatory.getTyped<DefaultCtor>();
+      var result2 = _activatory.getTyped<DefaultCtor>();
+      expect(result1, same(expected));
+      expect(result2, same(expected));
+    });
+  });
+
 }

@@ -7,4 +7,6 @@
 ## v0.0.5
 - Named arguments supported
 - Complex object activation now respects default non null values
-  
+
+## v0.0.6
+- Added ability to register factory explicitly
