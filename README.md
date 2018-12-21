@@ -21,7 +21,7 @@ This is my first Dart project. Actually, this is my "pet-project" so there are n
   - [x] using default argument values for named arguments
 - [ ] Customization of complex object factory strategy selection: random/round robin/first/shortest/longest 
 - [x] Add ability to explicit register factory
-- [ ] Add fixed (singleton) values support
+- [x] Add fixed (singleton) values support
 - [ ] Add parameter overloading by name
 - [ ] Add parameter overloading by type
 - [ ] Add configuration layers and reusability for complex cases

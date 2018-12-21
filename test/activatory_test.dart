@@ -112,27 +112,65 @@ void main() {
     });
   });
 
-  group("Can override default factory resolution logic for ", (){
+  group("Can override default factory resolution logic ", (){
     tearDown((){
       _activatory = new Activatory();
     });
+    
+    group("with explicit factory for",(){
+      test("primitive type",(){
+        var expected = _activatory.getTyped<int>();
+        _activatory.override((_)=> expected);
+        var result1 = _activatory.getTyped<int>();
+        var result2 = _activatory.getTyped<int>();
+        expect(result1, equals(expected));
+        expect(result2, equals(expected));
+      });
 
-    test("primitive type",(){
-      var expected = _activatory.getTyped<int>();
-      _activatory.override((_)=> expected);
-      var result1 = _activatory.getTyped<int>();
-      var result2 = _activatory.getTyped<int>();
-      expect(result1, equals(expected));
-      expect(result2, equals(expected));
+      test("complex type",(){
+        var expected = new DefaultCtor();
+        _activatory.override((_)=> expected);
+        var result1 = _activatory.getTyped<DefaultCtor>();
+        var result2 = _activatory.getTyped<DefaultCtor>();
+        expect(result1, same(expected));
+        expect(result2, same(expected));
+      });
+    });  
+    
+    group("with singletone for", (){
+      test("primitive type", (){        
+        _activatory.useSingleton(DateTime);
+        var result1 = _activatory.getTyped<DateTime>();
+        var result2 = _activatory.getTyped<DateTime>();
+        expect(result1, equals(result2));
+      });
+      
+      test("complex type",(){
+        _activatory.useSingleton(DefaultCtor);
+        var result1 = _activatory.getTyped<DefaultCtor>();
+        var result2 = _activatory.getTyped<DefaultCtor>();
+        expect(result1, same(result2));
+      });
     });
 
-    test("complex type",(){
-      var expected = new DefaultCtor();
-      _activatory.override((_)=> expected);
-      var result1 = _activatory.getTyped<DefaultCtor>();
-      var result2 = _activatory.getTyped<DefaultCtor>();
-      expect(result1, same(expected));
-      expect(result2, same(expected));
+    group("with fixed value for",(){
+      test("primitive type",(){
+        var expected = _activatory.getTyped<int>();
+        _activatory.useValue(expected);
+        var result1 = _activatory.getTyped<int>();
+        var result2 = _activatory.getTyped<int>();
+        expect(result1, equals(expected));
+        expect(result2, equals(expected));
+      });
+
+      test("complex type",(){
+        var expected = new DefaultCtor();
+        _activatory.useValue(expected);
+        var result1 = _activatory.getTyped<DefaultCtor>();
+        var result2 = _activatory.getTyped<DefaultCtor>();
+        expect(result1, same(expected));
+        expect(result2, same(expected));
+      });
     });
   });
 

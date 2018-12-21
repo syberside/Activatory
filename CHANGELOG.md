@@ -10,3 +10,7 @@
 
 ## v0.0.6
 - Added ability to register factory explicitly
+
+## v0.0.7
+- Added ability to register generated singleton
+- Added ability to register pre defined value

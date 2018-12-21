@@ -19,7 +19,7 @@ class ActivationContext {
       return result;
     }
     var complexObjectBackend = new ComplexObjectBackend(type);
-    _exactBackends[type] = complexObjectBackend;
+    register(type, complexObjectBackend);
     return complexObjectBackend;
   }
 
