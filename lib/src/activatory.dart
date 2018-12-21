@@ -16,10 +16,7 @@ class Activatory {
   }
 
   Object get(Type type) {
-    var backend = _context.find(type);
-    if (backend == null) {
-      throw new Exception('Backend for type ${type} not found');
-    }
+    var backend = _context.get(type);
     var value = backend.get(_context);
     return value;
   }

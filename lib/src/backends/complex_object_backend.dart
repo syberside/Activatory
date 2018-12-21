@@ -77,10 +77,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
     if (arg.defaultValue != null) {
       return arg.defaultValue;
     } else {
-      var backend = context.find(arg.type);
-      if (backend == null) {
-        throw new Exception("Backend of type ${arg.type} not found");
-      }
+      var backend = context.get(arg.type);
       return backend.get(context);
     }
   }

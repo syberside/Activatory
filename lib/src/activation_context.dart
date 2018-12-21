@@ -5,6 +5,14 @@ class ActivationContext {
   Map<Type, GeneratorBackend> _exactBackends =
       new Map<Type, GeneratorBackend>();
 
+  GeneratorBackend get(Type type){
+    var backend = find(type);
+    if (backend == null) {
+      throw new Exception("Backend of type ${type} not found");
+    }
+    return backend;
+  }
+
   GeneratorBackend find(Type type) {
     var result = _exactBackends[type];
     if (result != null) {
