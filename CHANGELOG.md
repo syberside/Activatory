@@ -14,3 +14,6 @@
 ## v0.0.7
 - Added ability to register generated singleton
 - Added ability to register pre defined value
+
+## WIP
+- Back-ends now can be registered and lookuped using any object as a key  

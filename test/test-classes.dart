@@ -8,121 +8,117 @@ class DefaultCtor {
   int intField;
 }
 
-class PrimitiveComplexObject {
-  int _intField;
-  int get intField => _intField;
+class DefaultNamedNoNullValue {
+  static const String defaultValue = "defaultValue is not generated";
+  String _stringValue;
+  PrimitiveComplexObject _object;
 
-  String _stringField;
-  String get stringField => _stringField;
-
-  double _doubleField;
-  double get doubleField => _doubleField;
-
-  bool _boolField;
-  bool get boolField => _boolField;
-
-  DateTime _dateTimeField;
-  DateTime get dateTimeField => _dateTimeField;
-
-  PrimitiveComplexObject(this._intField, this._stringField, this._doubleField,
-      this._boolField, this._dateTimeField);
-}
-
-class NonPrimitiveComplexObject {
-  PrimitiveComplexObject _primitiveComplexObject;
-  PrimitiveComplexObject get primitiveComplexObject => _primitiveComplexObject;
-
-  int _intField;
-  int get intField => _intField;
-
-  NonPrimitiveComplexObject(this._primitiveComplexObject, this._intField);
-}
-
-class NamedCtor {
-  String _stringField;
-  String get stringField => _stringField;
-
-  NamedCtor.nonDefaultName(this._stringField);
-}
-
-class FactoryCtor {
-  String _stringField;
-  String get stringField => _stringField;
-
-  String _nonFactoryField;
-  String get nonFactoryField => _nonFactoryField;
-
-  FactoryCtor._internal(this._stringField, this._nonFactoryField);
-
-  factory FactoryCtor(String stringField) {
-    return new FactoryCtor._internal(stringField, null);
+  DefaultNamedNoNullValue(this._object, {String stringValue = defaultValue}) {
+    _stringValue = stringValue;
   }
+  PrimitiveComplexObject get object => _object;
+
+  String get stringValue => _stringValue;
 }
 
-class NoPublicCtor {
-  String _stringField;
-  String get stringField => _stringField;
+class DefaultNamedNullValue {
+  String _stringValue;
+  PrimitiveComplexObject _notSetObject;
 
-  NoPublicCtor._internal(this._stringField);
+  PrimitiveComplexObject _nullSetObject;
+  DefaultNamedNullValue(
+      {PrimitiveComplexObject notSetObject, PrimitiveComplexObject nullSetObject = null, String stringValue = null}) {
+    _stringValue = stringValue;
+    _notSetObject = notSetObject;
+    _nullSetObject = nullSetObject;
+  }
+
+  PrimitiveComplexObject get notSetObject => _notSetObject;
+  PrimitiveComplexObject get nullSetObject => _nullSetObject;
+
+  String get stringValue => _stringValue;
 }
 
 class DefaultPositionalNoNullValue {
   static const String defaultValue = "defaultValue is not generated";
   String _stringValue;
-  String get stringValue => _stringValue;
-
   PrimitiveComplexObject _object;
+
+  DefaultPositionalNoNullValue(this._object, [this._stringValue = defaultValue]);
   PrimitiveComplexObject get object => _object;
 
-  DefaultPositionalNoNullValue(this._object,
-      [this._stringValue = defaultValue]);
+  String get stringValue => _stringValue;
 }
 
 class DefaultPositionalNullValue {
   String _stringValue;
-  String get stringValue => _stringValue;
-
   PrimitiveComplexObject _notSetObject;
-  PrimitiveComplexObject get notSetObject => _notSetObject;
 
   PrimitiveComplexObject _nullSetObject;
-  PrimitiveComplexObject get nullSetObject => _nullSetObject;
+  DefaultPositionalNullValue([this._notSetObject, this._nullSetObject = null, this._stringValue = null]);
 
-  DefaultPositionalNullValue(
-      [this._notSetObject,
-      this._nullSetObject = null,
-      this._stringValue = null]);
-}
-
-class DefaultNamedNoNullValue {
-  static const String defaultValue = "defaultValue is not generated";
-  String _stringValue;
-  String get stringValue => _stringValue;
-
-  PrimitiveComplexObject _object;
-  PrimitiveComplexObject get object => _object;
-
-  DefaultNamedNoNullValue(this._object, {String stringValue = defaultValue}) {
-    _stringValue = stringValue;
-  }
-}
-
-class DefaultNamedNullValue {
-  String _stringValue;
-  String get stringValue => _stringValue;
-
-  PrimitiveComplexObject _notSetObject;
   PrimitiveComplexObject get notSetObject => _notSetObject;
-
-  PrimitiveComplexObject _nullSetObject;
   PrimitiveComplexObject get nullSetObject => _nullSetObject;
 
-  DefaultNamedNullValue(
-      {PrimitiveComplexObject notSetObject,
-      PrimitiveComplexObject nullSetObject = null,
-      String stringValue = null}) {
-    _stringValue = stringValue;
-    _notSetObject = notSetObject;
-    _nullSetObject = nullSetObject;
-  }
+  String get stringValue => _stringValue;
 }
+
+class FactoryCtor {
+  String _stringField;
+  String _nonFactoryField;
+
+  factory FactoryCtor(String stringField) {
+    return new FactoryCtor._internal(stringField, null);
+  }
+  FactoryCtor._internal(this._stringField, this._nonFactoryField);
+
+  String get nonFactoryField => _nonFactoryField;
+
+  String get stringField => _stringField;
+}
+
+class NamedCtor {
+  String _stringField;
+  NamedCtor.nonDefaultName(this._stringField);
+
+  String get stringField => _stringField;
+}
+
+class NonPrimitiveComplexObject {
+  PrimitiveComplexObject _primitiveComplexObject;
+  int _intField;
+
+  NonPrimitiveComplexObject(this._primitiveComplexObject, this._intField);
+  int get intField => _intField;
+
+  PrimitiveComplexObject get primitiveComplexObject => _primitiveComplexObject;
+}
+
+class NoPublicCtor {
+  String _stringField;
+  NoPublicCtor._internal(this._stringField);
+
+  String get stringField => _stringField;
+}
+
+class PrimitiveComplexObject {
+  int _intField;
+  String _stringField;
+
+  double _doubleField;
+  bool _boolField;
+
+  DateTime _dateTimeField;
+  PrimitiveComplexObject(this._intField, this._stringField, this._doubleField, this._boolField, this._dateTimeField);
+
+  bool get boolField => _boolField;
+  DateTime get dateTimeField => _dateTimeField;
+
+  double get doubleField => _doubleField;
+  int get intField => _intField;
+
+  String get stringField => _stringField;
+}
+
+//TODO: add enums to primitive types
+enum TestEnum { A, B, C }

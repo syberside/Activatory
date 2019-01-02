@@ -12,30 +12,31 @@ class Activatory {
     _context = ActivationContextFactory.createDefault();
   }
 
-  T getTyped<T>() {
-    return get(T);
-  }
+  //TODO: Test key
+  T getTyped<T>({Object key}) => get(T, key: key);
 
-  Object get(Type type) {
-    var backend = _context.get(type);
+  Object get(Type type, {Object key}) {
+    var backend = _context.get(type, key: key);
     var value = backend.get(_context);
     return value;
   }
 
-  void override<T>(Generator<T> generator){
+  //TODO: Test
+  void override<T>(Generator<T> generator, {Object key}){
     var backend = new ExplicitBackend(generator);
-    _context.register(T, backend);
+    _context.register(backend, T, key: key);
   }
 
-  void useSingleton(Type type){
+  void useSingleton(Type type) {
+    //TODO: support key and rename to define?
+
+    //TODO: BAD practice - unexpected state mutation + black magic
     var currentBackend = _context.get(type);
     var value = currentBackend.get(_context);
 
     var backend = new SingletonBackend(value);
-    _context.register(type, backend);
+    _context.register(backend, type);
   }
 
-  void useValue<T>(T value){
-    override((ctx) => value);
-  }
+  void useValue<T>(T value, {Object key})=> override((ctx) => value, key: key);
 }

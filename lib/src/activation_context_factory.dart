@@ -14,6 +14,10 @@ class ActivationContextFactory {
       bool: new RandomBoolBackent(random),
       DateTime: new RandomDateTimeBackent(random),
     };
-    return new ActivationContext()..registerAll(backends);
+    var result = new ActivationContext();
+    for(var type in backends.keys){
+      result.register(backends[type], type);
+    }
+    return result;
   }
 }

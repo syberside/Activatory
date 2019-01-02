@@ -22,6 +22,7 @@ This is my first Dart project. Actually, this is my "pet-project" so there are n
 - [ ] Customization of complex object factory strategy selection: random/round robin/first/shortest/longest 
 - [x] Add ability to explicit register factory
 - [x] Add fixed (singleton) values support
+- [x] Add factory labeling
 - [ ] Add parameter overloading by name
 - [ ] Add parameter overloading by type
 - [ ] Add configuration layers and reusability for complex cases
