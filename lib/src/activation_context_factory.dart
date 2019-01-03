@@ -5,7 +5,7 @@ import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 
 class ActivationContextFactory {
-  static ActivationContext createDefault() {
+  ActivationContext createDefault() {
     var random = new Random(DateTime.now().millisecondsSinceEpoch);
     Map<Type, GeneratorBackend> backends = {
       String: new RandomStringBackent(),

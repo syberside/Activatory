@@ -15,5 +15,6 @@
 - Added ability to register generated singleton
 - Added ability to register pre defined value
 
-## WIP
-- Back-ends now can be registered and lookuped using any object as a key  
+## v0.0.8
+- Back-ends now can be registered and lookuped using any object as a key
+- useSingleton renamed to pin, useValue renamed to pinValue

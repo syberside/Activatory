@@ -8,6 +8,7 @@ main() {
   print('String: ${activatory.getTyped<String>()}');
   print('DateTime: ${activatory.getTyped<DateTime>()}');
   print('Bool: ${activatory.getTyped<bool>()}');
+  print('TestEnum: ${activatory.getTyped<TestEnum>()}');
 
   //We can create complex types
   var complexClassInstance = activatory.getTyped<SomeComplexClass>();
@@ -17,21 +18,25 @@ main() {
   var moreComplexClassInstance = activatory.getTyped<MoreComplexClass>();
   print('MoreComplex.DateTime: ${moreComplexClassInstance.dateTimeField}');
   print('MoreComplex.Complex.String: ${moreComplexClassInstance.someComplexClass.stringField}');
+
+  //See activatory_test.dart for full feature list
 }
 
-class SomeComplexClass{
-  String _stringField;
-  String get stringField => _stringField;
-
-  SomeComplexClass(this._stringField);
-}
-
-class MoreComplexClass{
+class MoreComplexClass {
   DateTime _dateTimeField;
-  DateTime get dateTimeField => _dateTimeField;
-
   SomeComplexClass _someComplexField;
-  SomeComplexClass get someComplexClass => _someComplexField;
 
   MoreComplexClass(this._dateTimeField, this._someComplexField);
+  DateTime get dateTimeField => _dateTimeField;
+
+  SomeComplexClass get someComplexClass => _someComplexField;
 }
+
+class SomeComplexClass {
+  String _stringField;
+  SomeComplexClass(this._stringField);
+
+  String get stringField => _stringField;
+}
+
+enum TestEnum { A, B, C }

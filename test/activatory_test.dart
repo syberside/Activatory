@@ -16,14 +16,15 @@ void main() {
     expect(obj.doubleField, isNotNull);
     expect(obj.stringField, isNotNull);
     expect(obj.intField, isNotNull);
+    expect(obj.enumField, isNotNull);
   }
 
   group('Can generate primitive types', () {
-    var types = [String, int, bool, DateTime, double];
+    var types = [String, int, bool, DateTime, double, TestEnum];
     for (var type in types) {
       test(type, () {
         var result = _activatory.get(type);
-        expect(result, allOf([isNotNull]));
+        expect(result, isNotNull);
         expect(result.runtimeType, same(type));
       });
     }
@@ -133,26 +134,26 @@ void main() {
       });
     });
 
-    group("with singletone for", () {
+    group("with pin for", () {
       test("primitive type", () {
-        _activatory.useSingleton(DateTime);
+        _activatory.pin(DateTime);
         var result1 = _activatory.getTyped<DateTime>();
         var result2 = _activatory.getTyped<DateTime>();
         expect(result1, equals(result2));
       });
 
       test("complex type", () {
-        _activatory.useSingleton(DefaultCtor);
+        _activatory.pin(DefaultCtor);
         var result1 = _activatory.getTyped<DefaultCtor>();
         var result2 = _activatory.getTyped<DefaultCtor>();
         expect(result1, same(result2));
       });
     });
 
-    group("with fixed value for", () {
+    group("with pined value for", () {
       test("primitive type", () {
         var expected = _activatory.getTyped<int>();
-        _activatory.useValue(expected);
+        _activatory.pinValue(expected);
         var result1 = _activatory.getTyped<int>();
         var result2 = _activatory.getTyped<int>();
         expect(result1, equals(expected));
@@ -161,7 +162,7 @@ void main() {
 
       test("complex type", () {
         var expected = new DefaultCtor();
-        _activatory.useValue(expected);
+        _activatory.pinValue(expected);
         var result1 = _activatory.getTyped<DefaultCtor>();
         var result2 = _activatory.getTyped<DefaultCtor>();
         expect(result1, same(expected));
@@ -170,35 +171,79 @@ void main() {
     });
   });
 
-  group('Can use labels to define factory to use:', () {
-    void testLabels<TKey, TValue>(TKey key1, TValue value1, TKey key2, TValue value2) {
-      _activatory.useValue(value1, key: key1);
-      _activatory.useValue(value2, key: key2);
+  group('Can use labels to define', () {
+    group('pined values to use:',(){
+      void testLabels<TKey, TValue>(TKey key1, TValue value1, TKey key2, TValue value2) {
+        _activatory.pinValue(value1, key: key1);
+        _activatory.pinValue(value2, key: key2);
 
-      var result1 = _activatory.get(TValue, key: key1);
-      var result2 = _activatory.get(TValue, key: key2);
-      var result = _activatory.get(TValue);
+        var result1 = _activatory.get(TValue, key: key1);
+        var result2 = _activatory.get(TValue, key: key2);
+        var result = _activatory.get(TValue);
+
+        expect(result1, equals(value1));
+        expect(result2, equals(value2));
+        expect(result, isNot(equals(result1)));
+        expect(result, isNot(equals(result2)));
+      }
+
+      test('primitive key, primitive value', () {
+        testLabels('key1', 10, 'key2', 22);
+      });
+      test('primitive key, complex value', () {
+        var value1 = _activatory.get(PrimitiveComplexObject);
+        var value2 = _activatory.get(PrimitiveComplexObject);
+        testLabels('key1', value1, 'key2', value2);
+      });
+      test('complex key, complex value', () {
+        var key1 = _activatory.get(PrimitiveComplexObject);
+        var key2 = _activatory.get(PrimitiveComplexObject);
+        var value1 = _activatory.get(PrimitiveComplexObject);
+        var value2 = _activatory.get(PrimitiveComplexObject);
+        testLabels(key1, value1, key2, value2);
+      });
+    });
+    test('factories to use', (){
+      var value1 = 'value1';
+      var key1 = 'key1';
+      var value2 = 'value1';
+      var key2 = 'key2';
+      _activatory.override<String>((ctx)=> value1, key: key1);
+      _activatory.override<String>((ctx)=> value2, key: key2);
+
+      var result1 = _activatory.get(String, key: key1);
+      var result2 = _activatory.get(String, key: key2);
+      var result = _activatory.get(String);
 
       expect(result1, equals(value1));
       expect(result2, equals(value2));
       expect(result, isNot(equals(result1)));
       expect(result, isNot(equals(result2)));
-    }
+    });
 
-    test('primitive key, primitive value', () {
-      testLabels('key1', 10, 'key2', 22);
-    });
-    test('primitive key, complex value', () {
-      var value1 = _activatory.get(PrimitiveComplexObject);
-      var value2 = _activatory.get(PrimitiveComplexObject);
-      testLabels('key1', value1, 'key2', value2);
-    });
-    test('complex key, complex value', () {
-      var key1 = _activatory.get(PrimitiveComplexObject);
-      var key2 = _activatory.get(PrimitiveComplexObject);
-      var value1 = _activatory.get(PrimitiveComplexObject);
-      var value2 = _activatory.get(PrimitiveComplexObject);
-      testLabels(key1, value1, key2, value2);
+    test('defined values to use', (){
+      var key1 = 'key1';
+      var key2 = 'key2';
+      _activatory.pin(String, key: key1);
+      _activatory.pin(String, key: key2);
+      //NOTE: The order does matter
+      _activatory.pin(String);
+
+      var result_1a = _activatory.get(String, key: key1);
+      var result_1b = _activatory.get(String, key: key1);
+      var result_2a = _activatory.get(String, key: key2);
+      var result_2b = _activatory.get(String, key: key2);
+      var result_a = _activatory.get(String);
+      var result_b = _activatory.get(String);
+
+
+      expect(result_1a, equals(result_1b));
+      expect(result_2a, equals(result_2b));
+      expect(result_1a, isNot(equals(result_2a)));
+
+      expect(result_a, equals(result_b));
+      expect(result_a, isNot(equals(result_1a)));
+      expect(result_a, isNot(equals(result_2a)));
     });
   });
 }

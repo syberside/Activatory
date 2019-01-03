@@ -8,11 +8,16 @@ typedef T Generator<T>(ActivationContext activatory);
 
 class Activatory {
   ActivationContext _context;
-  Activatory() {
-    _context = ActivationContextFactory.createDefault();
+  ActivationContextFactory _factory;
+
+  Activatory.custom(this._factory,[this._context]){
+    if(_context==null){
+      _context = _factory.createDefault();
+    }
   }
 
-  //TODO: Test key
+  Activatory():this.custom(new ActivationContextFactory());
+
   T getTyped<T>({Object key}) => get(T, key: key);
 
   Object get(Type type, {Object key}) {
@@ -21,22 +26,19 @@ class Activatory {
     return value;
   }
 
-  //TODO: Test
   void override<T>(Generator<T> generator, {Object key}){
     var backend = new ExplicitBackend(generator);
     _context.register(backend, T, key: key);
   }
 
-  void useSingleton(Type type) {
-    //TODO: support key and rename to define?
-
-    //TODO: BAD practice - unexpected state mutation + black magic
-    var currentBackend = _context.get(type);
-    var value = currentBackend.get(_context);
+  void pin(Type type, {Object key}) {
+    var detachedContext = _context.clone();
+    var currentBackend = detachedContext.get(type, key: null);
+    var value = currentBackend.get(detachedContext);
 
     var backend = new SingletonBackend(value);
-    _context.register(backend, type);
+    _context.register(backend, type, key: key);
   }
 
-  void useValue<T>(T value, {Object key})=> override((ctx) => value, key: key);
+  void pinValue<T>(T value, {Object key})=> override((ctx) => value, key: key);
 }

@@ -74,7 +74,6 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
   }
 }
 
-/// TODO: Add polymorphism?
 class _ArgResolveResult {
   Type _type;
   Object _defaultValue;

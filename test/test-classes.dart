@@ -104,21 +104,20 @@ class NoPublicCtor {
 class PrimitiveComplexObject {
   int _intField;
   String _stringField;
-
   double _doubleField;
   bool _boolField;
-
   DateTime _dateTimeField;
-  PrimitiveComplexObject(this._intField, this._stringField, this._doubleField, this._boolField, this._dateTimeField);
+  TestEnum _enumField;
+
+  PrimitiveComplexObject(
+      this._intField, this._stringField, this._doubleField, this._boolField, this._dateTimeField, this._enumField);
 
   bool get boolField => _boolField;
   DateTime get dateTimeField => _dateTimeField;
-
   double get doubleField => _doubleField;
+  TestEnum get enumField => _enumField;
   int get intField => _intField;
-
   String get stringField => _stringField;
 }
 
-//TODO: add enums to primitive types
 enum TestEnum { A, B, C }

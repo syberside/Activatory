@@ -8,33 +8,12 @@ This will greatly simplify unit testing and especially Test-Driven Development.
 
 This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/AutoFixture) library.
 
-This is my first Dart project. Actually, this is my "pet-project" so there are no exact plans and etc.
+## Supported features
+- Effortless primitive types (String, int, double, bool, DateTime, enums) generating
+- Effortless complex object generating using constructors/factory methods/named constructors (default values for arguments are preferred)
+- Overriding default generating behavior with custom factories, pinned values defined by user or auto generated
+- Overriding default generating behavior for specific cases using any object as a key
 
-## Project TODO's:
-- [x] Add primitive types support
-- [x] Add complex types support
-  - [x] using constructor
-  - [x] using factory methods
-  - [x] using named constructors
-  - [x] using default argument values for positional arguments
-  - [x] using named arguments
-  - [x] using default argument values for named arguments
-- [ ] Customization of complex object factory strategy selection: random/round robin/first/shortest/longest 
-- [x] Add ability to explicit register factory
-- [x] Add fixed (singleton) values support
-- [x] Add factory labeling
-- [ ] Add parameter overloading by name
-- [ ] Add parameter overloading by type
-- [ ] Add configuration layers and reusability for complex cases
-- [ ] Add paramsObject and paramsObject to factory matching
-- [ ] Add ability to customize context before data generation without saving settings to context
-- [ ] Add paramsObject layering
-- [ ] *Read autofixture sources to gather ideas and vision
-- [ ] *Add examples and docs
-- [ ] *Add CI/CD:
-  - [ ] *build and publish to pub
-  - [ ] *coverage reports
-- [ ] Add nice looking readme and github repo info
-- [ ] Add recursion handling (which one strategy should be used?)
-- [ ] Encapsulate all errors inside library (throws only ActivatoryException)
-- [ ] Add feature customization (e.g. ctor resolution strategy, default values handling and etc)
+## Roadmap
+This is my first Dart project and, actually, this is "pet-project". So there are no exact plans and etc.
+For planned features and more see [enhancements on github](https://github.com/syberside/Activatory/issues?utf8=%E2%9C%93&q=is%3Aenhancement+is%3Aopen+). 

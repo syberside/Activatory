@@ -1,9 +1,11 @@
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
-import 'package:quiver/core.dart';
 
 class ActivationContext {
   Map<BackendStoreKey, GeneratorBackend> _exactBackends = new Map<BackendStoreKey, GeneratorBackend>();
+
+  ActivationContext();
+  ActivationContext._fromMap(this._exactBackends);
 
   GeneratorBackend find(Type type, {Object key}) {
     final keyObject = new BackendStoreKey(type, key);
@@ -30,6 +32,11 @@ class ActivationContext {
   void register(GeneratorBackend backend, Type type, {Object key}) {
     final keyObject = new BackendStoreKey(type, key);
     _exactBackends[keyObject] = backend;
+  }
+
+  ActivationContext clone(){
+    var backends = Map<BackendStoreKey, GeneratorBackend>.from(_exactBackends);
+    return new ActivationContext._fromMap(backends);
   }
 }
 

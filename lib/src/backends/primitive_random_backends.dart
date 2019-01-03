@@ -17,7 +17,6 @@ class RandomBoolBackent implements GeneratorBackend<bool> {
 
 class RandomDateTimeBackent implements GeneratorBackend<DateTime> {
   Random _random;
-  //TODO: define better max values (DateTime.Max?!)
   int maxDays = 100 * 1000 * 1000;
   int maxMilliseconds = 24 * 60 * 60 * 1000;
 
@@ -44,7 +43,6 @@ class RandomDoubleBackent implements GeneratorBackend<double> {
 
 class RandomIntBackend implements GeneratorBackend<int> {
   Random _random;
-  //TODO: define better max values (int.Max?!)
   int _maxValue = 2 ^ 53;
 
   RandomIntBackend(this._random);

@@ -1,6 +1,6 @@
 name: activatory
 description: Test data generator aimed to simplify Test-Driven Development with Dart
-version: 0.0.7
+version: 0.0.8
 homepage: https://github.com/syberside/Activatory
 author: syberside
 
@@ -9,7 +9,6 @@ environment:
 
 dependencies:
   uuid: ^2.0.0-rc1
-  quiver: 2.0.1
 
 dev_dependencies:
   test: ^1.0.0
