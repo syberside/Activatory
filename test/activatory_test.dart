@@ -20,6 +20,7 @@ void main() {
     expect(obj.stringField, isNotNull);
     expect(obj.intField, isNotNull);
     expect(obj.enumField, isNotNull);
+    expect(TestEnum.values, contains(obj.enumField));
   }
 
   group('Can generate primitive types', () {
@@ -279,6 +280,7 @@ void main() {
         var items = _activatory.getTyped<List<TestEnum>>();
 
         _assertArray(items, TestEnum);
+        expect(TestEnum.values, containsAll(items));
       });
     });
     test('of complex object with explicit registration', () {

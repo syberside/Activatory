@@ -1,13 +1,15 @@
+import 'dart:math';
 import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 
 class ComplexObjectBackend implements GeneratorBackend<Object> {
-  Type _type;
+  final Type _type;
   List<_CtorResolveResult> _ctors;
+  final Random _random;
 
-  ComplexObjectBackend(this._type);
+  ComplexObjectBackend(this._type, this._random);
 
   activateInstance(ClassMirror classMirror, Symbol ctor, List<_ArgResolveResult> args, ActivationContext context) {
     var positionalArguments = args.where((arg) => !arg.isNamed).map((arg) => _generateValues(arg, context)).toList();
@@ -21,7 +23,13 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
 
   @override
   Object get(ActivationContext context) {
-    var ctorResolutionResult = _resolveByCtor(context);
+    var classMirror = reflectClass(_type);
+
+    if(classMirror.isEnum){
+      return _resolveEnum(classMirror);
+    }
+
+    var ctorResolutionResult = _resolveByCtor(context, classMirror);
     if (ctorResolutionResult.resolvedSuccessfully) {
       var factory = ctorResolutionResult.result;
       return factory.factory(factory.arguments, context);
@@ -55,9 +63,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
     }
   }
 
-  _ResolveResult _resolveByCtor(ActivationContext context) {
-    var classMirror = reflectClass(_type);
-
+  _ResolveResult _resolveByCtor(ActivationContext context, ClassMirror classMirror) {
     if (classMirror.isAbstract) {
       throw new Exception("Cant create instance of abstract class ${_type}");
     }
@@ -71,6 +77,20 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
     }
 
     return _ResolveResult.success(_ctors[0]);
+  }
+
+  Object _resolveEnum(ClassMirror classMirror) {
+    for (final d in classMirror.declarations.values) {
+      if (d is VariableMirror && d.isStatic && d.simpleName == #values){
+        final allValues = classMirror.getField(d.simpleName).reflectee as List;
+        if(allValues.length==0){
+            throw new Exception('Enum ${_type} values found but empty');
+        }
+        var index = _random.nextInt(allValues.length);
+        return allValues[index];
+      }
+    }
+    throw new Exception('Enum ${_type} values not found');
   }
 }
 

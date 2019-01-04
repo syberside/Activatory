@@ -6,7 +6,7 @@ import 'package:activatory/src/backends/primitive_random_backends.dart';
 class ActivationContextFactory {
   ActivationContext createDefault() {
     var random = new Random(DateTime.now().millisecondsSinceEpoch);
-    var result = new ActivationContext();
+    var result = new ActivationContext(random);
 
     result.registerTyped(new RandomBoolBackent(random));
     result.registerTyped(new RandomIntBackend(random));

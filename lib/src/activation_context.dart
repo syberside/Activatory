@@ -1,17 +1,20 @@
+import 'dart:math';
+
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 
 class ActivationContext {
   Map<_BackendStoreKey, GeneratorBackend> _exactBackends = new Map<_BackendStoreKey, GeneratorBackend>();
+  Random _random;
 
-  ActivationContext();
+  ActivationContext(this._random);
 
-  ActivationContext._fromMap(this._exactBackends);
+  ActivationContext._fromMap(this._exactBackends, this._random);
 
   ActivationContext clone() {
     var backends = Map<_BackendStoreKey, GeneratorBackend>.from(_exactBackends);
-    return new ActivationContext._fromMap(backends);
+    return new ActivationContext._fromMap(backends, _random);
   }
 
   GeneratorBackend find(Type type, {Object key}) {
@@ -24,7 +27,7 @@ class ActivationContext {
       return null;
     }
 
-    var complexObjectBackend = new ComplexObjectBackend(type);
+    var complexObjectBackend = new ComplexObjectBackend(type, _random);
     register(complexObjectBackend, type);
     return complexObjectBackend;
   }

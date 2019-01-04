@@ -22,3 +22,4 @@
 ## v0.0.9
 - Added effortless support for primitive types arrays generating (except of enums arrays)
 - Added support for complex types array generating with explicit array registration
+- Fixed enum generation bug (generated values was not real enum values from values list)
