@@ -280,7 +280,9 @@ void main() {
         var items = _activatory.getTyped<List<TestEnum>>();
 
         _assertArray(items, TestEnum);
-        expect(TestEnum.values, containsAll(items));
+        for(var item in items){
+          expect(TestEnum.values, contains(item));
+        }
       });
     });
     test('of complex object with explicit registration', () {
