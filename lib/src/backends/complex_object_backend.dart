@@ -10,22 +10,13 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
   ComplexObjectBackend(this._type);
 
   activateInstance(ClassMirror classMirror, Symbol ctor, List<_ArgResolveResult> args, ActivationContext context) {
-    var positionalArguments = args.where((arg) => !arg.isNamed).map((arg) => generateValues(arg, context)).toList();
+    var positionalArguments = args.where((arg) => !arg.isNamed).map((arg) => _generateValues(arg, context)).toList();
 
     var namedArguments = new Map<Symbol, Object>();
-    args.where((args) => args.isNamed).forEach((arg) => namedArguments[arg.name] = generateValues(arg, context));
+    args.where((args) => args.isNamed).forEach((arg) => namedArguments[arg.name] = _generateValues(arg, context));
 
     var result = classMirror.newInstance(ctor, positionalArguments, namedArguments).reflectee;
     return result;
-  }
-
-  Object generateValues(_ArgResolveResult arg, ActivationContext context) {
-    if (arg.defaultValue != null) {
-      return arg.defaultValue;
-    } else {
-      var backend = context.get(arg.type);
-      return backend.get(context);
-    }
   }
 
   @override
@@ -52,6 +43,15 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
                 activateInstance(classMirror, method.constructorName, args, ctx),
             arguments);
       }
+    }
+  }
+
+  Object _generateValues(_ArgResolveResult arg, ActivationContext context) {
+    if (arg.defaultValue != null) {
+      return arg.defaultValue;
+    } else {
+      var backend = context.get(arg.type);
+      return backend.get(context);
     }
   }
 

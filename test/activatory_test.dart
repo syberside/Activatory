@@ -1,9 +1,12 @@
+import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:test/test.dart';
 
 import 'test-classes.dart';
 
 void main() {
+  Type _getType<T>() => T;
+
   Activatory _activatory;
   setUp(() {
     _activatory = new Activatory();
@@ -20,8 +23,8 @@ void main() {
   }
 
   group('Can generate primitive types', () {
-    var types = [String, int, bool, DateTime, double, TestEnum];
-    for (var type in types) {
+    var supportedPrimitiveTypes = [String, int, bool, DateTime, double, TestEnum];
+    for (var type in supportedPrimitiveTypes) {
       test(type, () {
         var result = _activatory.get(type);
         expect(result, isNotNull);
@@ -172,7 +175,7 @@ void main() {
   });
 
   group('Can use labels to define', () {
-    group('pined values to use:',(){
+    group('pined values to use:', () {
       void testLabels<TKey, TValue>(TKey key1, TValue value1, TKey key2, TValue value2) {
         _activatory.pinValue(value1, key: key1);
         _activatory.pinValue(value2, key: key2);
@@ -203,13 +206,13 @@ void main() {
         testLabels(key1, value1, key2, value2);
       });
     });
-    test('factories to use', (){
+    test('factories to use', () {
       var value1 = 'value1';
       var key1 = 'key1';
       var value2 = 'value1';
       var key2 = 'key2';
-      _activatory.override<String>((ctx)=> value1, key: key1);
-      _activatory.override<String>((ctx)=> value2, key: key2);
+      _activatory.override<String>((ctx) => value1, key: key1);
+      _activatory.override<String>((ctx) => value2, key: key2);
 
       var result1 = _activatory.get(String, key: key1);
       var result2 = _activatory.get(String, key: key2);
@@ -221,7 +224,7 @@ void main() {
       expect(result, isNot(equals(result2)));
     });
 
-    test('defined values to use', (){
+    test('defined values to use', () {
       var key1 = 'key1';
       var key2 = 'key2';
       _activatory.pin(String, key: key1);
@@ -236,7 +239,6 @@ void main() {
       var result_a = _activatory.get(String);
       var result_b = _activatory.get(String);
 
-
       expect(result_1a, equals(result_1b));
       expect(result_2a, equals(result_2b));
       expect(result_1a, isNot(equals(result_2a)));
@@ -246,4 +248,70 @@ void main() {
       expect(result_a, isNot(equals(result_2a)));
     });
   });
+
+  group('Can create array', () {
+    void _assertArray(List items, Type expectedType) {
+      expect(items, isNotNull);
+      expect(items.length, equals(3));
+
+      var itemsType = items.map((x)=>x.runtimeType).cast<Type>().toSet().single;
+      expect(itemsType, equals(expectedType));
+    }
+
+    group('of primitive type (except enum)', () {
+       var primitiveArrayTypes = {
+        _getType<List<String>>():String,
+        _getType<List<int>>():int,
+        _getType<List<bool>>():bool,
+        _getType<List<DateTime>>():DateTime,
+        _getType<List<double>>():double,
+      };
+      for(var type in primitiveArrayTypes.keys){
+        test(type, (){
+          var items = _activatory.get(type) as List;
+
+          _assertArray(items, primitiveArrayTypes[type]);
+        });
+      }
+
+      test('of enums with explicit array registration', (){
+        _activatory.registerArray<TestEnum>();
+        var items = _activatory.getTyped<List<TestEnum>>();
+
+        _assertArray(items, TestEnum);
+      });
+    });
+    test('of complex object with explicit registration', () {
+      _activatory.registerArray<PrimitiveComplexObject>();
+      var items = _activatory.getTyped<List<PrimitiveComplexObject>>();
+
+      _assertArray(items, PrimitiveComplexObject);
+    });
+    group('required in ctor', () {
+      test('(concret array requirement)',(){
+        var result = _activatory.getTyped<IntArrayInCtor>();
+
+        expect(result, isNotNull);
+        _assertArray(result.listField, int);
+      });
+
+      test('(closed by inheritance generic array requirement)', () {
+        var result = _activatory.getTyped<ClosedByInheritanceGeneric>();
+
+        expect(result, isNotNull);
+        _assertArray(result.listField, String);
+      });
+    });
+  });
+
+  test('Can\'t use generics for generic array in ctor', () {
+    expect(()=>_activatory.getTyped<GenericArrayInCtor<int>>(), throwsException);
+  });
+
+  test('Can\'t use generics', () {
+      //void override<T>() => _activatory.override((ctx) => new Generic<T>(ctx.get(T).get(ctx)));
+      //override<bool>();
+      //override<String>();
+      expect(()=>_activatory.getTyped<Generic<bool>>(), throwsUnsupportedError);
+    });
 }

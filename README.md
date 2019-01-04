@@ -13,6 +13,7 @@ This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/Au
 - Effortless complex object generating using constructors/factory methods/named constructors (default values for arguments are preferred)
 - Overriding default generating behavior with custom factories, pinned values defined by user or auto generated
 - Overriding default generating behavior for specific cases using any object as a key
+- Arrays generating: it is effortless for primitive types and require explicit registration for enums and complex types
 
 ## Roadmap
 This is my first Dart project and, actually, this is "pet-project". So there are no exact plans and etc.

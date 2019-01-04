@@ -1,23 +1,25 @@
 import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 
 class ActivationContextFactory {
   ActivationContext createDefault() {
     var random = new Random(DateTime.now().millisecondsSinceEpoch);
-    Map<Type, GeneratorBackend> backends = {
-      String: new RandomStringBackent(),
-      int: new RandomIntBackend(random),
-      double: new RandomDoubleBackent(random),
-      bool: new RandomBoolBackent(random),
-      DateTime: new RandomDateTimeBackent(random),
-    };
     var result = new ActivationContext();
-    for(var type in backends.keys){
-      result.register(backends[type], type);
-    }
+
+    result.registerTyped(new RandomBoolBackent(random));
+    result.registerTyped(new RandomIntBackend(random));
+    result.registerTyped(new RandomDoubleBackent(random));
+    result.registerTyped(new RandomStringBackent());
+    result.registerTyped(new RandomDateTimeBackent(random));
+
+    result.registerArray<bool>();
+    result.registerArray<int>();
+    result.registerArray<double>();
+    result.registerArray<String>();
+    result.registerArray<DateTime>();
+
     return result;
   }
 }

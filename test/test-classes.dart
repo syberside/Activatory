@@ -4,6 +4,14 @@ abstract class AbstractClass {
   AbstractClass(this._intField);
 }
 
+class IntArrayInCtor {
+  final List<int> _listField;
+
+  IntArrayInCtor(this._listField);
+
+  List<int> get listField => _listField;
+}
+
 class DefaultCtor {
   int intField;
 }
@@ -77,6 +85,22 @@ class FactoryCtor {
   String get stringField => _stringField;
 }
 
+class Generic<T> {
+  final T _field;
+
+  Generic(this._field);
+
+  T get field => _field;
+}
+
+class GenericArrayInCtor<T> {
+  final List<T> _listField;
+
+  GenericArrayInCtor(this._listField);
+
+  List<T> get listField => _listField;
+}
+
 class NamedCtor {
   String _stringField;
   NamedCtor.nonDefaultName(this._stringField);
@@ -118,6 +142,10 @@ class PrimitiveComplexObject {
   TestEnum get enumField => _enumField;
   int get intField => _intField;
   String get stringField => _stringField;
+}
+
+class ClosedByInheritanceGeneric extends GenericArrayInCtor<String> {
+  ClosedByInheritanceGeneric(List<String> listField) : super(listField);
 }
 
 enum TestEnum { A, B, C }
