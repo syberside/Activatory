@@ -1,3 +1,4 @@
+import 'package:activatory/activatory.dart';
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:test/test.dart';
@@ -69,11 +70,11 @@ void main() {
 
   group('Cant create', () {
     test('abstract class', () {
-      expect(() => _activatory.getTyped<AbstractClass>(), throwsA(isInstanceOf<Exception>()));
+      expect(() => _activatory.getTyped<AbstractClass>(), throwsA(isInstanceOf<ActivationException>()));
     });
 
     test('class without public ctor', () {
-      expect(() => _activatory.getTyped<NoPublicCtor>(), throwsA(isInstanceOf<Exception>()));
+      expect(() => _activatory.getTyped<NoPublicCtor>(), throwsA(isInstanceOf<ActivationException>()));
     });
   });
 
@@ -309,7 +310,7 @@ void main() {
   });
 
   test('Can\'t use generics for generic array in ctor', () {
-    expect(()=>_activatory.getTyped<GenericArrayInCtor<int>>(), throwsException);
+    expect(()=>_activatory.getTyped<GenericArrayInCtor<int>>(), throwsA(isInstanceOf<ActivationException>()));
   });
 
   test('Can\'t use generics', () {

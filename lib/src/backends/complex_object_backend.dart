@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 
 class ComplexObjectBackend implements GeneratorBackend<Object> {
@@ -35,7 +36,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
       return factory.factory(factory.arguments, context);
     }
 
-    throw new Exception("Cant find constructor for type ${_type}");
+    throw new ActivationException("Cant find constructor for type ${_type}");
   }
 
   Iterable<_CtorResolveResult> _extractCtors(ClassMirror classMirror, ActivationContext context) sync* {
@@ -65,7 +66,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
 
   _ResolveResult _resolveByCtor(ActivationContext context, ClassMirror classMirror) {
     if (classMirror.isAbstract) {
-      throw new Exception("Cant create instance of abstract class ${_type}");
+      throw new ActivationException("Cant create instance of abstract class ${_type}");
     }
 
     if (_ctors == null) {
@@ -84,13 +85,13 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
       if (d is VariableMirror && d.isStatic && d.simpleName == #values){
         final allValues = classMirror.getField(d.simpleName).reflectee as List;
         if(allValues.length==0){
-            throw new Exception('Enum ${_type} values found but empty');
+            throw new ActivationException('Enum ${_type} values found but empty');
         }
         var index = _random.nextInt(allValues.length);
         return allValues[index];
       }
     }
-    throw new Exception('Enum ${_type} values not found');
+    throw new ActivationException('Enum ${_type} values not found');
   }
 }
 

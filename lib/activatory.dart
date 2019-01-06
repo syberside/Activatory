@@ -4,4 +4,5 @@
 /// For more information see https://github.com/syberside/Activatory/blob/master/README.md
 library Activatory;
 
-export 'src/activatory.dart' show Activatory, Generator;
+export 'src/activatory.dart' show Activatory;
+export 'src/activation_exception.dart' show ActivationException;

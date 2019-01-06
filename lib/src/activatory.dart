@@ -4,8 +4,7 @@ import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/activation_context_factory.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
-
-typedef T Generator<T>(ActivationContext activatory);
+import 'package:activatory/src/generator.dart';
 
 class Activatory {
   ActivationContext _context;

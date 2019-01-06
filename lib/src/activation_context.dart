@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
@@ -35,7 +36,7 @@ class ActivationContext {
   GeneratorBackend get(Type type, {Object key}) {
     var backend = find(type, key: key);
     if (backend == null) {
-      throw new Exception("Backend of type ${type} with key ${key} not found");
+      throw new ActivationException("Backend of type ${type} with key ${key} not found");
     }
     return backend;
   }
