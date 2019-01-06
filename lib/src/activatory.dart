@@ -28,16 +28,16 @@ class Activatory {
 
   void override<T>(Generator<T> generator, {Object key}) {
     var backend = new ExplicitBackend(generator);
-    _context.register(backend, T, key: key);
+    _context.registerTyped<T>(backend, key: key);
   }
 
-  void pin(Type type, {Object key}) {
+  void pin<T>({Object key}) {
     var detachedContext = _context.clone();
-    var currentBackend = detachedContext.get(type, key: null);
+    var currentBackend = detachedContext.get(T, key: null);
     var value = currentBackend.get(detachedContext);
 
-    var backend = new SingletonBackend(value);
-    _context.register(backend, type, key: key);
+    var backend = new SingletonBackend<T>(value);
+    _context.registerTyped<T>(backend, key: key);
   }
 
   void pinValue<T>(T value, {Object key}) => override((ctx) => value, key: key);

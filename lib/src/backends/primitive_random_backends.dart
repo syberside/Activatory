@@ -4,10 +4,10 @@ import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:uuid/uuid.dart';
 
-class RandomBoolBackent implements GeneratorBackend<bool> {
+class RandomBoolBackend implements GeneratorBackend<bool> {
   Random _random;
 
-  RandomBoolBackent(this._random);
+  RandomBoolBackend(this._random);
 
   @override
   bool get(ActivationContext context) {
@@ -15,12 +15,12 @@ class RandomBoolBackent implements GeneratorBackend<bool> {
   }
 }
 
-class RandomDateTimeBackent implements GeneratorBackend<DateTime> {
+class RandomDateTimeBackend implements GeneratorBackend<DateTime> {
   Random _random;
   int maxDays = 100 * 1000 * 1000;
   int maxMilliseconds = 24 * 60 * 60 * 1000;
 
-  RandomDateTimeBackent(this._random);
+  RandomDateTimeBackend(this._random);
 
   @override
   DateTime get(ActivationContext context) {
@@ -30,10 +30,10 @@ class RandomDateTimeBackent implements GeneratorBackend<DateTime> {
   }
 }
 
-class RandomDoubleBackent implements GeneratorBackend<double> {
+class RandomDoubleBackend implements GeneratorBackend<double> {
   Random _random;
 
-  RandomDoubleBackent(this._random);
+  RandomDoubleBackend(this._random);
 
   @override
   double get(ActivationContext context) {
@@ -53,7 +53,7 @@ class RandomIntBackend implements GeneratorBackend<int> {
   }
 }
 
-class RandomStringBackent implements GeneratorBackend<String> {
+class RandomStringBackend implements GeneratorBackend<String> {
   @override
   String get(ActivationContext context) {
     var uuid = new Uuid();

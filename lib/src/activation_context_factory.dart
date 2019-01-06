@@ -8,11 +8,11 @@ class ActivationContextFactory {
     var random = new Random(DateTime.now().millisecondsSinceEpoch);
     var result = new ActivationContext(random);
 
-    result.registerTyped(new RandomBoolBackent(random));
+    result.registerTyped(new RandomBoolBackend(random));
     result.registerTyped(new RandomIntBackend(random));
-    result.registerTyped(new RandomDoubleBackent(random));
-    result.registerTyped(new RandomStringBackent());
-    result.registerTyped(new RandomDateTimeBackent(random));
+    result.registerTyped(new RandomDoubleBackend(random));
+    result.registerTyped(new RandomStringBackend());
+    result.registerTyped(new RandomDateTimeBackend(random));
 
     result.registerArray<bool>();
     result.registerArray<int>();

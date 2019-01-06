@@ -141,14 +141,14 @@ void main() {
 
     group("with pin for", () {
       test("primitive type", () {
-        _activatory.pin(DateTime);
+        _activatory.pin<DateTime>();
         var result1 = _activatory.getTyped<DateTime>();
         var result2 = _activatory.getTyped<DateTime>();
         expect(result1, equals(result2));
       });
 
       test("complex type", () {
-        _activatory.pin(DefaultCtor);
+        _activatory.pin<DefaultCtor>();
         var result1 = _activatory.getTyped<DefaultCtor>();
         var result2 = _activatory.getTyped<DefaultCtor>();
         expect(result1, same(result2));
@@ -229,10 +229,10 @@ void main() {
     test('defined values to use', () {
       var key1 = 'key1';
       var key2 = 'key2';
-      _activatory.pin(String, key: key1);
-      _activatory.pin(String, key: key2);
+      _activatory.pin<String>(key: key1);
+      _activatory.pin<String>(key: key2);
       //NOTE: The order does matter
-      _activatory.pin(String);
+      _activatory.pin<String>();
 
       var result_1a = _activatory.get(String, key: key1);
       var result_1b = _activatory.get(String, key: key1);

@@ -47,12 +47,10 @@ class ActivationContext {
   }
 
   void registerArray<T>() {
-    register(new ArrayBackend<T>(), _getType<List<T>>());
+    registerTyped(new ArrayBackend<T>());
   }
 
   void registerTyped<T>(GeneratorBackend<T> backend, {Object key}) => register(backend, T, key: key);
-
-  Type _getType<T>() => T;
 }
 
 class _BackendStoreKey {
