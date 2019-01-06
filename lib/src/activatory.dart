@@ -1,22 +1,14 @@
 import 'dart:core';
+import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/activation_context_factory.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
+import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/generator.dart';
 
 class Activatory {
-  ActivationContext _context;
-  ActivationContextFactory _factory;
-
-  Activatory() : this.custom(new ActivationContextFactory());
-
-  Activatory.custom(this._factory, [this._context]) {
-    if (_context == null) {
-      _context = _factory.createDefault();
-    }
-  }
+  ActivationContext _context = new ActivationContext(new BackendsFactory(new Random()));
 
   Object get(Type type, {Object key}) {
     var backend = _context.get(type, key: key);
