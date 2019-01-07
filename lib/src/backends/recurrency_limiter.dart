@@ -7,7 +7,6 @@ class RecurrencyLimiter<T> implements GeneratorBackend<T>{
 
   final Type _type;
   final GeneratorBackend<T> _wrapped;
-  final T _defaultValue;
 
   RecurrencyLimiter(this._type, this._wrapped);
 

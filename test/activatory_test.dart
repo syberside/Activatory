@@ -336,7 +336,7 @@ void main() {
       expect(linked1, same(linked2));
     });
 
-    test('with overrided factory recurrsion call',(){
+    test('with overrided factory recursion call',(){
       _activatory.override<LinkedNode>((ctx) => ctx.create(LinkedNode, ctx));
       var linked = _activatory.getTyped<LinkedNode>();
 
