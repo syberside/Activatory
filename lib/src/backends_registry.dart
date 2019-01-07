@@ -4,6 +4,7 @@ import 'package:activatory/src/backend_store.dart';
 import 'package:activatory/src/backend_store_key.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/backends/recurrency_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
 
 class BackendsRegistry {
@@ -19,7 +20,7 @@ class BackendsRegistry {
     return new BackendsRegistry._fromStore(_factory, storeCopy);
   }
 
-  GeneratorBackend _findOrCreate(Type type, ActivationCtx context) {
+  GeneratorBackend _findOrCreate(Type type, ActivationContext context) {
     var result = _store.find(new BackendStoreKey(type, context.key));
     if(result != null){
       return result;
@@ -31,7 +32,7 @@ class BackendsRegistry {
     return newBackend;
   }
 
-  GeneratorBackend get(Type type, ActivationCtx context) {
+  GeneratorBackend get(Type type, ActivationContext context) {
     var backend = _findOrCreate(type, context);
     if (backend == null) {
       throw new ActivationException("Backend of type ${type} with key ${context.key} not found");
@@ -44,8 +45,10 @@ class BackendsRegistry {
   }
 
   void registerArray<T>() {
-    registerTyped(new ArrayBackend<T>());
+    registerTyped(new RecurrencyLimiter(_getType<List<T>>(), new ArrayBackend<T>(), new List<T>()));
   }
 
   void registerTyped<T>(GeneratorBackend<T> backend, {Object key}) => register(backend, T, key: key);
+
+  Type _getType<T>() => T;
 }

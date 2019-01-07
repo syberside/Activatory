@@ -8,7 +8,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
   ComplexObjectBackend(this._ctorInfo);
 
   @override
-  Object get(ActivationCtx context) {
+  Object get(ActivationContext context) {
     var positionalArguments = _ctorInfo.args.where((arg) => !arg.isNamed).map((arg) => _generateValues(arg, context)).toList();
 
     var namedArguments = new Map<Symbol, Object>();
@@ -18,7 +18,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
     return result;
   }
 
-  Object _generateValues(ArgumentInfo arg, ActivationCtx context) {
+  Object _generateValues(ArgumentInfo arg, ActivationContext context) {
     if (arg.defaultValue != null) {
       return arg.defaultValue;
     } else {

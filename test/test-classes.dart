@@ -149,3 +149,19 @@ class ClosedByInheritanceGeneric extends GenericArrayInCtor<String> {
 }
 
 enum TestEnum { A, B, C }
+
+class TreeNode{
+  final List<TreeNode> _children;
+
+  TreeNode(this._children);
+
+  List<TreeNode> get children => _children;
+}
+
+class LinkedNode{
+  final LinkedNode _next;
+
+  LinkedNode(this._next);
+
+  LinkedNode get next => _next;
+}

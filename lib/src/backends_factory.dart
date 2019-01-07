@@ -7,6 +7,7 @@ import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
+import 'package:activatory/src/backends/recurrency_limiter.dart';
 
 typedef GeneratorBackend Factory();
 
@@ -39,7 +40,7 @@ class BackendsFactory{
       return _createEnumBackend(classMirror);
     }
     else{
-      return _createComplexObjectBackend(classMirror);
+      return _createComplexObjectBackend(classMirror, type);
     }
   }
 
@@ -63,9 +64,9 @@ class BackendsFactory{
     return new RandomArrayItemBackend(_random, allValues);
   }
 
-  GeneratorBackend _createComplexObjectBackend(ClassMirror classMirror) {
+  GeneratorBackend _createComplexObjectBackend(ClassMirror classMirror, Type type) {
     var ctorInfo = _resolveByCtor(classMirror);
-    return new ComplexObjectBackend(ctorInfo);
+    return new RecurrencyLimiter(type, new ComplexObjectBackend(ctorInfo), null);
   }
 
   Iterable<CtorInfo> _extractCtors(ClassMirror classMirror) sync* {

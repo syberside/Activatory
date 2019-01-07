@@ -7,7 +7,7 @@ class SingletonBackend<T> implements GeneratorBackend<T> {
   SingletonBackend(this._value);
 
   @override
-  T get(ActivationCtx context) {
+  T get(ActivationContext context) {
     return _value;
   }
 }

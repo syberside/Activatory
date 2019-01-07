@@ -8,7 +8,7 @@ class ExplicitBackend<T> implements GeneratorBackend<T> {
   ExplicitBackend(this._generator);
 
   @override
-  T get(ActivationCtx context) {
+  T get(ActivationContext context) {
     return _generator(context);
   }
 }

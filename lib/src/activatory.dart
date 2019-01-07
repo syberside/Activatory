@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
+import 'package:activatory/src/backends/recurrency_limiter.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/backends_registry.dart';
@@ -11,27 +12,25 @@ import 'package:activatory/src/value_generator.dart';
 
 class Activatory {
   final Random _random = new Random(DateTime.now().millisecondsSinceEpoch);
+  ValueGeneratorImpl _valueGenerator;
   BackendsRegistry _backendsRegistry;
-  _ActivatoryClosure _wrapper;
 
   Activatory(){
     _backendsRegistry = new BackendsRegistry(new BackendsFactory(_random));
-    _wrapper = new _ActivatoryClosure(this);
+    _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
   }
 
   Object get(Type type, {Object key}) {
-    var ctx = _createContext(key);
-    var backend = _backendsRegistry.get(type, ctx);
-    var value = backend.get(ctx);
-    return value;
+    var context = _createContext(key);
+    return _valueGenerator.create(type, context);
   }
 
-  ActivationCtx _createContext(Object key) => new ActivationCtx(_wrapper, _random, key);
+  ActivationContext _createContext(Object key) => new ActivationContext(_valueGenerator, _random, key);
 
   T getTyped<T>({Object key}) => get(T, key: key);
 
   void override<T>(Generator<T> generator, {Object key}) {
-    var backend = new ExplicitBackend(generator);
+    var backend = new RecurrencyLimiter(T, new ExplicitBackend<T>(generator), null);
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 
@@ -41,27 +40,30 @@ class Activatory {
     var currentBackend = detachedContext.get(T, context);
     var value = currentBackend.get(context);
 
-    var backend = new SingletonBackend<T>(value);
+    var backend = new RecurrencyLimiter(T, new SingletonBackend<T>(value), null);
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 
-  void pinValue<T>(T value, {Object key}) => override((ctx) => value, key: key);
+  void pinValue<T>(T value, {Object key}) {
+    var backend = new RecurrencyLimiter(T, new SingletonBackend<T>(value), null);
+    _backendsRegistry.registerTyped<T>(backend, key: key);
+  }
 
   void registerArray<T>() => _backendsRegistry.registerArray<T>();
 }
 
-class _ActivatoryClosure implements ValueGenerator{
-  final Activatory _wrapped;
+class ValueGeneratorImpl implements ValueGenerator{
+  BackendsRegistry _backendsRegistry;
 
-  _ActivatoryClosure(this._wrapped);
+  ValueGeneratorImpl(this._backendsRegistry);
 
   @override
-  Object create(Type type, ActivationCtx context) {
-    return _wrapped.get(type,key: context.key);
+  Object create(Type type, ActivationContext context) {
+    var backend = _backendsRegistry.get(type, context);
+    var value = backend.get(context);
+    return value;
   }
 
   @override
-  T createTyped<T>(ActivationCtx context) {
-    return _wrapped.getTyped<T>(key: context.key);
-  }
+  T createTyped<T>(ActivationContext context) => create(T, context);
 }

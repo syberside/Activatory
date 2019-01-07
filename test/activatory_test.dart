@@ -319,4 +319,50 @@ void main() {
       //override<String>();
       expect(()=>_activatory.getTyped<Generic<bool>>(), throwsUnsupportedError);
     });
+
+  group('Can create recursive graph ',(){
+    test('for object with same object in ctor',(){
+      var linked = _activatory.getTyped<LinkedNode>();
+
+      expect(linked, isNotNull);
+      expect(linked.next, isNotNull);
+      expect(linked.next.next, isNotNull);
+      expect(linked.next.next.next, isNull);
+    });
+
+    test('for object with array in ctor',(){
+      _activatory.registerArray<TreeNode>();
+      var tree = _activatory.getTyped<TreeNode>();
+
+      _assertTreeNode(tree, 3);
+      for(var node1 in tree.children){
+        _assertTreeNode(node1, 3);
+        for(var node2 in node1.children){
+          _assertTreeNode(node2, 0);
+        }
+      }
+    });
+
+    test('for array of objects with array in ctor',(){
+      _activatory.registerArray<TreeNode>();
+      var tree = _activatory.getTyped<List<TreeNode>>();
+
+      for(var node1 in tree){
+        _assertTreeNode(node1, 3);
+        for(var node2 in node1.children){
+          _assertTreeNode(node2, 3);
+          for(var node3 in node2.children){
+            _assertTreeNode(node3, 0);
+          }
+        }
+      }
+    });
+
+  });
+}
+
+void _assertTreeNode(TreeNode node, int childrenCount) {
+  expect(node, isNotNull);
+  expect(node.children, isNotNull);
+  expect(node.children, hasLength(childrenCount));
 }
