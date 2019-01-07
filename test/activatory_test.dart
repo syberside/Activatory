@@ -324,10 +324,23 @@ void main() {
     test('for object with same object in ctor',(){
       var linked = _activatory.getTyped<LinkedNode>();
 
-      expect(linked, isNotNull);
-      expect(linked.next, isNotNull);
-      expect(linked.next.next, isNotNull);
-      expect(linked.next.next.next, isNull);
+      _assertLinkedNode(linked);
+    });
+
+    test('with pinned generated values',(){
+      _activatory.pin<LinkedNode>();
+      var linked1 = _activatory.getTyped<LinkedNode>();
+      var linked2 = _activatory.getTyped<LinkedNode>();
+
+      _assertLinkedNode(linked1);
+      expect(linked1, same(linked2));
+    });
+
+    test('with overrided factory recurrsion call',(){
+      _activatory.override<LinkedNode>((ctx) => ctx.create(LinkedNode, ctx));
+      var linked = _activatory.getTyped<LinkedNode>();
+
+      expect(linked, isNull);
     });
 
     test('for object with array in ctor',(){
@@ -359,6 +372,13 @@ void main() {
     });
 
   });
+}
+
+void _assertLinkedNode(LinkedNode linked) {
+  expect(linked, isNotNull);
+  expect(linked.next, isNotNull);
+  expect(linked.next.next, isNotNull);
+  expect(linked.next.next.next, isNull);
 }
 
 void _assertTreeNode(TreeNode node, int childrenCount) {

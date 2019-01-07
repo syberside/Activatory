@@ -1,4 +1,3 @@
-import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/backend_store_key.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:activatory/src/settings.dart';
 import 'package:activatory/src/value_generator.dart';
 
 class ActivationContext implements ValueGenerator{
@@ -27,12 +28,4 @@ class ActivationContext implements ValueGenerator{
   void notifyVisiting(Type type) => _stackTrace.add(type);
 
   void notifyVisited(Type type) => _stackTrace.removeAt(_stackTrace.lastIndexOf(type));
-}
-
-class Settings{
-  final int maxStackSizePerType;
-
-  Settings(this.maxStackSizePerType);
-
-  const Settings.defaults():this(3);
 }

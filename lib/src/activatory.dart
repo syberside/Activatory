@@ -3,11 +3,10 @@ import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
-import 'package:activatory/src/backends/recurrency_limiter.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/backends_registry.dart';
-import 'package:activatory/src/generator.dart';
+import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/value_generator.dart';
 
 class Activatory {
@@ -29,8 +28,8 @@ class Activatory {
 
   T getTyped<T>({Object key}) => get(T, key: key);
 
-  void override<T>(Generator<T> generator, {Object key}) {
-    var backend = new RecurrencyLimiter(T, new ExplicitBackend<T>(generator), null);
+  void override<T>(GeneratorDelegate<T> generator, {Object key}) {
+    var backend = new ExplicitBackend<T>(generator);
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 
@@ -40,12 +39,12 @@ class Activatory {
     var currentBackend = detachedContext.get(T, context);
     var value = currentBackend.get(context);
 
-    var backend = new RecurrencyLimiter(T, new SingletonBackend<T>(value), null);
+    var backend = new SingletonBackend<T>(value);
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 
   void pinValue<T>(T value, {Object key}) {
-    var backend = new RecurrencyLimiter(T, new SingletonBackend<T>(value), null);
+    var backend = new SingletonBackend<T>(value);
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 

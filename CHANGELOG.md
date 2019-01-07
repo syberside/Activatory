@@ -26,3 +26,7 @@
 
 ## v0.0.10
 - Added custom exception type for all library internal errors
+
+## v0.0.11
+- Added recursion handling
+- Performed large refactoring  
