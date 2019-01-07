@@ -1,5 +1,3 @@
-import 'dart:mirrors';
-
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends_factory.dart';
@@ -10,7 +8,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
   ComplexObjectBackend(this._ctorInfo);
 
   @override
-  Object get(ActivationContext context) {
+  Object get(ActivationCtx context) {
     var positionalArguments = _ctorInfo.args.where((arg) => !arg.isNamed).map((arg) => _generateValues(arg, context)).toList();
 
     var namedArguments = new Map<Symbol, Object>();
@@ -20,12 +18,11 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
     return result;
   }
 
-  Object _generateValues(ArgumentInfo arg, ActivationContext context) {
+  Object _generateValues(ArgumentInfo arg, ActivationCtx context) {
     if (arg.defaultValue != null) {
       return arg.defaultValue;
     } else {
-      var backend = context.get(arg.type);
-      return backend.get(context);
+      return context.create(arg.type, context);
     }
   }
 }

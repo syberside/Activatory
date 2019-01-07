@@ -10,7 +10,7 @@ class RandomBoolBackend implements GeneratorBackend<bool> {
   RandomBoolBackend(this._random);
 
   @override
-  bool get(ActivationContext context) {
+  bool get(ActivationCtx context) {
     return _random.nextBool();
   }
 }
@@ -23,7 +23,7 @@ class RandomDateTimeBackend implements GeneratorBackend<DateTime> {
   RandomDateTimeBackend(this._random);
 
   @override
-  DateTime get(ActivationContext context) {
+  DateTime get(ActivationCtx context) {
     var days = _random.nextInt(maxDays);
     var milisseconds = _random.nextInt(maxMilliseconds);
     return DateTime.fromMillisecondsSinceEpoch(0).add(new Duration(days: days, milliseconds: milisseconds));
@@ -36,7 +36,7 @@ class RandomDoubleBackend implements GeneratorBackend<double> {
   RandomDoubleBackend(this._random);
 
   @override
-  double get(ActivationContext context) {
+  double get(ActivationCtx context) {
     return _random.nextDouble();
   }
 }
@@ -48,14 +48,14 @@ class RandomIntBackend implements GeneratorBackend<int> {
   RandomIntBackend(this._random);
 
   @override
-  int get(ActivationContext context) {
+  int get(ActivationCtx context) {
     return _random.nextInt(_maxValue);
   }
 }
 
 class RandomStringBackend implements GeneratorBackend<String> {
   @override
-  String get(ActivationContext context) {
+  String get(ActivationCtx context) {
     var uuid = new Uuid();
     return uuid.v1();
   }

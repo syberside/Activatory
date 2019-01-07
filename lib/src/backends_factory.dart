@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:mirrors';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
@@ -10,7 +9,6 @@ import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
 
 typedef GeneratorBackend Factory();
-typedef Object ValueFactory(List<ArgumentInfo> args, ActivationContext ctx);
 
 class BackendsFactory{
   Random _random;

@@ -5,9 +5,8 @@ class ArrayBackend<T> extends GeneratorBackend<List<T>> {
   ArrayBackend();
 
   @override
-  List<T> get(ActivationContext context) {
-    var backend = context.get(T);
-    var result = List<T>.generate(3, (_) => backend.get(context));
+  List<T> get(ActivationCtx context) {
+    var result = List<T>.generate(3, (_) => context.createTyped<T>(context));
     return result;
   }
 }

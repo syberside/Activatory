@@ -10,7 +10,7 @@ class RandomArrayItemBackend implements GeneratorBackend<Object> {
   RandomArrayItemBackend(this._random, this._values);
 
   @override
-  Object get(ActivationContext context) {
+  Object get(ActivationCtx context) {
     var index = _random.nextInt(_values.length);
     return _values[index];
   }
