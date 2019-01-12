@@ -309,16 +309,43 @@ void main() {
     });
   });
 
-  test('Can\'t use generics for generic array in ctor', () {
-    expect(()=>_activatory.getTyped<GenericArrayInCtor<int>>(), throwsA(isInstanceOf<ActivationException>()));
-  });
+  group('Can use generics with explicit overriding',(){
+    void overrideGeneric<T>() => _activatory.override((ctx)=>new Generic<T>(ctx.createTyped<T>(ctx)));
+    void overrideGenericArray<T>() => _activatory.override((ctx)=>new GenericArrayInCtor<T>(ctx.createTyped<List<T>>(ctx)));
 
-  test('Can\'t use generics', () {
-      //void override<T>() => _activatory.override((ctx) => new Generic<T>(ctx.get(T).get(ctx)));
-      //override<bool>();
-      //override<String>();
-      expect(()=>_activatory.getTyped<Generic<bool>>(), throwsUnsupportedError);
+    test('for ctor argument', () {
+
+      overrideGeneric<bool>();
+      overrideGeneric<int>();
+
+      var genericResult1 = _activatory.getTyped<Generic<bool>>();
+      var genericResult2 = _activatory.getTyped<Generic<int>>();
+
+      expect(genericResult1, isNotNull);
+      expect(genericResult1.field, isNotNull);
+
+      expect(genericResult2, isNotNull);
+      expect(genericResult2.field, isNotNull);
     });
+
+    test('for ctor array argument', () {
+      overrideGenericArray<bool>();
+      overrideGenericArray<int>();
+
+      var genericResult1 = _activatory.getTyped<GenericArrayInCtor<bool>>();
+      var genericResult2 = _activatory.getTyped<GenericArrayInCtor<int>>();
+
+      expect(genericResult1, isNotNull);
+      expect(genericResult1.listField, isNotNull);
+      expect(genericResult1.listField, hasLength(3));
+      expect(genericResult1.listField, isNot(contains(null)));
+
+      expect(genericResult2, isNotNull);
+      expect(genericResult2.listField, isNotNull);
+      expect(genericResult2.listField, hasLength(3));
+      expect(genericResult2.listField, isNot(contains(null)));
+    });
+  });
 
   group('Can create recursive graph ',(){
     test('for object with same object in ctor',(){

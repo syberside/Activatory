@@ -34,9 +34,7 @@ class BackendsRegistry {
     return wrapped;
   }
 
-  void registerArray<T>() {
-    registerTyped(new ArrayBackend<T>());
-  }
+  void registerArray<T>() => registerTyped(new ArrayBackend<T>());
 
   void registerTyped<T>(GeneratorBackend<T> backend, {Object key}) => register(backend, T, key: key);
 }
