@@ -1,27 +1,21 @@
 import 'package:activatory/src/activation_context.dart';
 
-abstract class SelfResolvable<TResult>{
-  TResult resolve(ActivationContext ctx);
-}
+abstract class Params<TResult>{
 
-abstract class ParamsObject<TResult> implements SelfResolvable<TResult>{
+  TResult resolve(ActivationContext ctx);
+
   T get<T>(Value<T> value, ActivationContext ctx){
     if(value == null){
       return ctx.createTyped<T>(ctx);
     }
-    return value.resolve(ctx);
+    return value.value;
   }
 }
 
-class Value<T> implements SelfResolvable<T>{
-  final T _value;
+class Value<T>{
+  final T value;
 
-  const Value(this._value);
-
-  @override
-  T resolve(ActivationContext ctx) {
-    return _value;
-  }
+  const Value(this.value);
 }
 
 Value<T> v<T>(T value) => new Value<T>(value);

@@ -52,7 +52,7 @@ class Activatory {
 
   void registerArray<T>() => _backendsRegistry.registerArray<T>();
 
-  void useParamsObject<TValue, TParamsObj extends ParamsObject<TValue>>() {
+  void useParamsObject<TValue, TParamsObj extends Params<TValue>>() {
     var backend = new ParamsObjectBackend<TValue>();
     _backendsRegistry.registerTyped<TValue>(backend, key: TParamsObj);
   }

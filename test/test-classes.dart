@@ -176,13 +176,13 @@ abstract class Task{
   DateTime get dueDate;
 }
 
-class GenericArrayInCtorParams<T> extends ParamsObject<GenericArrayInCtor<T>>{
+class GenericArrayInCtorParams<T> extends Params<GenericArrayInCtor<T>>{
   GenericArrayInCtor<T> resolve(ActivationContext ctx) {
     return new GenericArrayInCtor(ctx.createTyped<List<T>>(ctx));
   }
 }
 
-class GenericParams<T> extends ParamsObject<Generic<T>>{
+class GenericParams<T> extends Params<Generic<T>>{
   Generic<T> resolve(ActivationContext ctx) {
     return new Generic(ctx.createTyped<T>(ctx));
   }

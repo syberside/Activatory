@@ -27,7 +27,7 @@ class TaskStub implements Task{
   String get title => _title;
 }
 
-class TaskParams extends ParamsObject<Task>{
+class TaskParams extends Params<Task>{
   Value<int> _id;
   Value<String> _title;
   Value<bool> _isRecurrent;

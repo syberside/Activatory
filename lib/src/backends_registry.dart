@@ -22,7 +22,7 @@ class BackendsRegistry {
 
   GeneratorBackend get(Type type, ActivationContext context) {
     Object key = context.key;
-    if(context.key is ParamsObject){
+    if(context.key is Params){
       key = key.runtimeType;
     }
     var backend = _store.find(new BackendStoreKey(type, key));
