@@ -3,10 +3,12 @@ import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
+import 'package:activatory/src/backends/params_object_backend.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/backends_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
+import 'package:activatory/src/params_object.dart';
 import 'package:activatory/src/value_generator.dart';
 
 class Activatory {
@@ -19,14 +21,14 @@ class Activatory {
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
   }
 
-  Object get(Type type, {Object key}) {
+  Object get(Type type, [Object key = null]) {
     var context = _createContext(key);
     return _valueGenerator.create(type, context);
   }
 
   ActivationContext _createContext(Object key) => new ActivationContext(_valueGenerator, _random, key);
 
-  T getTyped<T>({Object key}) => get(T, key: key);
+  T getTyped<T>([Object key = null]) => get(T, key);
 
   void override<T>(GeneratorDelegate<T> generator, {Object key}) {
     var backend = new ExplicitBackend<T>(generator);
@@ -49,6 +51,11 @@ class Activatory {
   }
 
   void registerArray<T>() => _backendsRegistry.registerArray<T>();
+
+  void useParamsObject<TValue, TParamsObj extends ParamsObject<TValue>>() {
+    var backend = new ParamsObjectBackend<TValue>();
+    _backendsRegistry.registerTyped<TValue>(backend, key: TParamsObj);
+  }
 }
 
 class ValueGeneratorImpl implements ValueGenerator{

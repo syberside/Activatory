@@ -5,6 +5,7 @@ import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/recurrency_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
+import 'package:activatory/src/params_object.dart';
 
 class BackendsRegistry {
 
@@ -20,10 +21,14 @@ class BackendsRegistry {
   }
 
   GeneratorBackend get(Type type, ActivationContext context) {
-    var backend = _store.find(new BackendStoreKey(type, context.key));
+    Object key = context.key;
+    if(context.key is ParamsObject){
+      key = key.runtimeType;
+    }
+    var backend = _store.find(new BackendStoreKey(type, key));
     if(backend == null){
       backend = _factory.create(type);
-      backend = register(backend, type, key: context.key);
+      backend = register(backend, type, key: key);
     }
     return backend;
   }

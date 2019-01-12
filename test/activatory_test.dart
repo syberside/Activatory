@@ -1,8 +1,8 @@
 import 'package:activatory/activatory.dart';
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:test/test.dart';
 
+import 'task_params.dart';
 import 'test-classes.dart';
 
 void main() {
@@ -182,8 +182,8 @@ void main() {
         _activatory.pinValue(value1, key: key1);
         _activatory.pinValue(value2, key: key2);
 
-        var result1 = _activatory.get(TValue, key: key1);
-        var result2 = _activatory.get(TValue, key: key2);
+        var result1 = _activatory.get(TValue, key1);
+        var result2 = _activatory.get(TValue, key2);
         var result = _activatory.get(TValue);
 
         expect(result1, equals(value1));
@@ -216,8 +216,8 @@ void main() {
       _activatory.override<String>((ctx) => value1, key: key1);
       _activatory.override<String>((ctx) => value2, key: key2);
 
-      var result1 = _activatory.get(String, key: key1);
-      var result2 = _activatory.get(String, key: key2);
+      var result1 = _activatory.get(String, key1);
+      var result2 = _activatory.get(String, key2);
       var result = _activatory.get(String);
 
       expect(result1, equals(value1));
@@ -234,10 +234,10 @@ void main() {
       //NOTE: The order does matter
       _activatory.pin<String>();
 
-      var result_1a = _activatory.get(String, key: key1);
-      var result_1b = _activatory.get(String, key: key1);
-      var result_2a = _activatory.get(String, key: key2);
-      var result_2b = _activatory.get(String, key: key2);
+      var result_1a = _activatory.get(String, key1);
+      var result_1b = _activatory.get(String, key1);
+      var result_2a = _activatory.get(String, key2);
+      var result_2b = _activatory.get(String, key2);
       var result_a = _activatory.get(String);
       var result_b = _activatory.get(String);
 
@@ -397,7 +397,42 @@ void main() {
         }
       }
     });
+  });
 
+  group('Can use ParamsObject',(){
+    test('for complex type',(){
+      _activatory.useParamsObject<Task, TaskParams>();
+      var title = _activatory.getTyped<String>();
+
+      var result = _activatory.getTyped<Task>(TaskParams(title: v(title), isTemplate: v(null)));
+
+      expect(result, isNotNull);
+      expect(result.id, isNotNull);
+      expect(result.title, equals(title));
+      expect(result.isRecurrent, isNotNull);
+      expect(result.isTemplate, isNull);
+      expect(result.dueDate, isNull);
+    });
+
+    test('for generic type',(){
+      _activatory.useParamsObject<Generic<int>, GenericParams<int>>();
+
+      var result = _activatory.getTyped<Generic<int>>(GenericParams<int>());
+
+      expect(result, isNotNull);
+      expect(result.field, isNotNull);
+    });
+
+    test('for generic type with generic array in ctor',(){
+      _activatory.useParamsObject<GenericArrayInCtor<int>, GenericArrayInCtorParams<int>>();
+
+      var result = _activatory.getTyped<GenericArrayInCtor<int>>(GenericArrayInCtorParams<int>());
+
+      expect(result, isNotNull);
+      expect(result.listField, isNotNull);
+      expect(result.listField, hasLength(3));
+      expect(result.listField, isNot(contains(null)));
+    });
   });
 }
 

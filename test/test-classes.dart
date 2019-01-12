@@ -1,3 +1,5 @@
+import 'package:activatory/activatory.dart';
+
 abstract class AbstractClass {
   int _intField;
 
@@ -164,4 +166,24 @@ class LinkedNode{
   LinkedNode(this._next);
 
   LinkedNode get next => _next;
+}
+
+abstract class Task{
+  int get id;
+  String get title;
+  bool get isRecurrent;
+  bool get isTemplate;
+  DateTime get dueDate;
+}
+
+class GenericArrayInCtorParams<T> extends ParamsObject<GenericArrayInCtor<T>>{
+  GenericArrayInCtor<T> resolve(ActivationContext ctx) {
+    return new GenericArrayInCtor(ctx.createTyped<List<T>>(ctx));
+  }
+}
+
+class GenericParams<T> extends ParamsObject<Generic<T>>{
+  Generic<T> resolve(ActivationContext ctx) {
+    return new Generic(ctx.createTyped<T>(ctx));
+  }
 }

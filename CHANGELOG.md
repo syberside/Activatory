@@ -29,4 +29,8 @@
 
 ## v0.0.11
 - Added recurrency handling
-- Performed large refactoring  
+- Performed large refactoring
+
+## v0.0.12
+- Added test for generics support with explicit overriding
+- Added parameterizable custom factories support
