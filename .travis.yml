@@ -7,8 +7,10 @@ dart_task:
 # - dartanalyzer
 # - dartfmt: -w lib/ test/
 
+script: ./tool/cover.sh
+
 before_install:
- - chmod +x ./tool/publish.sh
+ - chmod -R +x ./tool
 
 deploy:
   provider: script
