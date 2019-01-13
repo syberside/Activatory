@@ -5,19 +5,23 @@ import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/recurrency_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
+import 'package:activatory/src/customization/backend_resolver_factory.dart';
+import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/params_object.dart';
 
 class BackendsRegistry {
 
   BackendStore _store = new BackendStore();
   final BackendsFactory _factory;
+  final TypeCustomizationRegistry _customizationsRegistry;
+  final BackendResolverFactory _ctorResolveStrategyFactory;
 
-  BackendsRegistry(this._factory);
-  BackendsRegistry._fromStore(this._factory, this._store);
+  BackendsRegistry(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory);
+  BackendsRegistry._fromStore(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory, this._store);
 
   BackendsRegistry clone() {
     var storeCopy = _store.clone();
-    return new BackendsRegistry._fromStore(_factory, storeCopy);
+    return new BackendsRegistry._fromStore(_factory, _customizationsRegistry, _ctorResolveStrategyFactory, storeCopy);
   }
 
   GeneratorBackend get(Type type, ActivationContext context) {
@@ -25,11 +29,16 @@ class BackendsRegistry {
     if(context.key is Params){
       key = key.runtimeType;
     }
-    var backend = _store.find(new BackendStoreKey(type, key));
-    if(backend == null){
-      backend = _factory.create(type);
-      backend = register(backend, type, key: key);
+    var backends = _store.find(new BackendStoreKey(type, key));
+    if(backends == null){
+      backends = _factory.create(type);
+      backends = backends.reversed.map((b)=>register(b, type, key: key)).toList();
+      return get(type, context);
     }
+
+    var customization = _customizationsRegistry.get(type);
+    var ctorResolveStrategy = _ctorResolveStrategyFactory.get(customization.resolutionStrategy);
+    var backend = ctorResolveStrategy.resolve(backends, context);
     return backend;
   }
 

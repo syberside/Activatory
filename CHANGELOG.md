@@ -34,3 +34,6 @@
 ## v0.0.12
 - Added test for generics support with explicit overriding
 - Added parameterizable custom factories support
+
+## v0.0.13
+- Added ctor resolution customization mechanism

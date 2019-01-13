@@ -1,0 +1,1 @@
+Type getType<T>() => T;

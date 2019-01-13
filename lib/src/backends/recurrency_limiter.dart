@@ -2,8 +2,9 @@ import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/backends/generator_backend_wrapper.dart';
 
-class RecurrencyLimiter<T> implements GeneratorBackend<T>{
+class RecurrencyLimiter<T> implements GeneratorBackend<T>, GeneratorBackendWrapper<T>{
 
   final Type _type;
   final GeneratorBackend<T> _wrapped;
@@ -24,4 +25,7 @@ class RecurrencyLimiter<T> implements GeneratorBackend<T>{
     context.notifyVisited(_type);
     return result;
   }
+
+  @override
+  GeneratorBackend<T> get wrapped => _wrapped;
 }

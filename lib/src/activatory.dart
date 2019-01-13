@@ -7,17 +7,24 @@ import 'package:activatory/src/backends/params_object_backend.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/backends_registry.dart';
+import 'package:activatory/src/customization/backend_resolver_factory.dart';
+import 'package:activatory/src/customization/type_customization.dart';
+import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/params_object.dart';
-import 'package:activatory/src/value_generator.dart';
+import 'package:activatory/src/value_generator_impl.dart';
 
 class Activatory {
   final Random _random = new Random(DateTime.now().millisecondsSinceEpoch);
   ValueGeneratorImpl _valueGenerator;
   BackendsRegistry _backendsRegistry;
+  TypeCustomizationRegistry _customizationsRegistry;
+  BackendResolverFactory _ctorResolveStrategyFactory;
 
   Activatory(){
-    _backendsRegistry = new BackendsRegistry(new BackendsFactory(_random));
+    _customizationsRegistry = new TypeCustomizationRegistry();
+    _ctorResolveStrategyFactory = new BackendResolverFactory(_random);
+    _backendsRegistry = new BackendsRegistry(new BackendsFactory(_random), _customizationsRegistry, _ctorResolveStrategyFactory);
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
   }
 
@@ -56,20 +63,6 @@ class Activatory {
     var backend = new ParamsObjectBackend<TValue>();
     _backendsRegistry.registerTyped<TValue>(backend, key: TParamsObj);
   }
-}
 
-class ValueGeneratorImpl implements ValueGenerator{
-  BackendsRegistry _backendsRegistry;
-
-  ValueGeneratorImpl(this._backendsRegistry);
-
-  @override
-  Object create(Type type, ActivationContext context) {
-    var backend = _backendsRegistry.get(type, context);
-    var value = backend.get(context);
-    return value;
-  }
-
-  @override
-  T createTyped<T>(ActivationContext context) => create(T, context);
+  TypeCustomization customize<T>() => _customizationsRegistry.get(T);
 }

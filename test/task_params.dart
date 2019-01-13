@@ -1,4 +1,5 @@
 import 'package:activatory/activatory.dart';
+import 'package:mockito/mockito.dart';
 
 import 'test-classes.dart';
 
@@ -59,3 +60,5 @@ class TaskParams extends Params<Task>{
     );
   }
 }
+
+class TaskMock extends Mock implements Task{}

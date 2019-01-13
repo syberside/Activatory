@@ -187,3 +187,35 @@ class GenericParams<T> extends Params<Generic<T>>{
     return new Generic(ctx.createTyped<T>(ctx));
   }
 }
+
+class ManyNamedCtors{
+  final String _field;
+  String get field => _field;
+
+  ManyNamedCtors.createA():this("A");
+
+  ManyNamedCtors(this._field);
+
+  ManyNamedCtors.createB():this("B");
+
+  ManyNamedCtors.createC():this("C");
+
+  ManyNamedCtors.createD():this("D");
+}
+
+class ManyNamedCtorsWithFactory{
+  String _field;
+  String get field => _field;
+
+  ManyNamedCtorsWithFactory.createA(){
+    _field = "A";
+  }
+
+  ManyNamedCtorsWithFactory._internal(String arg){
+    _field = arg;
+  }
+
+  factory ManyNamedCtorsWithFactory(String arg){
+    return ManyNamedCtorsWithFactory._internal(arg);
+  }
+}

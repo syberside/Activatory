@@ -9,6 +9,7 @@ import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
+import 'package:activatory/src/type_helper.dart';
 
 typedef GeneratorBackend _GeneratorBackendFactory();
 
@@ -23,30 +24,38 @@ class BackendsFactory {
     _predefinedFactories[String] = () => new RandomStringBackend();
     _predefinedFactories[DateTime] = () => new RandomDateTimeBackend(_random);
 
-    _predefinedFactories[_getType<List<bool>>()] = () => new ArrayBackend<bool>();
-    _predefinedFactories[_getType<List<int>>()] = () => new ArrayBackend<int>();
-    _predefinedFactories[_getType<List<double>>()] = () => new ArrayBackend<double>();
-    _predefinedFactories[_getType<List<String>>()] = () => new ArrayBackend<String>();
-    _predefinedFactories[_getType<List<DateTime>>()] = () => new ArrayBackend<DateTime>();
+    _predefinedFactories[getType<List<bool>>()] = () => new ArrayBackend<bool>();
+    _predefinedFactories[getType<List<int>>()] = () => new ArrayBackend<int>();
+    _predefinedFactories[getType<List<double>>()] = () => new ArrayBackend<double>();
+    _predefinedFactories[getType<List<String>>()] = () => new ArrayBackend<String>();
+    _predefinedFactories[getType<List<DateTime>>()] = () => new ArrayBackend<DateTime>();
   }
 
-  GeneratorBackend create(Type type) {
+  List<GeneratorBackend> create(Type type) {
     var predefinedFactory = _predefinedFactories[type];
     if (predefinedFactory != null) {
-      return predefinedFactory();
+      return [predefinedFactory()];
     }
 
     var classMirror = reflectClass(type);
     if (classMirror.isEnum) {
-      return _createEnumBackend(classMirror);
+      return [_createEnumBackend(classMirror)];
     } else {
       return _createComplexObjectBackend(classMirror, type);
     }
   }
 
-  GeneratorBackend _createComplexObjectBackend(ClassMirror classMirror, Type type) {
-    var ctorInfo = _resolveByCtor(classMirror);
-    return new ComplexObjectBackend(ctorInfo);
+  List<GeneratorBackend> _createComplexObjectBackend(ClassMirror classMirror, Type type) {
+    if (classMirror.isAbstract) {
+      throw new ActivationException("Cant create instance of abstract class ${classMirror}");
+    }
+
+    var ctors = _extractCtors(classMirror).toList();
+    if (ctors.isEmpty) {
+      throw new ActivationException("Cant find constructor for type ${classMirror}");
+    }
+
+    return ctors.map((ctorInfo) => new ComplexObjectBackend(ctorInfo)).toList();
   }
 
   GeneratorBackend _createEnumBackend(ClassMirror classMirror) {
@@ -75,23 +84,23 @@ class BackendsFactory {
         var arguments = method.parameters
             .map((p) => new ArgumentInfo(p.type.reflectedType, p.defaultValue?.reflectee, p.isNamed, p.simpleName))
             .toList();
-        yield new CtorInfo(classMirror, method.constructorName, arguments);
+        var name = method.constructorName;
+        CtorType type = _getCtorType(method);
+        yield new CtorInfo(classMirror, name, arguments, type);
       }
     }
   }
 
-  Type _getType<T>() => T;
+  static const _emptySymbol = const Symbol('');
 
-  CtorInfo _resolveByCtor(ClassMirror classMirror) {
-    if (classMirror.isAbstract) {
-      throw new ActivationException("Cant create instance of abstract class ${classMirror}");
+  CtorType _getCtorType(MethodMirror method){
+    var name = method.constructorName;
+    if(name != _emptySymbol){
+      return CtorType.Named;
     }
-
-    var ctors = _extractCtors(classMirror).toList();
-    if (ctors.isEmpty) {
-      throw new ActivationException("Cant find constructor for type ${classMirror}");
+    if(method.isGenerativeConstructor){
+      return CtorType.Default;
     }
-
-    return ctors[0];
+    return CtorType.Factory;
   }
 }

@@ -8,6 +8,8 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
 
   ComplexObjectBackend(this._ctorInfo);
 
+  CtorType get ctorType => _ctorInfo.type;
+
   @override
   Object get(ActivationContext context) {
     var positionalArguments = _ctorInfo.args.where((arg) => !arg.isNamed).map((arg) => _generateValues(arg, context)).toList();

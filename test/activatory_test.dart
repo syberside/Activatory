@@ -1,6 +1,10 @@
+import 'dart:collection';
+
 import 'package:activatory/activatory.dart';
 import 'package:activatory/src/activatory.dart';
+import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:test/test.dart';
+import 'package:mockito/mockito.dart';
 
 import 'task_params.dart';
 import 'test-classes.dart';
@@ -432,6 +436,77 @@ void main() {
       expect(result.listField, isNotNull);
       expect(result.listField, hasLength(3));
       expect(result.listField, isNot(contains(null)));
+    });
+  });
+
+  test('Can use library to create mock',(){
+    var result = _activatory.getTyped<TaskMock>();
+    when(result.isRecurrent).thenReturn(true);
+
+    expect(result, isNotNull);
+    expect(result.isRecurrent, isTrue);
+    expect(result.isTemplate, isNull);
+  });
+
+  group('Can customize', (){
+    group('ctors',(){
+      test('take first',(){
+        _activatory.customize<ManyNamedCtors>()
+            .resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
+
+        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+        var expected = ['A'];
+        expect(result, equals(expected));
+      });
+
+      test('take random named',(){
+        _activatory.customize<ManyNamedCtors>()
+          .resolutionStrategy = BackendResolutionStrategy.TakeRandomNamedCtor;
+
+        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+        var expected = ['A', 'B', 'C', 'D'];
+        expect(result, equals(expected));
+      });
+
+      test('take random',(){
+        _activatory.customize<ManyNamedCtors>()
+            .resolutionStrategy = BackendResolutionStrategy.TakeRandom;
+        _activatory.pinValue<String>('E');
+
+        var items = List.generate(200, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+        var expected = ['A', 'B', 'C', 'D', 'E'];
+        expect(result, equals(expected));
+      });
+
+      test('take default ctor', (){
+        _activatory.customize<ManyNamedCtors>()
+            .resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
+        _activatory.pinValue<String>('E');
+
+        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+        var expected = ['E'];
+        expect(result, equals(expected));
+      });
+
+      test('take factory',(){
+        _activatory.customize<ManyNamedCtorsWithFactory>()
+            .resolutionStrategy = BackendResolutionStrategy.TakeFactory;
+        _activatory.pinValue<String>('E');
+
+        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtorsWithFactory>());
+        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+        var expected = ['E'];
+        expect(result, equals(expected));
+      });
     });
   });
 }
