@@ -10,14 +10,14 @@ This will greatly simplify unit testing and especially Test-Driven Development.
 This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/AutoFixture) library.
 
 ## Supported features
-- Effortless primitive types (String, int, double, bool, DateTime, enums) generating
-- Effortless complex object generating using constructors/factory methods/named constructors (default values for arguments are preferred)
-- Overriding default generating behavior with custom factories, pinned values defined by user or auto generated
-- Overriding default generating behavior for specific cases using any object as a key
-- Arrays generating: it is effortless for primitive types and require explicit registration for enums and complex types
-- Support of recursive graphs (trees, linked lists and etc) 
-- Generic class instances generating with explicit factory registration
-- Customization of ctor resolution: random, first, random named, factory, default
+- Effortless primitive types (String, int, double, bool, DateTime, enums) generating.
+- Effortless complex object generating using constructors/factory methods/named constructors (default values for arguments are preferred).
+- Overriding default generating behavior with custom factories, pinned values defined by user or auto generated.
+- Overriding default generating behavior for specific cases using any object as a key.
+- Arrays generating: it is effortless for primitive types and require explicit registration for enums and complex types.
+- Support of recursive graphs (trees, linked lists and etc).
+- Generic class instances generating with explicit factory registration.
+- Customization of ctor resolution: random, first, random named, factory, default.
 
 ## Roadmap
 This is my first Dart project and, actually, this is "pet-project". So there are no exact plans and etc.
