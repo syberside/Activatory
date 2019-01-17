@@ -16,6 +16,8 @@ typedef GeneratorBackend _GeneratorBackendFactory();
 class BackendsFactory {
   Random _random;
   final Map<Type, _GeneratorBackendFactory> _predefinedFactories = new Map<Type, _GeneratorBackendFactory>();
+  final _listMirror = reflectClass(List);
+
 
   BackendsFactory(this._random) {
     _predefinedFactories[bool] = () => new RandomBoolBackend(_random);
@@ -23,12 +25,14 @@ class BackendsFactory {
     _predefinedFactories[double] = () => new RandomDoubleBackend(_random);
     _predefinedFactories[String] = () => new RandomStringBackend();
     _predefinedFactories[DateTime] = () => new RandomDateTimeBackend(_random);
+    _predefinedFactories[Null] = () => new NullBackend();
 
     _predefinedFactories[getType<List<bool>>()] = () => new ArrayBackend<bool>();
     _predefinedFactories[getType<List<int>>()] = () => new ArrayBackend<int>();
     _predefinedFactories[getType<List<double>>()] = () => new ArrayBackend<double>();
     _predefinedFactories[getType<List<String>>()] = () => new ArrayBackend<String>();
     _predefinedFactories[getType<List<DateTime>>()] = () => new ArrayBackend<DateTime>();
+    _predefinedFactories[getType<List<Null>>()] = () => new ArrayBackend<Null>();
   }
 
   List<GeneratorBackend> create(Type type) {
@@ -46,6 +50,10 @@ class BackendsFactory {
   }
 
   List<GeneratorBackend> _createComplexObjectBackend(ClassMirror classMirror, Type type) {
+    //TODO: write test
+    if(classMirror.isSubtypeOf(_listMirror)){
+      throw new ActivationException('Arrays should be registrered explicitly');
+    }
     if (classMirror.isAbstract) {
       throw new ActivationException("Cant create instance of abstract class ${classMirror}");
     }

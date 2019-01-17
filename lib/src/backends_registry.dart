@@ -3,7 +3,7 @@ import 'package:activatory/src/backend_store.dart';
 import 'package:activatory/src/backend_store_key.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
-import 'package:activatory/src/backends/recurrency_limiter.dart';
+import 'package:activatory/src/backends/recursion_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/customization/backend_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
@@ -43,7 +43,7 @@ class BackendsRegistry {
   }
 
   GeneratorBackend register(GeneratorBackend backend, Type type, {Object key}) {
-    var wrapped = new RecurrencyLimiter(type, backend);
+    var wrapped = new RecursionLimiter(type, backend);
     _store.store(wrapped, new BackendStoreKey(type, key));
     return wrapped;
   }

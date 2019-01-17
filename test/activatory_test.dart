@@ -382,7 +382,10 @@ void main() {
       for(var node1 in tree.children){
         _assertTreeNode(node1, 3);
         for(var node2 in node1.children){
-          _assertTreeNode(node2, 0);
+          _assertTreeNode(node2, 3);
+          for(var node3 in node2.children){
+            _assertTreeNode(node3, 0);
+          }
         }
       }
     });
@@ -396,7 +399,10 @@ void main() {
         for(var node2 in node1.children){
           _assertTreeNode(node2, 3);
           for(var node3 in node2.children){
-            _assertTreeNode(node3, 0);
+            _assertTreeNode(node3, 3);
+            for(var node4 in node3.children){
+              _assertTreeNode(node4, 0);
+            }
           }
         }
       }
@@ -508,6 +514,56 @@ void main() {
         expect(result, equals(expected));
       });
     });
+
+    test('array sizes per type',(){
+      var expectedIntArraySize = 5;
+      var expectedNullSize = 0;
+      _activatory.customize<int>().arraySize = expectedIntArraySize;
+      _activatory.customize<Null>().arraySize = expectedNullSize;
+
+      final intArray = _activatory.getTyped<List<int>>();
+      final nullArray = _activatory.getTyped<List<Null>>();
+
+      expect(intArray, hasLength(expectedIntArraySize));
+      expect(nullArray, hasLength(expectedNullSize));
+    });
+
+    test('array sizes for all types',(){
+      final defaultSize = 5;
+      _activatory.defaultCustomization.arraySize = defaultSize;
+
+      final intList = _activatory.getTyped<List<int>>();
+
+      expect(intList, hasLength(defaultSize));
+    });
+
+    test('recursion limit per type',(){
+      _activatory.registerArray<TreeNode>();
+      var expectedArrayRecursionLimit = 5;
+      var expectedRefRecursionLimit = 0;
+      _activatory.customize<TreeNode>().maxRecursion = expectedArrayRecursionLimit;
+      _activatory.customize<LinkedNode>().maxRecursion = expectedRefRecursionLimit;
+
+      final tree = _activatory.getTyped<TreeNode>();
+      final linkedNode = _activatory.getTyped<LinkedNode>();
+
+      _assertTreeNode(tree, 3);
+      for(var node1 in tree.children){
+        _assertTreeNode(node1, 3);
+        for(var node2 in node1.children){
+          _assertTreeNode(node2, 3);
+          for(var node3 in node2.children){
+            _assertTreeNode(node3, 3);
+            for(var node4 in node3.children){
+              _assertTreeNode(node4, 0);
+            }
+          }
+        }
+      }
+
+      expect(linkedNode, isNotNull);
+      expect(linkedNode.next, isNull);
+    });
   });
 }
 
@@ -515,7 +571,6 @@ void _assertLinkedNode(LinkedNode linked) {
   expect(linked, isNotNull);
   expect(linked.next, isNotNull);
   expect(linked.next.next, isNotNull);
-  expect(linked.next.next.next, isNull);
 }
 
 void _assertTreeNode(TreeNode node, int childrenCount) {

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:activatory/src/settings.dart';
+import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/value_generator.dart';
 
 class ActivationContext implements ValueGenerator{
@@ -8,9 +8,10 @@ class ActivationContext implements ValueGenerator{
   final Object _key;
   final Random _random;
   final List<Type> _stackTrace = new List<Type>();
-  final Settings _settings = Settings.defaults();
+  final TypeCustomizationRegistry _customizationsRegistry;
 
-  ActivationContext(this._valueGenerator, this._random, this._key);
+
+  ActivationContext(this._valueGenerator, this._random, this._key, this._customizationsRegistry);
 
   Object get key => _key;
   Random get random => _random;
@@ -23,9 +24,14 @@ class ActivationContext implements ValueGenerator{
 
   int countVisits(Type type) => _stackTrace.where((t)=>t==type).length;
 
-  bool isVisitLimitReached(Type type) => countVisits(type)>=_settings.maxStackSizePerType;
+  bool isVisitLimitReached(Type type) {
+    final customization = _customizationsRegistry.get(type);
+    return countVisits(type)>customization.maxRecursion;
+  }
 
   void notifyVisiting(Type type) => _stackTrace.add(type);
 
   void notifyVisited(Type type) => _stackTrace.removeAt(_stackTrace.lastIndexOf(type));
+
+  int arraySize(Type type) => _customizationsRegistry.get(type).arraySize;
 }

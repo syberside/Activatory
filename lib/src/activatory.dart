@@ -28,12 +28,14 @@ class Activatory {
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
   }
 
+  TypeCustomization get defaultCustomization => _customizationsRegistry.get(null);
+
   Object get(Type type, [Object key = null]) {
     var context = _createContext(key);
     return _valueGenerator.create(type, context);
   }
 
-  ActivationContext _createContext(Object key) => new ActivationContext(_valueGenerator, _random, key);
+  ActivationContext _createContext(Object key) => new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
 
   T getTyped<T>([Object key = null]) => get(T, key);
 

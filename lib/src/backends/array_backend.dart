@@ -7,7 +7,7 @@ class ArrayBackend<T> extends GeneratorBackend<List<T>> {
     if(context.isVisitLimitReached(T)){
       return new List<T>();
     }
-    var result = List<T>.generate(3, (_) => context.createTyped<T>(context));
+    var result = List<T>.generate(context.arraySize(T), (_) => context.createTyped<T>(context));
     return result;
   }
 }

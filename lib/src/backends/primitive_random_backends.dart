@@ -60,3 +60,11 @@ class RandomStringBackend implements GeneratorBackend<String> {
     return uuid.v1();
   }
 }
+
+class NullBackend implements GeneratorBackend<Null>{
+  @override
+  Null get(ActivationContext context) {
+    return null;
+  }
+
+}

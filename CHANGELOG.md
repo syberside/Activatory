@@ -28,7 +28,7 @@
 - Added custom exception type for all library internal errors
 
 ## v0.0.11
-- Added recurrency handling
+- Added recursion handling
 - Performed large refactoring
 
 ## v0.0.12
@@ -37,3 +37,8 @@
 
 ## v0.0.13
 - Added ctor resolution customization mechanism
+
+## v0.0.14
+- Fixed wrong counting of types in recursion limiter
+- Added customization mechanism for recursion limiter and array backend
+- Added Null type support

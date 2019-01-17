@@ -14,8 +14,8 @@ This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/Au
 - Effortless complex object generating using constructors/factory methods/named constructors (default values for arguments are preferred).
 - Overriding default generating behavior with custom factories, pinned values defined by user or auto generated.
 - Overriding default generating behavior for specific cases using any object as a key.
-- Arrays generating: it is effortless for primitive types and require explicit registration for enums and complex types.
-- Support of recursive graphs (trees, linked lists and etc).
+- Arrays generating with customizable size: it is effortless for primitive types and require explicit registration for enums and complex types.
+- Support of recursive graphs (trees, linked lists and etc) with customizable recursion level.
 - Generic class instances generating with explicit factory registration.
 - Customization of ctor resolution: random, first, random named, factory, default.
 
