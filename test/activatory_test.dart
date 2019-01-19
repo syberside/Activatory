@@ -617,6 +617,15 @@ void main() {
       expect(linkedNode.next, isNull);
     });
   });
+
+  test('Can create map with explicit registration',(){
+    _activatory.registerMap<String, int>();
+
+    final result = _activatory.getTyped<Map<String, int>>();
+
+    expect(result, isNotNull);
+    expect(result, hasLength(_activatory.defaultCustomization.arraySize));
+  });
 }
 
 void _assertLinkedNode(LinkedNode linked) {

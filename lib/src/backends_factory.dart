@@ -6,6 +6,7 @@ import 'package:activatory/src/argument_info.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/backends/map_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
@@ -50,7 +51,6 @@ class BackendsFactory {
   }
 
   List<GeneratorBackend> _createComplexObjectBackend(ClassMirror classMirror, Type type) {
-    //TODO: write test
     if(classMirror.isSubtypeOf(_listMirror)){
       throw new ActivationException('Arrays should be registrered explicitly');
     }

@@ -3,6 +3,7 @@ import 'package:activatory/src/backend_store.dart';
 import 'package:activatory/src/backend_store_key.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/backends/map_backend.dart';
 import 'package:activatory/src/backends/recursion_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/customization/backend_resolver_factory.dart';
@@ -51,4 +52,6 @@ class BackendsRegistry {
   void registerArray<T>() => registerTyped(new ArrayBackend<T>());
 
   void registerTyped<T>(GeneratorBackend<T> backend, {Object key}) => register(backend, T, key: key);
+
+  void registerMap<K, V>() => registerTyped(new MapBackend<K, V>());
 }
