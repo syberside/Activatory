@@ -106,9 +106,6 @@ class BackendsFactory {
     if(name != _emptySymbol){
       return CtorType.Named;
     }
-    if(method.isGenerativeConstructor){
-      return CtorType.Default;
-    }
-    return CtorType.Factory;
+    return CtorType.Default;
   }
 }

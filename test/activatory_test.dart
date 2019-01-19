@@ -457,10 +457,10 @@ void main() {
   group('Can customize', (){
     group('ctors',(){
       test('take first',(){
-        _activatory.customize<ManyNamedCtors>()
+        _activatory.customize<NamedCtorsAndDefaultCtor>()
             .resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
 
-        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
         var result =  SplayTreeSet.from(items.map((item)=>item.field));
 
         var expected = ['A'];
@@ -468,10 +468,10 @@ void main() {
       });
 
       test('take random named',(){
-        _activatory.customize<ManyNamedCtors>()
+        _activatory.customize<NamedCtorsAndDefaultCtor>()
           .resolutionStrategy = BackendResolutionStrategy.TakeRandomNamedCtor;
 
-        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
         var result =  SplayTreeSet.from(items.map((item)=>item.field));
 
         var expected = ['A', 'B', 'C', 'D'];
@@ -479,35 +479,47 @@ void main() {
       });
 
       test('take random',(){
-        _activatory.customize<ManyNamedCtors>()
+        _activatory.customize<NamedCtorsAndDefaultCtor>()
             .resolutionStrategy = BackendResolutionStrategy.TakeRandom;
         _activatory.pinValue<String>('E');
 
-        var items = List.generate(200, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var items = List.generate(200, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
         var result =  SplayTreeSet.from(items.map((item)=>item.field));
 
         var expected = ['A', 'B', 'C', 'D', 'E'];
         expect(result, equals(expected));
       });
 
-      test('take default ctor', (){
-        _activatory.customize<ManyNamedCtors>()
+      test('take default ctor for class with default ctor', (){
+        _activatory.customize<NamedCtorsAndDefaultCtor>()
             .resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
         _activatory.pinValue<String>('E');
 
-        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtors>());
+        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
         var result =  SplayTreeSet.from(items.map((item)=>item.field));
 
         var expected = ['E'];
         expect(result, equals(expected));
       });
 
-      test('take factory',(){
-        _activatory.customize<ManyNamedCtorsWithFactory>()
-            .resolutionStrategy = BackendResolutionStrategy.TakeFactory;
+      test('take default for class with factory',(){
+        _activatory.customize<NamedCtorsAndFactory>()
+            .resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
         _activatory.pinValue<String>('E');
 
-        var items = List.generate(15, (_)=>_activatory.getTyped<ManyNamedCtorsWithFactory>());
+        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndFactory>());
+        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+        var expected = ['E'];
+        expect(result, equals(expected));
+      });
+
+      test('take default for class with const ctor',(){
+        _activatory.customize<NamedCtorsAndConstCtor>()
+            .resolutionStrategy=BackendResolutionStrategy.TakeDefaultCtor;
+        _activatory.pinValue<String>('E');
+
+        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndConstCtor>());
         var result =  SplayTreeSet.from(items.map((item)=>item.field));
 
         var expected = ['E'];

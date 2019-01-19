@@ -1,1 +1,1 @@
-enum BackendResolutionStrategy { TakeFirstDefined, TakeRandomNamedCtor, TakeRandom, TakeDefaultCtor, TakeFactory }
+enum BackendResolutionStrategy { TakeFirstDefined, TakeRandomNamedCtor, TakeRandom, TakeDefaultCtor}

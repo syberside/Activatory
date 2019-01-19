@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:activatory/src/customization/backend_resolver.dart';
 import 'package:activatory/src/customization/default_ctor_resolver.dart';
-import 'package:activatory/src/customization/factory_ctor_resolver.dart';
 import 'package:activatory/src/customization/first_ctor_resolve_strategy.dart';
 import 'package:activatory/src/customization/random_named_ctor_resolver.dart';
 import 'package:activatory/src/customization/random_resolver.dart';
@@ -33,8 +32,6 @@ class BackendResolverFactory {
         return new RandomResolver(_random);
       case BackendResolutionStrategy.TakeDefaultCtor:
         return new DefaultCtorResolver();
-      case BackendResolutionStrategy.TakeFactory:
-        return new FactoryCtorResolver();
       default:
         throw ArgumentError.value(strategy);
     }

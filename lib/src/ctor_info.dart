@@ -18,6 +18,5 @@ class CtorInfo {
 
 enum CtorType{
   Default,
-  Factory,
   Named
 }

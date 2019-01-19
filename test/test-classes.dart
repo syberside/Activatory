@@ -188,34 +188,46 @@ class GenericParams<T> extends Params<Generic<T>>{
   }
 }
 
-class ManyNamedCtors{
+class NamedCtorsAndDefaultCtor{
   final String _field;
   String get field => _field;
 
-  ManyNamedCtors.createA():this("A");
+  NamedCtorsAndDefaultCtor.createA():this("A");
 
-  ManyNamedCtors(this._field);
+  NamedCtorsAndDefaultCtor(this._field);
 
-  ManyNamedCtors.createB():this("B");
+  NamedCtorsAndDefaultCtor.createB():this("B");
 
-  ManyNamedCtors.createC():this("C");
+  NamedCtorsAndDefaultCtor.createC():this("C");
 
-  ManyNamedCtors.createD():this("D");
+  NamedCtorsAndDefaultCtor.createD():this("D");
 }
 
-class ManyNamedCtorsWithFactory{
+class NamedCtorsAndFactory{
   String _field;
   String get field => _field;
 
-  ManyNamedCtorsWithFactory.createA(){
+  NamedCtorsAndFactory.createA(){
     _field = "A";
   }
 
-  ManyNamedCtorsWithFactory._internal(String arg){
+  NamedCtorsAndFactory._internal(String arg){
     _field = arg;
   }
 
-  factory ManyNamedCtorsWithFactory(String arg){
-    return ManyNamedCtorsWithFactory._internal(arg);
+  factory NamedCtorsAndFactory(String arg){
+    return NamedCtorsAndFactory._internal(arg);
   }
+}
+
+class NamedCtorsAndConstCtor{
+  final String _field;
+  String get field => _field;
+
+  NamedCtorsAndConstCtor.A():this('A');
+
+  const NamedCtorsAndConstCtor(this._field);
+
+  NamedCtorsAndConstCtor.B():this('B');
+  NamedCtorsAndConstCtor.C():this('C');
 }
