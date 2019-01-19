@@ -48,3 +48,4 @@
 
 ## v0.0.16
 - Bugfix and documentation improvements
+- Added support for Map<K,V> generating
