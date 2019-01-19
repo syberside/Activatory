@@ -74,11 +74,11 @@ void main() {
 
   group('Cant create', () {
     test('abstract class', () {
-      expect(() => _activatory.getTyped<AbstractClass>(), throwsA(isInstanceOf<ActivationException>()));
+      expect(() => _activatory.getTyped<AbstractClass>(), throwsA(TypeMatcher<ActivationException>()));
     });
 
     test('class without public ctor', () {
-      expect(() => _activatory.getTyped<NoPublicCtor>(), throwsA(isInstanceOf<ActivationException>()));
+      expect(() => _activatory.getTyped<NoPublicCtor>(), throwsA(TypeMatcher<ActivationException>()));
     });
   });
 
@@ -313,6 +313,10 @@ void main() {
     });
   });
 
+  test('Cant create array of complex type without explicit registration',(){
+    expect(()=>_activatory.getTyped<List<PrimitiveComplexObject>>(), throwsA(TypeMatcher<ActivationException>()));
+  });
+
   group('Can use generics with explicit overriding',(){
     void overrideGeneric<T>() => _activatory.override((ctx)=>new Generic<T>(ctx.createTyped<T>(ctx)));
     void overrideGenericArray<T>() => _activatory.override((ctx)=>new GenericArrayInCtor<T>(ctx.createTyped<List<T>>(ctx)));
@@ -455,75 +459,111 @@ void main() {
   });
 
   group('Can customize', (){
-    group('ctors',(){
-      test('take first',(){
-        _activatory.customize<NamedCtorsAndDefaultCtor>()
-            .resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
+    group('backends',(){
+      group('without overrides', (){
+        test('take first for complex type to take first ctor',(){
+          _activatory.customize<NamedCtorsAndDefaultCtor>()
+              .resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
 
-        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
-        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+          var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var result =  SplayTreeSet.from(items.map((item)=>item.field));
 
-        var expected = ['A'];
-        expect(result, equals(expected));
+          var expected = ['A'];
+          expect(result, equals(expected));
+        });
+
+        test('take random named ctor',(){
+          _activatory.customize<NamedCtorsAndDefaultCtor>()
+              .resolutionStrategy = BackendResolutionStrategy.TakeRandomNamedCtor;
+
+          var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+          var expected = ['A', 'B', 'C', 'D'];
+          expect(result, equals(expected));
+        });
+
+        test('take random for complex type to take random ctor',(){
+          _activatory.customize<NamedCtorsAndDefaultCtor>()
+              .resolutionStrategy = BackendResolutionStrategy.TakeRandom;
+          _activatory.pinValue<String>('E');
+
+          var items = List.generate(200, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+          var expected = ['A', 'B', 'C', 'D', 'E'];
+          expect(result, equals(expected));
+        });
+
+        test('take default ctor for type with default ctor', (){
+          _activatory.customize<NamedCtorsAndDefaultCtor>()
+              .resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
+          _activatory.pinValue<String>('E');
+
+          var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+          var expected = ['E'];
+          expect(result, equals(expected));
+        });
+
+        test('take default for class with factory',(){
+          _activatory.customize<NamedCtorsAndFactory>()
+              .resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
+          _activatory.pinValue<String>('E');
+
+          var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndFactory>());
+          var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+          var expected = ['E'];
+          expect(result, equals(expected));
+        });
+
+        test('take default for class with const ctor',(){
+          _activatory.customize<NamedCtorsAndConstCtor>()
+              .resolutionStrategy=BackendResolutionStrategy.TakeDefaultCtor;
+          _activatory.pinValue<String>('E');
+
+          var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndConstCtor>());
+          var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+          var expected = ['E'];
+          expect(result, equals(expected));
+        });
       });
 
-      test('take random named',(){
-        _activatory.customize<NamedCtorsAndDefaultCtor>()
-          .resolutionStrategy = BackendResolutionStrategy.TakeRandomNamedCtor;
+      group('with overrides',(){
+        test('take random to take random from overrides',(){
+          _activatory.pinValue(10);
+          _activatory.override((ctx)=>20);
+          _activatory.pinValue(30);
+          _activatory.override((ctx)=>40);
+          _activatory.customize<int>()
+            ..arraySize=15
+            ..resolutionStrategy = BackendResolutionStrategy.TakeRandom;
 
-        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
-        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+          final generated = _activatory.getTyped<List<int>>();
+          var result =  SplayTreeSet.from(generated);
 
-        var expected = ['A', 'B', 'C', 'D'];
-        expect(result, equals(expected));
-      });
+          const expected = [10,20, 30, 40];
+          expect(result, equals(expected));
+        });
 
-      test('take random',(){
-        _activatory.customize<NamedCtorsAndDefaultCtor>()
-            .resolutionStrategy = BackendResolutionStrategy.TakeRandom;
-        _activatory.pinValue<String>('E');
+        test('take random to take random from overrides',(){
+          _activatory.pinValue(10);
+          _activatory.override((ctx)=>20);
+          _activatory.pinValue(30);
+          _activatory.override((ctx)=>40);
+          _activatory.customize<int>()
+              ..arraySize=15
+              ..resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
 
-        var items = List.generate(200, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
-        var result =  SplayTreeSet.from(items.map((item)=>item.field));
+          final generated = _activatory.getTyped<List<int>>();
+          var result =  SplayTreeSet.from(generated);
 
-        var expected = ['A', 'B', 'C', 'D', 'E'];
-        expect(result, equals(expected));
-      });
-
-      test('take default ctor for class with default ctor', (){
-        _activatory.customize<NamedCtorsAndDefaultCtor>()
-            .resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
-        _activatory.pinValue<String>('E');
-
-        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndDefaultCtor>());
-        var result =  SplayTreeSet.from(items.map((item)=>item.field));
-
-        var expected = ['E'];
-        expect(result, equals(expected));
-      });
-
-      test('take default for class with factory',(){
-        _activatory.customize<NamedCtorsAndFactory>()
-            .resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
-        _activatory.pinValue<String>('E');
-
-        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndFactory>());
-        var result =  SplayTreeSet.from(items.map((item)=>item.field));
-
-        var expected = ['E'];
-        expect(result, equals(expected));
-      });
-
-      test('take default for class with const ctor',(){
-        _activatory.customize<NamedCtorsAndConstCtor>()
-            .resolutionStrategy=BackendResolutionStrategy.TakeDefaultCtor;
-        _activatory.pinValue<String>('E');
-
-        var items = List.generate(15, (_)=>_activatory.getTyped<NamedCtorsAndConstCtor>());
-        var result =  SplayTreeSet.from(items.map((item)=>item.field));
-
-        var expected = ['E'];
-        expect(result, equals(expected));
+          const expected = [40];
+          expect(result, equals(expected));
+        });
       });
     });
 

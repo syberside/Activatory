@@ -42,3 +42,9 @@
 - Fixed wrong counting of types in recursion limiter
 - Added customization mechanism for recursion limiter and array backend
 - Added Null type support
+
+## v0.0.15
+- Const ctor supported
+
+## v0.0.16
+- Bugfix and documentation improvements
