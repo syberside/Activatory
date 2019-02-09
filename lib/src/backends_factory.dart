@@ -58,7 +58,7 @@ class BackendsFactory {
       throw new ActivationException("Cant create instance of abstract class ${classMirror}");
     }
 
-    var ctors = _extractCtors(classMirror).toList();
+    var ctors = _extractCtors(classMirror, type).toList();
     if (ctors.isEmpty) {
       throw new ActivationException("Cant find constructor for type ${classMirror}");
     }
@@ -84,7 +84,7 @@ class BackendsFactory {
     return new RandomArrayItemBackend(_random, allValues);
   }
 
-  Iterable<CtorInfo> _extractCtors(ClassMirror classMirror) sync* {
+  Iterable<CtorInfo> _extractCtors(ClassMirror classMirror, Type type) sync* {
     var constructors = classMirror.declarations.values;
 
     for (var method in constructors) {
@@ -93,8 +93,8 @@ class BackendsFactory {
             .map((p) => new ArgumentInfo(p.type.reflectedType, p.defaultValue?.reflectee, p.isNamed, p.simpleName))
             .toList();
         var name = method.constructorName;
-        CtorType type = _getCtorType(method);
-        yield new CtorInfo(classMirror, name, arguments, type);
+        CtorType ctorType = _getCtorType(method);
+        yield new CtorInfo(classMirror, name, arguments, ctorType, type);
       }
     }
   }

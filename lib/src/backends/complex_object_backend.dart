@@ -22,11 +22,16 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
   }
 
   Object _generateValues(ArgumentInfo arg, ActivationContext context) {
+    final overrideDelegate = context.getArgumentOverride(_ctorInfo.classType, arg.type);
+    if(overrideDelegate!=null){
+      return overrideDelegate(context);
+    }
+
     if (arg.defaultValue != null) {
       return arg.defaultValue;
-    } else {
-      return context.create(arg.type, context);
     }
+
+    return context.create(arg.type, context);
   }
 }
 

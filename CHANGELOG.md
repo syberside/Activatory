@@ -49,3 +49,6 @@
 ## v0.0.16
 - Bugfix and documentation improvements
 - Added support for Map<K,V> generating
+
+## v0.0.17
+- Implemented ctor parameter overloading by type 

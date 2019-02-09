@@ -231,3 +231,23 @@ class NamedCtorsAndConstCtor{
   NamedCtorsAndConstCtor.B():this('B');
   NamedCtorsAndConstCtor.C():this('C');
 }
+
+class FactoryWithFixedValues{
+  String _field;
+  String get field => _field;
+
+  FactoryWithFixedValues._(this._field);
+
+  static final FactoryWithFixedValues a = new FactoryWithFixedValues._("A");
+  static final FactoryWithFixedValues b = new FactoryWithFixedValues._("B");
+  static final FactoryWithFixedValues c = new FactoryWithFixedValues._("C");
+
+  factory FactoryWithFixedValues(String type){
+    switch(type){
+      case 'A': return a;
+      case 'B': return b;
+      case 'C': return c;
+      default: throw new ArgumentError(type);
+    }
+  }
+}

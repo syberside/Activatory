@@ -626,6 +626,20 @@ void main() {
     expect(result, isNotNull);
     expect(result, hasLength(_activatory.defaultCustomization.arraySize));
   });
+
+  group('Can customize',(){
+    test('arguments with delegate',(){
+      _activatory.customize<FactoryWithFixedValues>()
+        ..whenArgument<String>().than = ((ctx)=>'A');
+      _activatory.registerArray<FactoryWithFixedValues>();
+
+      final items = _activatory.getTyped<List<FactoryWithFixedValues>>();
+      var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+      final expected = ['A'];
+      expect(result, equals(expected));
+    });
+  });
 }
 
 void _assertLinkedNode(LinkedNode linked) {

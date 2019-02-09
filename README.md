@@ -19,7 +19,8 @@ This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/Au
 - Support of recursive graphs (trees, linked lists and etc) with customizable recursion level.
 - Generic class instances generating with explicit factory registration.
 - Customization of ctor resolution: first defined, random, random named, random default.
-
+- Overriding generated parameters values by type for complex cases (when random values are not applicable).
+ 
 ## Roadmap
 This is my first Dart project and, actually, this is "pet-project". So there are no exact plans and etc.
 For planned features and more see [enhancements on github](https://github.com/syberside/Activatory/issues?utf8=%E2%9C%93&q=is%3Aenhancement+is%3Aopen+). 

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:activatory/src/customization/type_customization_registry.dart';
+import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/value_generator.dart';
 
 class ActivationContext implements ValueGenerator{
@@ -34,4 +35,10 @@ class ActivationContext implements ValueGenerator{
   void notifyVisited(Type type) => _stackTrace.removeAt(_stackTrace.lastIndexOf(type));
 
   int arraySize(Type type) => _customizationsRegistry.get(type).arraySize;
+
+  GeneratorDelegate getArgumentOverride<T>(Type resolveType, Type argumentType){
+    var customization = _customizationsRegistry.get(resolveType);
+    var delegate = customization.getArgumentOverride(argumentType);
+    return delegate;
+  }
 }
