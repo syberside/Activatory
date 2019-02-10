@@ -21,21 +21,22 @@ class Activatory {
   TypeCustomizationRegistry _customizationsRegistry;
   BackendResolverFactory _ctorResolveStrategyFactory;
 
-  Activatory(){
+  Activatory() {
     _customizationsRegistry = new TypeCustomizationRegistry();
     _ctorResolveStrategyFactory = new BackendResolverFactory(_random);
-    _backendsRegistry = new BackendsRegistry(new BackendsFactory(_random), _customizationsRegistry, _ctorResolveStrategyFactory);
+    _backendsRegistry =
+        new BackendsRegistry(new BackendsFactory(_random), _customizationsRegistry, _ctorResolveStrategyFactory);
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
   }
 
   TypeCustomization get defaultCustomization => _customizationsRegistry.get(null);
 
+  TypeCustomization customize<T>() => _customizationsRegistry.get(T);
+
   Object get(Type type, [Object key = null]) {
     var context = _createContext(key);
     return _valueGenerator.create(type, context);
   }
-
-  ActivationContext _createContext(Object key) => new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
 
   T getTyped<T>([Object key = null]) => get(T, key);
 
@@ -68,5 +69,6 @@ class Activatory {
     _backendsRegistry.registerTyped<TValue>(backend, key: TParamsObj);
   }
 
-  TypeCustomization customize<T>() => _customizationsRegistry.get(T);
+  ActivationContext _createContext(Object key) =>
+      new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
 }

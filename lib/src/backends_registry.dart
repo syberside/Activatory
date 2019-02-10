@@ -11,14 +11,14 @@ import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/params_object.dart';
 
 class BackendsRegistry {
-
   BackendStore _store = new BackendStore();
   final BackendsFactory _factory;
   final TypeCustomizationRegistry _customizationsRegistry;
   final BackendResolverFactory _ctorResolveStrategyFactory;
 
   BackendsRegistry(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory);
-  BackendsRegistry._fromStore(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory, this._store);
+  BackendsRegistry._fromStore(
+      this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory, this._store);
 
   BackendsRegistry clone() {
     var storeCopy = _store.clone();
@@ -27,13 +27,13 @@ class BackendsRegistry {
 
   GeneratorBackend get(Type type, ActivationContext context) {
     Object key = context.key;
-    if(context.key is Params){
+    if (context.key is Params) {
       key = key.runtimeType;
     }
     var backends = _store.find(new BackendStoreKey(type, key));
-    if(backends == null){
+    if (backends == null) {
       backends = _factory.create(type);
-      backends = backends.reversed.map((b)=>register(b, type, key: key)).toList();
+      backends = backends.reversed.map((b) => register(b, type, key: key)).toList();
       return get(type, context);
     }
 
@@ -51,7 +51,7 @@ class BackendsRegistry {
 
   void registerArray<T>() => registerTyped(new ArrayBackend<T>());
 
-  void registerTyped<T>(GeneratorBackend<T> backend, {Object key}) => register(backend, T, key: key);
-
   void registerMap<K, V>() => registerTyped(new MapBackend<K, V>());
+
+  void registerTyped<T>(GeneratorBackend<T> backend, {Object key}) => register(backend, T, key: key);
 }

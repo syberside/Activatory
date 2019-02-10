@@ -4,6 +4,13 @@ import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:uuid/uuid.dart';
 
+class NullBackend implements GeneratorBackend<Null> {
+  @override
+  Null get(ActivationContext context) {
+    return null;
+  }
+}
+
 class RandomBoolBackend implements GeneratorBackend<bool> {
   Random _random;
 
@@ -59,12 +66,4 @@ class RandomStringBackend implements GeneratorBackend<String> {
     var uuid = new Uuid();
     return uuid.v1();
   }
-}
-
-class NullBackend implements GeneratorBackend<Null>{
-  @override
-  Null get(ActivationContext context) {
-    return null;
-  }
-
 }

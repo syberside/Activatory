@@ -6,12 +6,18 @@ abstract class AbstractClass {
   AbstractClass(this._intField);
 }
 
-class IntArrayInCtor {
-  final List<int> _listField;
+class ClosedByInheritanceGeneric extends GenericArrayInCtor<String> {
+  ClosedByInheritanceGeneric(List<String> listField) : super(listField);
+}
 
-  IntArrayInCtor(this._listField);
+class CtorWithTwoStringArgs {
+  final String _a;
+  final String _b;
 
-  List<int> get listField => _listField;
+  CtorWithTwoStringArgs(this._a, this._b);
+
+  String get a => _a;
+  String get b => _b;
 }
 
 class DefaultCtor {
@@ -87,6 +93,30 @@ class FactoryCtor {
   String get stringField => _stringField;
 }
 
+class FactoryWithFixedValues {
+  static final FactoryWithFixedValues a = new FactoryWithFixedValues._("A");
+  static final FactoryWithFixedValues b = new FactoryWithFixedValues._("B");
+
+  static final FactoryWithFixedValues c = new FactoryWithFixedValues._("C");
+
+  String _field;
+  factory FactoryWithFixedValues(String type) {
+    switch (type) {
+      case 'A':
+        return a;
+      case 'B':
+        return b;
+      case 'C':
+        return c;
+      default:
+        throw new ArgumentError(type);
+    }
+  }
+  FactoryWithFixedValues._(this._field);
+
+  String get field => _field;
+}
+
 class Generic<T> {
   final T _field;
 
@@ -103,11 +133,83 @@ class GenericArrayInCtor<T> {
   List<T> get listField => _listField;
 }
 
+class GenericArrayInCtorParams<T> extends Params<GenericArrayInCtor<T>> {
+  GenericArrayInCtor<T> resolve(ActivationContext ctx) {
+    return new GenericArrayInCtor(ctx.createTyped<List<T>>(ctx));
+  }
+}
+
+class GenericParams<T> extends Params<Generic<T>> {
+  Generic<T> resolve(ActivationContext ctx) {
+    return new Generic(ctx.createTyped<T>(ctx));
+  }
+}
+
+class IntArrayInCtor {
+  final List<int> _listField;
+
+  IntArrayInCtor(this._listField);
+
+  List<int> get listField => _listField;
+}
+
+class LinkedNode {
+  final LinkedNode _next;
+
+  LinkedNode(this._next);
+
+  LinkedNode get next => _next;
+}
+
 class NamedCtor {
   String _stringField;
   NamedCtor.nonDefaultName(this._stringField);
 
   String get stringField => _stringField;
+}
+
+class NamedCtorsAndConstCtor {
+  final String _field;
+  const NamedCtorsAndConstCtor(this._field);
+
+  NamedCtorsAndConstCtor.A() : this('A');
+
+  NamedCtorsAndConstCtor.B() : this('B');
+
+  NamedCtorsAndConstCtor.C() : this('C');
+  String get field => _field;
+}
+
+class NamedCtorsAndDefaultCtor {
+  final String _field;
+  NamedCtorsAndDefaultCtor(this._field);
+
+  NamedCtorsAndDefaultCtor.createA() : this("A");
+
+  NamedCtorsAndDefaultCtor.createB() : this("B");
+
+  NamedCtorsAndDefaultCtor.createC() : this("C");
+
+  NamedCtorsAndDefaultCtor.createD() : this("D");
+
+  String get field => _field;
+}
+
+class NamedCtorsAndFactory {
+  String _field;
+  factory NamedCtorsAndFactory(String arg) {
+    return NamedCtorsAndFactory._internal(arg);
+  }
+
+  NamedCtorsAndFactory.createA() {
+    _field = "A";
+  }
+
+  NamedCtorsAndFactory._internal(String arg) {
+    _field = arg;
+  }
+
+  String get field => _field;
 }
 
 class NonPrimitiveComplexObject {
@@ -146,118 +248,20 @@ class PrimitiveComplexObject {
   String get stringField => _stringField;
 }
 
-class ClosedByInheritanceGeneric extends GenericArrayInCtor<String> {
-  ClosedByInheritanceGeneric(List<String> listField) : super(listField);
+abstract class Task {
+  DateTime get dueDate;
+  int get id;
+  bool get isRecurrent;
+  bool get isTemplate;
+  String get title;
 }
 
 enum TestEnum { A, B, C }
 
-class TreeNode{
+class TreeNode {
   final List<TreeNode> _children;
 
   TreeNode(this._children);
 
   List<TreeNode> get children => _children;
-}
-
-class LinkedNode{
-  final LinkedNode _next;
-
-  LinkedNode(this._next);
-
-  LinkedNode get next => _next;
-}
-
-abstract class Task{
-  int get id;
-  String get title;
-  bool get isRecurrent;
-  bool get isTemplate;
-  DateTime get dueDate;
-}
-
-class GenericArrayInCtorParams<T> extends Params<GenericArrayInCtor<T>>{
-  GenericArrayInCtor<T> resolve(ActivationContext ctx) {
-    return new GenericArrayInCtor(ctx.createTyped<List<T>>(ctx));
-  }
-}
-
-class GenericParams<T> extends Params<Generic<T>>{
-  Generic<T> resolve(ActivationContext ctx) {
-    return new Generic(ctx.createTyped<T>(ctx));
-  }
-}
-
-class NamedCtorsAndDefaultCtor{
-  final String _field;
-  String get field => _field;
-
-  NamedCtorsAndDefaultCtor.createA():this("A");
-
-  NamedCtorsAndDefaultCtor(this._field);
-
-  NamedCtorsAndDefaultCtor.createB():this("B");
-
-  NamedCtorsAndDefaultCtor.createC():this("C");
-
-  NamedCtorsAndDefaultCtor.createD():this("D");
-}
-
-class NamedCtorsAndFactory{
-  String _field;
-  String get field => _field;
-
-  NamedCtorsAndFactory.createA(){
-    _field = "A";
-  }
-
-  NamedCtorsAndFactory._internal(String arg){
-    _field = arg;
-  }
-
-  factory NamedCtorsAndFactory(String arg){
-    return NamedCtorsAndFactory._internal(arg);
-  }
-}
-
-class NamedCtorsAndConstCtor{
-  final String _field;
-  String get field => _field;
-
-  NamedCtorsAndConstCtor.A():this('A');
-
-  const NamedCtorsAndConstCtor(this._field);
-
-  NamedCtorsAndConstCtor.B():this('B');
-  NamedCtorsAndConstCtor.C():this('C');
-}
-
-class FactoryWithFixedValues{
-  String _field;
-  String get field => _field;
-
-  FactoryWithFixedValues._(this._field);
-
-  static final FactoryWithFixedValues a = new FactoryWithFixedValues._("A");
-  static final FactoryWithFixedValues b = new FactoryWithFixedValues._("B");
-  static final FactoryWithFixedValues c = new FactoryWithFixedValues._("C");
-
-  factory FactoryWithFixedValues(String type){
-    switch(type){
-      case 'A': return a;
-      case 'B': return b;
-      case 'C': return c;
-      default: throw new ArgumentError(type);
-    }
-  }
-}
-
-class CtorWithTwoStringArgs{
-  final String _a;
-  final String _b;
-
-  CtorWithTwoStringArgs(this._a, this._b);
-
-  String get a => _a;
-  String get b => _b;
 }

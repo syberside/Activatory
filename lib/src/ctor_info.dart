@@ -13,12 +13,9 @@ class CtorInfo {
 
   List<ArgumentInfo> get args => _args;
   ClassMirror get classMirror => _classMirror;
+  Type get classType => _classType;
   Symbol get ctor => _ctor;
   CtorType get type => _type;
-  Type get classType => _classType;
 }
 
-enum CtorType{
-  Default,
-  Named
-}
+enum CtorType { Default, Named }

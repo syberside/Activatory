@@ -2,7 +2,7 @@ import 'package:activatory/activatory.dart';
 import 'package:activatory/src/backends_registry.dart';
 import 'package:activatory/src/value_generator.dart';
 
-class ValueGeneratorImpl implements ValueGenerator{
+class ValueGeneratorImpl implements ValueGenerator {
   final BackendsRegistry _backendsRegistry;
 
   ValueGeneratorImpl(this._backendsRegistry);

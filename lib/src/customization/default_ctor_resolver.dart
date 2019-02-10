@@ -8,10 +8,10 @@ import 'package:activatory/src/customization/backend_resolver.dart';
 class DefaultCtorResolver implements BackendResolver {
   @override
   GeneratorBackend resolve(List<GeneratorBackend> ctors, ActivationContext context) {
-    var filtered = ctors
-        .map((c) => unwrap(c))
-        .where((c) => c is ComplexObjectBackend && c.ctorType == CtorType.Default)
-        .toList();
+    var filtered =
+        ctors.map((c) => unwrap(c))
+            .where((c) => c is ComplexObjectBackend && c.ctorType == CtorType.Default)
+            .toList();
     assertBackendsNotEmpty(filtered);
     return filtered[0];
   }
