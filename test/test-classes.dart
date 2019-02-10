@@ -251,3 +251,13 @@ class FactoryWithFixedValues{
     }
   }
 }
+
+class CtorWithTwoStringArgs{
+  final String _a;
+  final String _b;
+
+  CtorWithTwoStringArgs(this._a, this._b);
+
+  String get a => _a;
+  String get b => _b;
+}

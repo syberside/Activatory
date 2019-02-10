@@ -628,7 +628,7 @@ void main() {
   });
 
   group('Can customize',(){
-    test('arguments with delegate',(){
+    test('argument by type with delegate',(){
       _activatory.customize<FactoryWithFixedValues>()
         ..whenArgument<String>().than = ((ctx)=>'A');
       _activatory.registerArray<FactoryWithFixedValues>();
@@ -638,6 +638,17 @@ void main() {
 
       final expected = ['A'];
       expect(result, equals(expected));
+    });
+
+    test('argument by type and name with delegate',(){
+      _activatory.customize<CtorWithTwoStringArgs>()
+        ..whenArgument<String>('_b').than = ((ctx)=>'B')
+        ..whenArgument<String>().than = ((ctx)=>'A');
+
+      final result = _activatory.getTyped<CtorWithTwoStringArgs>();
+
+      expect(result.a, equals('A'));
+      expect(result.b, equals('B'));
     });
   });
 }

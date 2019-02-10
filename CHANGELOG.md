@@ -51,4 +51,4 @@
 - Added support for Map<K,V> generating
 
 ## v0.0.17
-- Implemented ctor parameter overloading by type 
+- Implemented ctor parameter overloading by type and (optionally) by name 

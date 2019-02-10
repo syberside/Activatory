@@ -15,14 +15,14 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
     var positionalArguments = _ctorInfo.args.where((arg) => !arg.isNamed).map((arg) => _generateValues(arg, context)).toList();
 
     var namedArguments = new Map<Symbol, Object>();
-    _ctorInfo.args.where((args) => args.isNamed).forEach((arg) => namedArguments[arg.name] = _generateValues(arg, context));
+    _ctorInfo.args.where((args) => args.isNamed).forEach((arg) => namedArguments[new Symbol(arg.name)] = _generateValues(arg, context));
 
     var result = _ctorInfo.classMirror.newInstance(_ctorInfo.ctor, positionalArguments, namedArguments).reflectee;
     return result;
   }
 
   Object _generateValues(ArgumentInfo arg, ActivationContext context) {
-    final overrideDelegate = context.getArgumentOverride(_ctorInfo.classType, arg.type);
+    final overrideDelegate = context.getArgumentOverride(_ctorInfo.classType, arg.type, arg.name);
     if(overrideDelegate!=null){
       return overrideDelegate(context);
     }

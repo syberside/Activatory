@@ -6,7 +6,6 @@ import 'package:activatory/src/argument_info.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
-import 'package:activatory/src/backends/map_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
@@ -90,7 +89,7 @@ class BackendsFactory {
     for (var method in constructors) {
       if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
         var arguments = method.parameters
-            .map((p) => new ArgumentInfo(p.type.reflectedType, p.defaultValue?.reflectee, p.isNamed, p.simpleName))
+            .map((p) => new ArgumentInfo(p.type.reflectedType, p.defaultValue?.reflectee, p.isNamed, MirrorSystem.getName(p.simpleName)))
             .toList();
         var name = method.constructorName;
         CtorType ctorType = _getCtorType(method);

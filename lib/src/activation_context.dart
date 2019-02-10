@@ -36,9 +36,9 @@ class ActivationContext implements ValueGenerator{
 
   int arraySize(Type type) => _customizationsRegistry.get(type).arraySize;
 
-  GeneratorDelegate getArgumentOverride<T>(Type resolveType, Type argumentType){
+  GeneratorDelegate getArgumentOverride<T>(Type resolveType, Type argumentType, String argumentName){
     var customization = _customizationsRegistry.get(resolveType);
-    var delegate = customization.getArgumentOverride(argumentType);
+    var delegate = customization.getArgumentOverride(argumentType, argumentName);
     return delegate;
   }
 }
