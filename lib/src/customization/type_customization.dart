@@ -26,16 +26,18 @@ class TypeCustomization {
         ..resolutionStrategy = resolutionStrategy;
   }
 
-  GeneratorDelegate getArgumentOverride(Type type, String name){
+  ArgumentCustomization getArgumentCustomization(Type type, String name){
     var key = new _ArgumentKey(type, name);
-    var customization = _argumentCustomizations[key];
-
-    if(customization==null){
-      key = new _ArgumentKey(type, null);
-      customization = _argumentCustomizations[key];
+    if(_argumentCustomizations.containsKey(key)){
+      return _argumentCustomizations[key];
     }
 
-    return customization?.than;
+    key = new _ArgumentKey(type, null);
+    if(_argumentCustomizations.containsKey(key)){
+      return _argumentCustomizations[key];
+    }
+
+    return null;
   }
 }
 

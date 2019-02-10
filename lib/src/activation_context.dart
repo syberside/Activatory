@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/value_generator.dart';
@@ -37,8 +38,22 @@ class ActivationContext implements ValueGenerator{
   int arraySize(Type type) => _customizationsRegistry.get(type).arraySize;
 
   GeneratorDelegate getArgumentOverride<T>(Type resolveType, Type argumentType, String argumentName){
-    var customization = _customizationsRegistry.get(resolveType);
-    var delegate = customization.getArgumentOverride(argumentType, argumentName);
-    return delegate;
+    final typeCustomization = _customizationsRegistry.get(resolveType);
+    final argumentCustomization = typeCustomization.getArgumentCustomization(argumentType, argumentName);
+
+    if(argumentCustomization==null){
+      return null;
+    }
+
+    if(argumentCustomization.callback!=null){
+      return argumentCustomization.callback;
+    }
+
+    if(argumentCustomization.pool!=null){
+      final randomItemBackend = new RandomArrayItemBackend(argumentCustomization.pool);
+      return (ctx)=> randomItemBackend.get(ctx);
+    }
+
+    return null;
   }
 }

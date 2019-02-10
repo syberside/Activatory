@@ -630,7 +630,7 @@ void main() {
   group('Can customize',(){
     test('argument by type with delegate',(){
       _activatory.customize<FactoryWithFixedValues>()
-        ..whenArgument<String>().than = ((ctx)=>'A');
+        ..whenArgument<String>().than(useCallback: (ctx)=>'A');
       _activatory.registerArray<FactoryWithFixedValues>();
 
       final items = _activatory.getTyped<List<FactoryWithFixedValues>>();
@@ -642,13 +642,41 @@ void main() {
 
     test('argument by type and name with delegate',(){
       _activatory.customize<CtorWithTwoStringArgs>()
-        ..whenArgument<String>('_b').than = ((ctx)=>'B')
-        ..whenArgument<String>().than = ((ctx)=>'A');
+        ..whenArgument<String>('_b').than(useCallback: (ctx)=>'B')
+        ..whenArgument<String>().than(useCallback: (ctx)=>'A');
 
       final result = _activatory.getTyped<CtorWithTwoStringArgs>();
 
       expect(result.a, equals('A'));
       expect(result.b, equals('B'));
+    });
+
+    test('argument by type with pool',(){
+      _activatory.customize<FactoryWithFixedValues>()
+        ..arraySize = 15
+        ..whenArgument<String>().than(usePool: ['A', 'B', 'C']);
+      _activatory.registerArray<FactoryWithFixedValues>();
+
+      final items = _activatory.getTyped<List<FactoryWithFixedValues>>();
+      var result =  SplayTreeSet.from(items.map((item)=>item.field));
+
+      final expected = ['A', 'B', 'C'];
+      expect(result, equals(expected));
+    });
+
+    test('argument by type and name with pool',(){
+      _activatory.customize<CtorWithTwoStringArgs>()
+        ..arraySize = 15
+        ..whenArgument<String>('_b').than(usePool: ['B', 'C'])
+        ..whenArgument<String>().than(usePool: ['A']);
+      _activatory.registerArray<CtorWithTwoStringArgs>();
+
+      final items = _activatory.getTyped<List<CtorWithTwoStringArgs>>();
+      var resultA =  SplayTreeSet.from(items.map((item)=>item.a));
+      var resultB =  SplayTreeSet.from(items.map((item)=>item.b));
+
+      expect(resultA, equals(['A']));
+      expect(resultB, equals(['B', 'C']));
     });
   });
 }

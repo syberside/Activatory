@@ -80,7 +80,7 @@ class BackendsFactory {
       throw new ActivationException('Enum ${classMirror} values found but empty');
     }
 
-    return new RandomArrayItemBackend(_random, allValues);
+    return new RandomArrayItemBackend(allValues);
   }
 
   Iterable<CtorInfo> _extractCtors(ClassMirror classMirror, Type type) sync* {
