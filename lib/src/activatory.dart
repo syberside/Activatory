@@ -71,4 +71,15 @@ class Activatory {
 
   ActivationContext _createContext(Object key) =>
       new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
+
+  List<T> getManyTyped<T>({int count, Object key}) {
+    var dynamicResult = getMany(T,count: count, key: key);
+    //Cast result from List<dynamic> to List<T> through array creation
+    return new List<T>.from(dynamicResult);
+  }
+
+  List getMany(Type type, {int count, Object key}){
+    var countToCreate = count ?? _customizationsRegistry.get(type).arraySize;
+    return List.generate(countToCreate, (int index)=>get(type, key));
+  }
 }

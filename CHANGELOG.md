@@ -51,4 +51,7 @@
 - Added support for Map<K,V> generating
 
 ## v0.0.17
-- Implemented ctor parameter overloading by type and (optionally) by name 
+- Implemented ctor parameter overloading by type and (optionally) by name
+
+## v0.0.18
+- Added getMany and getManyTyped for effortless array creation

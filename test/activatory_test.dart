@@ -676,6 +676,37 @@ void main() {
       expect(resultB, equals(['B', 'C']));
     });
   });
+
+  group('Can create arrays without explicit regestration',(){
+    test('with default length',(){
+      var result = _activatory.getManyTyped<int>();
+      expect(result, isNotNull);
+      expect(result, hasLength(3));
+      expect(result, isNot(contains(null)));
+    });
+    test('with parametrized length',(){
+      var result = _activatory.getManyTyped<int>(count: 2);
+      expect(result, isNotNull);
+      expect(result, hasLength(2));
+      expect(result, isNot(contains(null)));
+    });
+    test('with customized per type length',(){
+      _activatory.customize<int>().arraySize = 10;
+      var result = _activatory.getManyTyped<int>();
+      expect(result, isNotNull);
+      expect(result, hasLength(10));
+      expect(result, isNot(contains(null)));
+    });
+    test('with customized key',(){
+      var key = 'key';
+      _activatory.pinValue(10, key: key);
+      var result = _activatory.getManyTyped<int>(key: key);
+      expect(result, isNotNull);
+      expect(result, hasLength(3));
+      var unique = new Set.from(result);
+      expect(unique, equals([10]));
+    });
+  });
 }
 
 void _assertLinkedNode(LinkedNode linked) {
