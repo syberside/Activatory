@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/aliases/type_alias_registry.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
 import 'package:activatory/src/backends/params_object_backend.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
@@ -12,6 +13,7 @@ import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/params_object.dart';
+import 'package:activatory/src/type_helper.dart';
 import 'package:activatory/src/value_generator_impl.dart';
 
 class Activatory {
@@ -19,13 +21,15 @@ class Activatory {
   ValueGeneratorImpl _valueGenerator;
   BackendsRegistry _backendsRegistry;
   TypeCustomizationRegistry _customizationsRegistry;
-  BackendResolverFactory _ctorResolveStrategyFactory;
+  BackendResolverFactory _backendResolverFactory;
+  TypeAliasesRegistry _aliasesRegistry;
 
   Activatory() {
+    _aliasesRegistry = new TypeAliasesRegistry();
     _customizationsRegistry = new TypeCustomizationRegistry();
-    _ctorResolveStrategyFactory = new BackendResolverFactory(_random);
-    _backendsRegistry =
-        new BackendsRegistry(new BackendsFactory(_random), _customizationsRegistry, _ctorResolveStrategyFactory);
+    _backendResolverFactory = new BackendResolverFactory(_random);
+    var backendsFactory = new BackendsFactory(_random);
+    _backendsRegistry = new BackendsRegistry(backendsFactory, _customizationsRegistry, _backendResolverFactory, _aliasesRegistry);
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
   }
 
@@ -60,7 +64,12 @@ class Activatory {
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 
-  void registerArray<T>() => _backendsRegistry.registerArray<T>();
+  void registerArray<T>({bool addIterableAlias=true}) {
+    if(addIterableAlias){
+      _aliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
+    }
+    _backendsRegistry.registerArray<T>();
+  }
 
   void registerMap<K, V>() => _backendsRegistry.registerMap<K, V>();
 
@@ -81,5 +90,9 @@ class Activatory {
   List getMany(Type type, {int count, Object key}){
     var countToCreate = count ?? _customizationsRegistry.get(type).arraySize;
     return List.generate(countToCreate, (int index)=>get(type, key));
+  }
+
+  void registerAlias<TSource, TTarget  extends TSource>() {
+    _aliasesRegistry.setAlias(TSource, TTarget);
   }
 }

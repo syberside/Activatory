@@ -1,4 +1,5 @@
 import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/aliases/type_alias_registry.dart';
 import 'package:activatory/src/backend_store.dart';
 import 'package:activatory/src/backend_store_key.dart';
 import 'package:activatory/src/backends/array_backend.dart';
@@ -15,14 +16,17 @@ class BackendsRegistry {
   final BackendsFactory _factory;
   final TypeCustomizationRegistry _customizationsRegistry;
   final BackendResolverFactory _ctorResolveStrategyFactory;
+  final TypeAliasesRegistry _aliasesRegistry;
 
-  BackendsRegistry(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory);
-  BackendsRegistry._fromStore(
-      this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory, this._store);
+  BackendsRegistry(
+      this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory, this._aliasesRegistry);
+  BackendsRegistry._fromStore(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory,
+      this._aliasesRegistry, this._store);
 
   BackendsRegistry clone() {
     var storeCopy = _store.clone();
-    return new BackendsRegistry._fromStore(_factory, _customizationsRegistry, _ctorResolveStrategyFactory, storeCopy);
+    return new BackendsRegistry._fromStore(
+        _factory, _customizationsRegistry, _ctorResolveStrategyFactory, _aliasesRegistry, storeCopy);
   }
 
   GeneratorBackend get(Type type, ActivationContext context) {
@@ -30,14 +34,16 @@ class BackendsRegistry {
     if (context.key is Params) {
       key = key.runtimeType;
     }
-    var backends = _store.find(new BackendStoreKey(type, key));
+    var affectedType = _aliasesRegistry.getAlias(type);
+    var storeKey = new BackendStoreKey(affectedType, key);
+    var backends = _store.find(storeKey);
     if (backends == null) {
-      backends = _factory.create(type);
-      backends = backends.reversed.map((b) => register(b, type, key: key)).toList();
-      return get(type, context);
+      backends = _factory.create(affectedType);
+      backends = backends.reversed.map((b) => register(b, affectedType, key: key)).toList();
+      return get(affectedType, context);
     }
 
-    var customization = _customizationsRegistry.get(type);
+    var customization = _customizationsRegistry.get(affectedType);
     var ctorResolveStrategy = _ctorResolveStrategyFactory.get(customization.resolutionStrategy);
     var backend = ctorResolveStrategy.resolve(backends, context);
     return backend;

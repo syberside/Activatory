@@ -265,3 +265,27 @@ class TreeNode {
 
   List<TreeNode> get children => _children;
 }
+
+class PrimitiveIterableInCtor{
+  final Iterable<String> _field;
+
+  PrimitiveIterableInCtor(this._field);
+
+  Iterable<String> get field => _field;
+}
+
+class ComplexIterableInCtor{
+  final Iterable<PrimitiveIterableInCtor> _field;
+
+  ComplexIterableInCtor(this._field);
+
+  Iterable<PrimitiveIterableInCtor> get field => _field;
+}
+
+abstract class ParentClass{
+
+}
+
+class ChildClass extends ParentClass{
+
+}

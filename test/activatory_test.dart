@@ -462,13 +462,14 @@ void main() {
     group('backends', () {
       group('without overrides', () {
         test('take first for complex type to take first ctor', () {
+          _activatory.pinValue('E');
           _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy =
               BackendResolutionStrategy.TakeFirstDefined;
 
           var items = List.generate(15, (_) => _activatory.getTyped<NamedCtorsAndDefaultCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
 
-          var expected = ['A'];
+          var expected = ['E'];
           expect(result, equals(expected));
         });
 
@@ -705,6 +706,36 @@ void main() {
       expect(result, hasLength(3));
       var unique = new Set.from(result);
       expect(unique, equals([10]));
+    });
+  });
+
+  group('Type aliases',(){
+    test('allow iterable of primitive type activation without setup',(){
+      var result = _activatory.getTyped<PrimitiveIterableInCtor>();
+
+      expect(result, isNotNull);
+      expect(result.field, isNotEmpty);
+      expect(result.field, hasLength(3));
+      expect(result.field, isNot(contains(null)));
+    });
+
+    test('allow iterable of complex type activation with setup',(){
+      _activatory.registerArray<PrimitiveIterableInCtor>();
+      var result = _activatory.getTyped<ComplexIterableInCtor>();
+
+      expect(result, isNotNull);
+      expect(result.field, isNotEmpty);
+      expect(result.field, hasLength(3));
+      expect(result.field, isNot(contains(null)));
+    });
+
+    test('allow use subtype activation strategy for parent type',(){
+      _activatory.registerAlias<ParentClass, ChildClass>();
+
+      var result = _activatory.getTyped<ParentClass>();
+
+      expect(result, isNotNull);
+      expect(result, TypeMatcher<ChildClass>());
     });
   });
 }
