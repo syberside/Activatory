@@ -59,3 +59,4 @@
 
 ## v0.0.19
 - Added default argument values usage customization
+- Added per key customization

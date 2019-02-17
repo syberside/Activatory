@@ -33,9 +33,9 @@ class Activatory {
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
   }
 
-  TypeCustomization get defaultCustomization => _customizationsRegistry.get(null);
+  TypeCustomization get defaultCustomization => _customizationsRegistry.get(null, key: null);
 
-  TypeCustomization customize<T>() => _customizationsRegistry.get(T);
+  TypeCustomization customize<T>({Object key = null}) => _customizationsRegistry.get(T, key: key);
 
   Object get(Type type, [Object key = null]) {
     var context = _createContext(key);
@@ -88,7 +88,7 @@ class Activatory {
   }
 
   List getMany(Type type, {int count, Object key}){
-    var countToCreate = count ?? _customizationsRegistry.get(type).arraySize;
+    var countToCreate = count ?? _customizationsRegistry.get(type, key: key).arraySize;
     return List.generate(countToCreate, (int index)=>get(type, key));
   }
 

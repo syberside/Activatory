@@ -1,8 +1,8 @@
-import 'package:activatory/src/backend_store_key.dart';
+import 'package:activatory/src/resolve_key.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 
 class BackendStore {
-  Map<BackendStoreKey, List<GeneratorBackend>> _backends = new Map<BackendStoreKey, List<GeneratorBackend>>();
+  Map<ResolveKey, List<GeneratorBackend>> _backends = new Map<ResolveKey, List<GeneratorBackend>>();
 
   BackendStore();
   BackendStore._fromMap(this._backends);
@@ -12,11 +12,11 @@ class BackendStore {
     return copy;
   }
 
-  List<GeneratorBackend> find(BackendStoreKey key) {
+  List<GeneratorBackend> find(ResolveKey key) {
     return _backends[key];
   }
 
-  void store(GeneratorBackend backend, BackendStoreKey key) {
+  void store(GeneratorBackend backend, ResolveKey key) {
     var itemsList = _backends[key];
     if (itemsList == null) {
       itemsList = new List<GeneratorBackend>();

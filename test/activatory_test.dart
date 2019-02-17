@@ -824,6 +824,19 @@ void main() {
       });
     });
   });
+
+  test('Can customize per key',(){
+    _activatory.customize<int>(key: 'A').arraySize = 10;
+    _activatory.customize<int>(key: 'B').arraySize = 1;
+
+    var resultA = _activatory.getTyped<List<int>>('A');
+    var resultB = _activatory.getTyped<List<int>>('B');
+    var resultC = _activatory.getTyped<List<int>>();
+
+    expect(resultA, hasLength(10));
+    expect(resultB, hasLength(1));
+    expect(resultC, hasLength(3));
+  });
 }
 
 void _assertLinkedNode(LinkedNode linked) {
