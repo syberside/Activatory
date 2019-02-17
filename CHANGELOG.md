@@ -56,3 +56,6 @@
 ## v0.0.18
 - Added getMany and getManyTyped for effortless array creation
 - Added type aliases support
+
+## v0.0.19
+- Added default argument values usage customization

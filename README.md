@@ -11,7 +11,7 @@ This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/Au
 
 ## Supported features
 - Effortless primitive types (String, int, double, bool, DateTime, enums) generating.
-- Effortless complex object generating using constructors/factory methods/named constructors (default values for arguments are preferred).
+- Effortless complex object generating using constructors/factory methods/named constructors (default values usage is customizable).
 - Overriding default generating behavior with custom factories, pinned values defined by user or auto generated.
 - Overriding default generating behavior for specific cases using any object as a key.
 - Lists (and Iterables) generating with customizable size: it is effortless for primitive types and require explicit registration for enums and complex types.

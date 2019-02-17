@@ -90,14 +90,21 @@ class BackendsFactory {
     for (var method in constructors) {
       if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
         var arguments = method.parameters
-            .map((p) => new ArgumentInfo(
-                p.type.reflectedType, p.defaultValue?.reflectee, p.isNamed, MirrorSystem.getName(p.simpleName)))
+            .map(constructArgumentInfo)
             .toList();
         var name = method.constructorName;
         CtorType ctorType = _getCtorType(method);
         yield new CtorInfo(classMirror, name, arguments, ctorType, type);
       }
     }
+  }
+
+  ArgumentInfo constructArgumentInfo(ParameterMirror p) {
+    var argType = p.type.reflectedType;
+    var defaultValue = p.defaultValue?.reflectee;
+    var isNamed = p.isNamed;
+    var name = MirrorSystem.getName(p.simpleName);
+    return new ArgumentInfo(argType, defaultValue, isNamed, name);
   }
 
   CtorType _getCtorType(MethodMirror method) {

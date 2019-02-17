@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:activatory/activatory.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
+import 'package:activatory/src/customization/default-values-handling-strategy.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -84,36 +85,24 @@ void main() {
 
   group("Default values of", () {
     group("positional arguments are", () {
-      test("used when they are not nulls", () {
-        var result = _activatory.getTyped<DefaultPositionalNoNullValue>();
+      test("ignored if they are nulls and used if not", () {
+        var result = _activatory.getTyped<DefaultPositionalValues>();
         expect(result, isNotNull);
-        expect(result.stringValue, equals(DefaultPositionalNoNullValue.defaultValue));
-        assertComplexObjectIsNotNull(result.object);
-      });
-
-      test("not used when they are nulls", () {
-        var result = _activatory.getTyped<DefaultPositionalNullValue>();
-        expect(result, isNotNull);
-        expect(result.stringValue, isNotNull);
+        expect(result.notNullSetStringValue, equals(DefaultPositionalValues.defaultStringValue));
+        expect(result.nullSetStringValue, isNotNull);
         assertComplexObjectIsNotNull(result.notSetObject);
         assertComplexObjectIsNotNull(result.nullSetObject);
       });
     });
 
     group("named arguments are", () {
-      test("used when they are not nulls", () {
-        var result = _activatory.getTyped<DefaultNamedNoNullValue>();
+      test("ignored if they are nulls and used if not", () {
+        var result = _activatory.getTyped<DefaultNamedValues>();
         expect(result, isNotNull);
-        expect(result.stringValue, equals(DefaultNamedNoNullValue.defaultValue));
-        assertComplexObjectIsNotNull(result.object);
-      });
-
-      test("not used when they are nulls", () {
-        var result = _activatory.getTyped<DefaultNamedNullValue>();
-        expect(result, isNotNull);
-        expect(result.stringValue, isNotNull);
-        assertComplexObjectIsNotNull(result.notSetObject);
+        expect(result.notNullSetString, equals(DefaultNamedValues.defaultValue));
+        expect(result.nullSetString, isNotNull);
         assertComplexObjectIsNotNull(result.nullSetObject);
+        assertComplexObjectIsNotNull(result.notSetObject);
       });
     });
   });
@@ -736,6 +725,103 @@ void main() {
 
       expect(result, isNotNull);
       expect(result, TypeMatcher<ChildClass>());
+    });
+  });
+
+  group('Can customize default values usage',(){
+    //Positional
+    //Named
+
+    //Nulls
+    //NotNulls
+
+    // UseDefaultValue
+    // ReplaceNulls
+    // ReplaceAll
+  });
+
+  group("Can customize default values usage for", () {
+    group("positional arguments", () {
+      test("with ReplaceNulls", () {
+        _activatory.customize<DefaultPositionalValues>()
+          .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
+
+
+        var result = _activatory.getTyped<DefaultPositionalValues>();
+
+        expect(result, isNotNull);
+        expect(result.notNullSetStringValue, equals(DefaultPositionalValues.defaultStringValue));
+        expect(result.nullSetStringValue, isNotNull);
+        assertComplexObjectIsNotNull(result.notSetObject);
+        assertComplexObjectIsNotNull(result.nullSetObject);
+      });
+
+      test("with ReplaceAll", () {
+        _activatory.customize<DefaultPositionalValues>()
+            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceAll;
+
+        var result = _activatory.getTyped<DefaultPositionalValues>();
+
+        expect(result, isNotNull);
+        expect(result.notNullSetStringValue, isNot(equals(DefaultPositionalValues.defaultStringValue)));
+        expect(result.nullSetStringValue, isNotNull);
+        assertComplexObjectIsNotNull(result.notSetObject);
+        assertComplexObjectIsNotNull(result.nullSetObject);
+      });
+
+      test("with UseAll", () {
+        _activatory.customize<DefaultPositionalValues>()
+            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.UseAll;
+
+        var result = _activatory.getTyped<DefaultPositionalValues>();
+
+        expect(result, isNotNull);
+        expect(result.notNullSetStringValue, equals(DefaultPositionalValues.defaultStringValue));
+        expect(result.nullSetStringValue, isNull);
+        expect(result.notSetObject, isNull);
+        expect(result.nullSetObject, isNull);
+      });
+    });
+
+    group("named arguments", () {
+      test("with ReplaceNulls", () {
+        _activatory.customize<DefaultNamedValues>()
+            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
+
+        var result = _activatory.getTyped<DefaultNamedValues>();
+
+        expect(result, isNotNull);
+        expect(result.notNullSetString, equals(DefaultNamedValues.defaultValue));
+        expect(result.nullSetString, isNotNull);
+        assertComplexObjectIsNotNull(result.nullSetObject);
+        assertComplexObjectIsNotNull(result.notSetObject);
+      });
+
+      test("with ReplaceAll", () {
+        _activatory.customize<DefaultNamedValues>()
+            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceAll;
+
+        var result = _activatory.getTyped<DefaultNamedValues>();
+
+        expect(result, isNotNull);
+        expect(result.notNullSetString, isNot(equals(DefaultNamedValues.defaultValue)));
+        expect(result.nullSetString, isNotNull);
+        assertComplexObjectIsNotNull(result.nullSetObject);
+        assertComplexObjectIsNotNull(result.notSetObject);
+      });
+
+      test("with UseAll", () {
+        _activatory.customize<DefaultNamedValues>()
+            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.UseAll;
+
+        var result = _activatory.getTyped<DefaultNamedValues>();
+
+        expect(result, isNotNull);
+        expect(result.notNullSetString, equals(DefaultNamedValues.defaultValue));
+        expect(result.nullSetString, isNull);
+        expect(result.nullSetObject, isNull);
+        expect(result.notSetObject, isNull);
+      });
     });
   });
 }

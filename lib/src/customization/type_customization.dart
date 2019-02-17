@@ -1,5 +1,6 @@
 import 'package:activatory/src/customization/argument_customization.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
+import 'package:activatory/src/customization/default-values-handling-strategy.dart';
 
 class TypeCustomization {
   final Map<_ArgumentKey, ArgumentCustomization> _argumentCustomizations =
@@ -8,12 +9,14 @@ class TypeCustomization {
   BackendResolutionStrategy resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
   int arraySize = 3;
   int maxRecursion = 3;
+  DefaultValuesHandlingStrategy defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
 
   TypeCustomization clone() {
     return new TypeCustomization()
       ..arraySize = arraySize
       ..maxRecursion = maxRecursion
-      ..resolutionStrategy = resolutionStrategy;
+      ..resolutionStrategy = resolutionStrategy
+      ..defaultValuesHandlingStrategy = defaultValuesHandlingStrategy;
   }
 
   ArgumentCustomization getArgumentCustomization(Type type, String name) {

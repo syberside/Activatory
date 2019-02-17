@@ -2,6 +2,7 @@ import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/argument_info.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
+import 'package:activatory/src/customization/default-values-handling-strategy.dart';
 
 class ComplexObjectBackend implements GeneratorBackend<Object> {
   final CtorInfo _ctorInfo;
@@ -30,10 +31,16 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
       return overrideDelegate(context);
     }
 
-    if (arg.defaultValue != null) {
-      return arg.defaultValue;
+    final defaultValuesStrategy = context.defaultValuesHandlingStrategy(_ctorInfo.classType);
+    switch (defaultValuesStrategy) {
+      case DefaultValuesHandlingStrategy.UseAll:
+        return arg.defaultValue;
+      case DefaultValuesHandlingStrategy.ReplaceNulls:
+        return arg.defaultValue != null ? arg.defaultValue : context.create(arg.type, context);
+      case DefaultValuesHandlingStrategy.ReplaceAll:
+        return context.create(arg.type, context);
+      default:
+        throw new UnsupportedError('${defaultValuesStrategy.toString()} is not supported');
     }
-
-    return context.create(arg.type, context);
   }
 }

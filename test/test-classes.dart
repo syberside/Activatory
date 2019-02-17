@@ -24,59 +24,48 @@ class DefaultCtor {
   int intField;
 }
 
-class DefaultNamedNoNullValue {
+class DefaultNamedValues {
   static const String defaultValue = "defaultValue is not generated";
-  String _stringValue;
-  PrimitiveComplexObject _object;
 
-  DefaultNamedNoNullValue(this._object, {String stringValue = defaultValue}) {
-    _stringValue = stringValue;
-  }
-  PrimitiveComplexObject get object => _object;
-
-  String get stringValue => _stringValue;
-}
-
-class DefaultNamedNullValue {
-  String _stringValue;
+  String _nullSetString;
   PrimitiveComplexObject _notSetObject;
 
   PrimitiveComplexObject _nullSetObject;
-  DefaultNamedNullValue(
-      {PrimitiveComplexObject notSetObject, PrimitiveComplexObject nullSetObject = null, String stringValue = null}) {
-    _stringValue = stringValue;
+
+  String _notNullSetString;
+  DefaultNamedValues({
+    PrimitiveComplexObject notSetObject,
+    PrimitiveComplexObject nullSetObject = null,
+    String nullSetString = null,
+    String notNullSetString=defaultValue}) {
+    _nullSetString = nullSetString;
     _notSetObject = notSetObject;
     _nullSetObject = nullSetObject;
+    _notNullSetString = notNullSetString;
   }
 
   PrimitiveComplexObject get notSetObject => _notSetObject;
   PrimitiveComplexObject get nullSetObject => _nullSetObject;
 
-  String get stringValue => _stringValue;
+  String get nullSetString => _nullSetString;
+  String get notNullSetString => _notNullSetString;
 }
 
-class DefaultPositionalNoNullValue {
-  static const String defaultValue = "defaultValue is not generated";
-  String _stringValue;
-  PrimitiveComplexObject _object;
+class DefaultPositionalValues {
+  static const String defaultStringValue = 'default value is not overriden';
+  final String _nullSetString;
+  final String _notNullString;
+  final PrimitiveComplexObject _notSetObject;
+  final PrimitiveComplexObject _nullSetObject;
+  final Object _a;
 
-  DefaultPositionalNoNullValue(this._object, [this._stringValue = defaultValue]);
-  PrimitiveComplexObject get object => _object;
-
-  String get stringValue => _stringValue;
-}
-
-class DefaultPositionalNullValue {
-  String _stringValue;
-  PrimitiveComplexObject _notSetObject;
-
-  PrimitiveComplexObject _nullSetObject;
-  DefaultPositionalNullValue([this._notSetObject, this._nullSetObject = null, this._stringValue = null]);
+  DefaultPositionalValues([this._notSetObject, this._nullSetObject = null, this._nullSetString = null, this._notNullString = defaultStringValue]);
 
   PrimitiveComplexObject get notSetObject => _notSetObject;
   PrimitiveComplexObject get nullSetObject => _nullSetObject;
 
-  String get stringValue => _stringValue;
+  String get nullSetStringValue => _nullSetString;
+  String get notNullSetStringValue => _notNullString;
 }
 
 class FactoryCtor {

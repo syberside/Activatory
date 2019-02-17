@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:activatory/src/backends/random_array_item_backend.dart';
+import 'package:activatory/src/customization/default-values-handling-strategy.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/value_generator.dart';
@@ -18,6 +19,8 @@ class ActivationContext implements ValueGenerator {
   Random get random => _random;
 
   int arraySize(Type type) => _customizationsRegistry.get(type).arraySize;
+
+  DefaultValuesHandlingStrategy defaultValuesHandlingStrategy(Type type)=> _customizationsRegistry.get(type).defaultValuesHandlingStrategy;
 
   int countVisits(Type type) => _stackTrace.where((t) => t == type).length;
 
