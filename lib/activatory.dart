@@ -8,3 +8,4 @@ export 'src/activation_context.dart' show ActivationContext;
 export 'src/activation_exception.dart' show ActivationException;
 export 'src/activatory.dart' show Activatory;
 export 'src/params_object.dart' show Params, Value, NullValue, v;
+export 'src/post_activation/fields_auto_fill.dart' show FieldsAutoFill;

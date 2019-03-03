@@ -3,7 +3,8 @@ import 'dart:collection';
 import 'package:activatory/activatory.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
-import 'package:activatory/src/customization/default-values-handling-strategy.dart';
+import 'package:activatory/src/customization/default_values_handling_strategy.dart';
+import 'package:activatory/src/post_activation/fields_auto_fill.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -44,7 +45,6 @@ void main() {
     test('with default (implicit) ctor', () {
       var result = _activatory.getTyped<DefaultCtor>();
       expect(result, isNotNull);
-      expect(result.intField, isNull);
     });
 
     test('with primitives only in ctor parameters', () {
@@ -836,6 +836,46 @@ void main() {
     expect(resultA, hasLength(10));
     expect(resultB, hasLength(1));
     expect(resultC, hasLength(3));
+  });
+
+  test('Can fill fields',(){
+    var result = _activatory.getTyped<FiledsWithPublicSetters>();
+
+    expect(result.finalField, isNotNull);
+    expect(result.publicField, isNotNull);
+    expect(result.publicProperty, isNull);
+  });
+
+  group('Can customize fields usage',(){
+    test('FieldsAndSetters', (){
+      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.FieldsAndSetters;
+
+      var result = _activatory.getTyped<FiledsWithPublicSetters>();
+
+      expect(result.finalField, isNotNull);
+      expect(result.publicField, isNotNull);
+      expect(result.publicProperty, isNotNull);
+    });
+
+    test('fields only', (){
+      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.Fields;
+
+      var result = _activatory.getTyped<FiledsWithPublicSetters>();
+
+      expect(result.finalField, isNotNull);
+      expect(result.publicField, isNotNull);
+      expect(result.publicProperty, isNull);
+    });
+
+    test('none', (){
+      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.None;
+
+      var result = _activatory.getTyped<FiledsWithPublicSetters>();
+
+      expect(result.finalField, isNotNull);
+      expect(result.publicField, isNull);
+      expect(result.publicProperty, isNull);
+    });
   });
 }
 

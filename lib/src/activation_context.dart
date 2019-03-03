@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:activatory/src/backends/random_array_item_backend.dart';
-import 'package:activatory/src/customization/default-values-handling-strategy.dart';
+import 'package:activatory/src/customization/default_values_handling_strategy.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
+import 'package:activatory/src/post_activation/fields_auto_fill.dart';
 import 'package:activatory/src/value_generator.dart';
 
 class ActivationContext implements ValueGenerator {
@@ -58,4 +59,6 @@ class ActivationContext implements ValueGenerator {
   void notifyVisited(Type type) => _stackTrace.removeAt(_stackTrace.lastIndexOf(type));
 
   void notifyVisiting(Type type) => _stackTrace.add(type);
+
+  FieldsAutoFill fieldsAutoFill(Type type)=> _customizationsRegistry.get(type, key: key).fieldsAutoFill;
 }

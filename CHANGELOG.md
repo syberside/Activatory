@@ -60,3 +60,7 @@
 ## v0.0.19
 - Added default argument values usage customization
 - Added per key customization
+
+## v0.0.20
+- Added fields and setter values activation
+- Added customization for fields and setters activation

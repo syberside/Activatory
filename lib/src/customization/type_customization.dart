@@ -1,6 +1,7 @@
 import 'package:activatory/src/customization/argument_customization.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
-import 'package:activatory/src/customization/default-values-handling-strategy.dart';
+import 'package:activatory/src/customization/default_values_handling_strategy.dart';
+import 'package:activatory/src/post_activation/fields_auto_fill.dart';
 
 class TypeCustomization {
   final Map<_ArgumentKey, ArgumentCustomization> _argumentCustomizations =
@@ -10,13 +11,15 @@ class TypeCustomization {
   int arraySize = 3;
   int maxRecursion = 3;
   DefaultValuesHandlingStrategy defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
+  FieldsAutoFill fieldsAutoFill = FieldsAutoFill.Fields;
 
   TypeCustomization clone() {
     return new TypeCustomization()
       ..arraySize = arraySize
       ..maxRecursion = maxRecursion
       ..resolutionStrategy = resolutionStrategy
-      ..defaultValuesHandlingStrategy = defaultValuesHandlingStrategy;
+      ..defaultValuesHandlingStrategy = defaultValuesHandlingStrategy
+      ..fieldsAutoFill = fieldsAutoFill;
   }
 
   ArgumentCustomization getArgumentCustomization(Type type, String name) {

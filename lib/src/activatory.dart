@@ -13,6 +13,7 @@ import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/params_object.dart';
+import 'package:activatory/src/post_activation/fields_filler.dart';
 import 'package:activatory/src/type_helper.dart';
 import 'package:activatory/src/value_generator_impl.dart';
 
@@ -30,7 +31,7 @@ class Activatory {
     _backendResolverFactory = new BackendResolverFactory(_random);
     var backendsFactory = new BackendsFactory(_random);
     _backendsRegistry = new BackendsRegistry(backendsFactory, _customizationsRegistry, _backendResolverFactory, _aliasesRegistry);
-    _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
+    _valueGenerator = new ValueGeneratorImpl(_backendsRegistry, new FieldsFiller());
   }
 
   TypeCustomization get defaultCustomization => _customizationsRegistry.get(null, key: null);

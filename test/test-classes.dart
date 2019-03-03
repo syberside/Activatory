@@ -21,7 +21,6 @@ class CtorWithTwoStringArgs {
 }
 
 class DefaultCtor {
-  int intField;
 }
 
 class DefaultNamedValues {
@@ -277,4 +276,19 @@ abstract class ParentClass{
 
 class ChildClass extends ParentClass{
 
+}
+
+class FiledsWithPublicSetters {
+  final String _finalField;
+  String get finalField => _finalField;
+
+  FiledsWithPublicSetters(this._finalField);
+
+  String publicField;
+
+  String _publicProperty;
+
+  String get publicProperty => _publicProperty;
+
+  String set publicProperty(String value) => _publicProperty = value;
 }
