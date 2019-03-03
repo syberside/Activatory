@@ -527,7 +527,7 @@ void main() {
           _activatory.pinValue(30);
           _activatory.override((ctx) => 40);
           _activatory.customize<int>()
-            ..arraySize = 15
+            ..arraySize = 30
             ..resolutionStrategy = BackendResolutionStrategy.TakeRandom;
 
           final generated = _activatory.getTyped<List<int>>();
