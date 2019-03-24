@@ -30,7 +30,8 @@ class Activatory {
     _customizationsRegistry = new TypeCustomizationRegistry();
     _backendResolverFactory = new BackendResolverFactory(_random);
     var backendsFactory = new BackendsFactory(_random);
-    _backendsRegistry = new BackendsRegistry(backendsFactory, _customizationsRegistry, _backendResolverFactory, _aliasesRegistry);
+    _backendsRegistry =
+        new BackendsRegistry(backendsFactory, _customizationsRegistry, _backendResolverFactory, _aliasesRegistry);
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry, new FieldsFiller());
   }
 
@@ -41,6 +42,17 @@ class Activatory {
   Object get(Type type, [Object key = null]) {
     var context = _createContext(key);
     return _valueGenerator.create(type, context);
+  }
+
+  List getMany(Type type, {int count, Object key}) {
+    var countToCreate = count ?? _customizationsRegistry.get(type, key: key).arraySize;
+    return List.generate(countToCreate, (int index) => get(type, key));
+  }
+
+  List<T> getManyTyped<T>({int count, Object key}) {
+    var dynamicResult = getMany(T, count: count, key: key);
+    //Cast result from List<dynamic> to List<T> through array creation
+    return new List<T>.from(dynamicResult);
   }
 
   T getTyped<T>([Object key = null]) => get(T, key);
@@ -65,8 +77,12 @@ class Activatory {
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 
-  void registerArray<T>({bool addIterableAlias=true}) {
-    if(addIterableAlias){
+  void registerAlias<TSource, TTarget extends TSource>() {
+    _aliasesRegistry.setAlias(TSource, TTarget);
+  }
+
+  void registerArray<T>({bool addIterableAlias = true}) {
+    if (addIterableAlias) {
       _aliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
     }
     _backendsRegistry.registerArray<T>();
@@ -81,19 +97,4 @@ class Activatory {
 
   ActivationContext _createContext(Object key) =>
       new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
-
-  List<T> getManyTyped<T>({int count, Object key}) {
-    var dynamicResult = getMany(T,count: count, key: key);
-    //Cast result from List<dynamic> to List<T> through array creation
-    return new List<T>.from(dynamicResult);
-  }
-
-  List getMany(Type type, {int count, Object key}){
-    var countToCreate = count ?? _customizationsRegistry.get(type, key: key).arraySize;
-    return List.generate(countToCreate, (int index)=>get(type, key));
-  }
-
-  void registerAlias<TSource, TTarget  extends TSource>() {
-    _aliasesRegistry.setAlias(TSource, TTarget);
-  }
 }
