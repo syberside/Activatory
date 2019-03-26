@@ -9,4 +9,4 @@ fi
 
 pub global activate dart_coveralls
 
-dart_coveralls report -C -E -T --retry=1 --token=$coverallsToken ./test/activatory_test.dart
+dart_coveralls report --debug -C -E -T --retry=1 --token=$coverallsToken ./test/activatory_test.dart
