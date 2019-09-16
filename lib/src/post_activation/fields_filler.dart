@@ -36,7 +36,7 @@ class FieldsFiller {
       name = name.substring(0, name.length - 1);
       var symbol = MirrorSystem.getSymbol(name);
 
-      var value = ctx.create(setter.returnType.reflectedType, ctx);
+      var value = ctx.create(setter.parameters.first.type.reflectedType, ctx);
       reflected.setField(symbol, value);
     }
   }

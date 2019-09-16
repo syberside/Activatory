@@ -56,7 +56,6 @@ class DefaultPositionalValues {
   final String _notNullString;
   final PrimitiveComplexObject _notSetObject;
   final PrimitiveComplexObject _nullSetObject;
-  final Object _a;
 
   DefaultPositionalValues([this._notSetObject, this._nullSetObject = null, this._nullSetString = null, this._notNullString = defaultStringValue]);
 
@@ -290,5 +289,5 @@ class FiledsWithPublicSetters {
 
   String get publicProperty => _publicProperty;
 
-  String set publicProperty(String value) => _publicProperty = value;
+  void set publicProperty(String value) => _publicProperty = value;
 }
