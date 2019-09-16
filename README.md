@@ -11,15 +11,16 @@ This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/Au
 
 ## Supported features
 - Effortless primitive types (String, int, double, bool, DateTime, enums) generating.
-- Effortless complex object generating using constructors/factory methods/named constructors (default values for arguments are preferred).
+- Effortless complex object generating using constructors/factory methods/named constructors (default values usage is customizable).
 - Overriding default generating behavior with custom factories, pinned values defined by user or auto generated.
 - Overriding default generating behavior for specific cases using any object as a key.
-- Arrays generating with customizable size: it is effortless for primitive types and require explicit registration for enums and complex types.
+- Lists (and Iterables) generating with customizable size: it is effortless for primitive types and require explicit registration for enums and complex types.
 - Maps of customizable size generating with explicit registration.
 - Support of recursive graphs (trees, linked lists and etc) with customizable recursion level.
 - Generic class instances generating with explicit factory registration.
 - Customization of ctor resolution: first defined, random, random named, random default.
 - Overriding generated parameters values by type and name for cases when random values are not applicable.
+- Creating aliases for inheritor classes
  
 ## Roadmap
 This is my first Dart project and, actually, this is "pet-project". So there are no exact plans and etc.

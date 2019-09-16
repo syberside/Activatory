@@ -1,7 +1,18 @@
-
-## v0.0.18
+## v0.0.21
 - Bugfix and pubspec update
 - Changelog sorting reverted
+
+## v0.0.20
+- Added fields and setter values activation
+- Added customization for fields and setters activation
+
+## v0.0.19
+- Added default argument values usage customization
+- Added per key customization
+
+## v0.0.18
+- Added getMany and getManyTyped for effortless array creation
+- Added type aliases support
 
 ## v0.0.17
 - Implemented ctor parameter overloading by type and (optionally) by name 

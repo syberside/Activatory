@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/aliases/type_alias_registry.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
 import 'package:activatory/src/backends/params_object_backend.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
@@ -12,6 +13,8 @@ import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/params_object.dart';
+import 'package:activatory/src/post_activation/fields_filler.dart';
+import 'package:activatory/src/type_helper.dart';
 import 'package:activatory/src/value_generator_impl.dart';
 
 class Activatory {
@@ -19,23 +22,38 @@ class Activatory {
   ValueGeneratorImpl _valueGenerator;
   BackendsRegistry _backendsRegistry;
   TypeCustomizationRegistry _customizationsRegistry;
-  BackendResolverFactory _ctorResolveStrategyFactory;
+  BackendResolverFactory _backendResolverFactory;
+  TypeAliasesRegistry _aliasesRegistry;
 
-  Activatory(){
+  Activatory() {
+    _aliasesRegistry = new TypeAliasesRegistry();
     _customizationsRegistry = new TypeCustomizationRegistry();
-    _ctorResolveStrategyFactory = new BackendResolverFactory(_random);
-    _backendsRegistry = new BackendsRegistry(new BackendsFactory(_random), _customizationsRegistry, _ctorResolveStrategyFactory);
-    _valueGenerator = new ValueGeneratorImpl(_backendsRegistry);
+    _backendResolverFactory = new BackendResolverFactory(_random);
+    var backendsFactory = new BackendsFactory(_random);
+    _backendsRegistry =
+        new BackendsRegistry(backendsFactory, _customizationsRegistry, _backendResolverFactory, _aliasesRegistry);
+    _valueGenerator = new ValueGeneratorImpl(_backendsRegistry, new FieldsFiller());
   }
 
-  TypeCustomization get defaultCustomization => _customizationsRegistry.get(null);
+  TypeCustomization get defaultCustomization => _customizationsRegistry.get(null, key: null);
+
+  TypeCustomization customize<T>({Object key = null}) => _customizationsRegistry.get(T, key: key);
 
   Object get(Type type, [Object key = null]) {
     var context = _createContext(key);
     return _valueGenerator.create(type, context);
   }
 
-  ActivationContext _createContext(Object key) => new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
+  List getMany(Type type, {int count, Object key}) {
+    var countToCreate = count ?? _customizationsRegistry.get(type, key: key).arraySize;
+    return List.generate(countToCreate, (int index) => get(type, key));
+  }
+
+  List<T> getManyTyped<T>({int count, Object key}) {
+    var dynamicResult = getMany(T, count: count, key: key);
+    //Cast result from List<dynamic> to List<T> through array creation
+    return new List<T>.from(dynamicResult);
+  }
 
   T getTyped<T>([Object key = null]) => get(T, key);
 
@@ -59,7 +77,16 @@ class Activatory {
     _backendsRegistry.registerTyped<T>(backend, key: key);
   }
 
-  void registerArray<T>() => _backendsRegistry.registerArray<T>();
+  void registerAlias<TSource, TTarget extends TSource>() {
+    _aliasesRegistry.setAlias(TSource, TTarget);
+  }
+
+  void registerArray<T>({bool addIterableAlias = true}) {
+    if (addIterableAlias) {
+      _aliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
+    }
+    _backendsRegistry.registerArray<T>();
+  }
 
   void registerMap<K, V>() => _backendsRegistry.registerMap<K, V>();
 
@@ -68,5 +95,6 @@ class Activatory {
     _backendsRegistry.registerTyped<TValue>(backend, key: TParamsObj);
   }
 
-  TypeCustomization customize<T>() => _customizationsRegistry.get(T);
+  ActivationContext _createContext(Object key) =>
+      new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
 }

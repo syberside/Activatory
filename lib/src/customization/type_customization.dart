@@ -1,64 +1,66 @@
 import 'package:activatory/src/customization/argument_customization.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
+import 'package:activatory/src/customization/default_values_handling_strategy.dart';
+import 'package:activatory/src/post_activation/fields_auto_fill.dart';
 
 class TypeCustomization {
-  final Map<_ArgumentKey, ArgumentCustomization> _argumentCustomizations = new Map<_ArgumentKey, ArgumentCustomization>();
+  final Map<_ArgumentKey, ArgumentCustomization> _argumentCustomizations =
+      new Map<_ArgumentKey, ArgumentCustomization>();
 
   BackendResolutionStrategy resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
   int arraySize = 3;
   int maxRecursion = 3;
-
-  ArgumentCustomization<T> whenArgument<T>([String argumentName=null]){
-    final key = new _ArgumentKey(T, argumentName);
-    var result = _argumentCustomizations[key];
-    if(result == null){
-      result = new ArgumentCustomization<T>();
-      _argumentCustomizations[key] = result;
-    }
-    return result;
-  }
+  DefaultValuesHandlingStrategy defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
+  FieldsAutoFill fieldsAutoFill = FieldsAutoFill.Fields;
 
   TypeCustomization clone() {
     return new TypeCustomization()
-        ..arraySize = arraySize
-        ..maxRecursion = maxRecursion
-        ..resolutionStrategy = resolutionStrategy;
+      ..arraySize = arraySize
+      ..maxRecursion = maxRecursion
+      ..resolutionStrategy = resolutionStrategy
+      ..defaultValuesHandlingStrategy = defaultValuesHandlingStrategy
+      ..fieldsAutoFill = fieldsAutoFill;
   }
 
-  ArgumentCustomization getArgumentCustomization(Type type, String name){
+  ArgumentCustomization getArgumentCustomization(Type type, String name) {
     var key = new _ArgumentKey(type, name);
-    if(_argumentCustomizations.containsKey(key)){
+    if (_argumentCustomizations.containsKey(key)) {
       return _argumentCustomizations[key];
     }
 
     key = new _ArgumentKey(type, null);
-    if(_argumentCustomizations.containsKey(key)){
+    if (_argumentCustomizations.containsKey(key)) {
       return _argumentCustomizations[key];
     }
 
     return null;
   }
+
+  ArgumentCustomization<T> whenArgument<T>([String argumentName = null]) {
+    final key = new _ArgumentKey(T, argumentName);
+    var result = _argumentCustomizations[key];
+    if (result == null) {
+      result = new ArgumentCustomization<T>();
+      _argumentCustomizations[key] = result;
+    }
+    return result;
+  }
 }
 
-class _ArgumentKey{
+class _ArgumentKey {
   final Type _type;
   final String _name;
 
   _ArgumentKey(this._type, this._name);
 
-  Type get type => _type;
+  @override
+  int get hashCode => _type.hashCode ^ _name.hashCode;
   String get name => _name;
+
+  Type get type => _type;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is _ArgumentKey &&
-              runtimeType == other.runtimeType &&
-              _type == other._type &&
-              _name == other._name;
-
-  @override
-  int get hashCode =>
-      _type.hashCode ^
-      _name.hashCode;
+      other is _ArgumentKey && runtimeType == other.runtimeType && _type == other._type && _name == other._name;
 }

@@ -14,10 +14,11 @@ import 'package:activatory/src/type_helper.dart';
 typedef GeneratorBackend _GeneratorBackendFactory();
 
 class BackendsFactory {
+  static const _emptySymbol = const Symbol('');
   Random _random;
   final Map<Type, _GeneratorBackendFactory> _predefinedFactories = new Map<Type, _GeneratorBackendFactory>();
-  final _listMirror = reflectClass(List);
 
+  final _listMirror = reflectClass(List);
 
   BackendsFactory(this._random) {
     _predefinedFactories[bool] = () => new RandomBoolBackend(_random);
@@ -50,7 +51,7 @@ class BackendsFactory {
   }
 
   List<GeneratorBackend> _createComplexObjectBackend(ClassMirror classMirror, Type type) {
-    if(classMirror.isSubtypeOf(_listMirror)){
+    if (classMirror.isSubtypeOf(_listMirror)) {
       throw new ActivationException('Arrays should be registrered explicitly');
     }
     if (classMirror.isAbstract) {
@@ -89,7 +90,7 @@ class BackendsFactory {
     for (var method in constructors) {
       if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
         var arguments = method.parameters
-            .map((p) => new ArgumentInfo(p.type.reflectedType, p.defaultValue?.reflectee, p.isNamed, MirrorSystem.getName(p.simpleName)))
+            .map(constructArgumentInfo)
             .toList();
         var name = method.constructorName;
         CtorType ctorType = _getCtorType(method);
@@ -98,11 +99,17 @@ class BackendsFactory {
     }
   }
 
-  static const _emptySymbol = const Symbol('');
+  ArgumentInfo constructArgumentInfo(ParameterMirror p) {
+    var argType = p.type.reflectedType;
+    var defaultValue = p.defaultValue?.reflectee;
+    var isNamed = p.isNamed;
+    var name = MirrorSystem.getName(p.simpleName);
+    return new ArgumentInfo(argType, defaultValue, isNamed, name);
+  }
 
-  CtorType _getCtorType(MethodMirror method){
+  CtorType _getCtorType(MethodMirror method) {
     var name = method.constructorName;
-    if(name != _emptySymbol){
+    if (name != _emptySymbol) {
       return CtorType.Named;
     }
     return CtorType.Default;
