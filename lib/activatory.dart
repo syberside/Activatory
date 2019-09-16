@@ -8,4 +8,3 @@ export 'src/activatory.dart' show Activatory;
 export 'src/activation_exception.dart' show ActivationException;
 export 'src/activation_context.dart' show ActivationContext;
 export 'src/params_object.dart' show Params, Value, NullValue, v;
-export 'src/customization/type_customization.dart' show CtorResolveStrategyType;

@@ -5,9 +5,11 @@ class ArrayBackend<T> extends GeneratorBackend<List<T>> {
   @override
   List<T> get(ActivationContext context) {
     if(context.isVisitLimitReached(T)){
-      return new List<T>();
+      return empty();
     }
     var result = List<T>.generate(context.arraySize(T), (_) => context.createTyped<T>(context));
     return result;
   }
+
+  List<T> empty () => new List<T>();
 }

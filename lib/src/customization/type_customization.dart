@@ -1,6 +1,5 @@
 import 'package:activatory/src/customization/argument_customization.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
-import 'package:activatory/src/generator_delegate.dart';
 
 class TypeCustomization {
   final Map<_ArgumentKey, ArgumentCustomization> _argumentCustomizations = new Map<_ArgumentKey, ArgumentCustomization>();
