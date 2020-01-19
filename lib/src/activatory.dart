@@ -12,7 +12,7 @@ import 'package:activatory/src/customization/backend_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
-import 'package:activatory/src/params_object.dart';
+import 'package:activatory/src/params_object/params_object.dart';
 import 'package:activatory/src/post_activation/fields_filler.dart';
 import 'package:activatory/src/type_helper.dart';
 import 'package:activatory/src/value_generator_impl.dart';
@@ -23,78 +23,47 @@ class Activatory {
   BackendsRegistry _backendsRegistry;
   TypeCustomizationRegistry _customizationsRegistry;
   BackendResolverFactory _backendResolverFactory;
-  TypeAliasesRegistry _aliasesRegistry;
+  TypeAliasesRegistry _typeAliasesRegistry;
 
   Activatory() {
-    _aliasesRegistry = new TypeAliasesRegistry();
+    _typeAliasesRegistry = new TypeAliasesRegistry();
     _customizationsRegistry = new TypeCustomizationRegistry();
     _backendResolverFactory = new BackendResolverFactory(_random);
-    var backendsFactory = new BackendsFactory(_random);
+    var backendFactory = new BackendsFactory(_random);
     _backendsRegistry =
-        new BackendsRegistry(backendsFactory, _customizationsRegistry, _backendResolverFactory, _aliasesRegistry);
+        new BackendsRegistry(backendFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry);
     _valueGenerator = new ValueGeneratorImpl(_backendsRegistry, new FieldsFiller());
   }
 
-  TypeCustomization get defaultCustomization => _customizationsRegistry.get(null, key: null);
+  // region Activation members
 
-  /// Get customization for specified type and key.
-  /// If key is not provided type default configuration will be returned.
-  /// Type default configuration is used:
-  /// 1. if key is not provided while activating called
-  /// 2. if key specified while activating called was not configured
-  TypeCustomization customize<T>({Object key = null}) => _customizationsRegistry.get(T, key: key);
+  /// Creates and returns instance of specified [type] filled with random data recursively.
+  /// Uses [key] to select configuration.
+  T get<T>([Object key = null]) => getUntyped(T, key) as T;
 
-  Object get(Type type, [Object key = null]) {
+  /// Creates and returns instance of specified [type] filled with random data recursively.
+  /// Uses [key] to select configuration.
+  Object getUntyped(Type type, [Object key = null]) {
     var context = _createContext(key);
     return _valueGenerator.create(type, context);
   }
 
+  /// Creates and returns multiple instances of specified [type] filled with random data recursively.
+  /// Returns [List] of size [count]. If [count] is not specified default strategy will be used.
+  /// Uses [key] to select configuration.
   List getMany(Type type, {int count, Object key}) {
     var countToCreate = count ?? _customizationsRegistry.get(type, key: key).arraySize;
-    return List.generate(countToCreate, (int index) => get(type, key));
+    return List.generate(countToCreate, (int index) => getUntyped(type, key));
   }
 
+  /// Creates and returns multiple instances of specified type [T] filled with random data recursively.
+  /// Returns [List] of size [count]. If [count] is not specified default strategy will be used.
+  /// Uses [key] to select configuration.
   List<T> getManyTyped<T>({int count, Object key}) {
     var dynamicResult = getMany(T, count: count, key: key);
     //Cast result from List<dynamic> to List<T> through array creation
     return new List<T>.from(dynamicResult);
   }
-
-  T getTyped<T>([Object key = null]) => get(T, key);
-
-  void override<T>(GeneratorDelegate<T> generator, {Object key}) {
-    var backend = new ExplicitBackend<T>(generator);
-    _backendsRegistry.registerTyped<T>(backend, key: key);
-  }
-
-  void pin<T>({Object key}) {
-    var detachedContext = _backendsRegistry.clone();
-    var context = _createContext(null);
-    var currentBackend = detachedContext.get(T, context);
-    var value = currentBackend.get(context);
-
-    var backend = new SingletonBackend<T>(value);
-    _backendsRegistry.registerTyped<T>(backend, key: key);
-  }
-
-  void pinValue<T>(T value, {Object key}) {
-    var backend = new SingletonBackend<T>(value);
-    _backendsRegistry.registerTyped<T>(backend, key: key);
-  }
-
-  void registerAlias<TSource, TTarget extends TSource>() {
-    _aliasesRegistry.setAlias(TSource, TTarget);
-  }
-
-  void registerArray<T>({bool addIterableAlias = true}) {
-    if (addIterableAlias) {
-      _aliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
-    }
-    _backendsRegistry.registerArray<T>();
-  }
-
-  /// Returns random item from iterable. Variations iterable will be iterated while choosing item.
-  T takeTyped<T>(Iterable<T> variations) => take(variations) as T;
 
   /// Returns random item from iterable. Variations iterable will be iterated while choosing item.
   Object take(Iterable variations) {
@@ -103,12 +72,82 @@ class Activatory {
     return items[index];
   }
 
+  /// Returns random item from iterable. Variations iterable will be iterated while choosing item.
+  T takeTyped<T>(Iterable<T> variations) => take(variations) as T;
+
+  // endregion
+
+  // region Customization members
+
+  /// Registers function to be called to activate instance of type [T] with [key].
+  void useFunction<T>(GeneratorDelegate<T> generator, {Object key}) {
+    var backend = new ExplicitBackend<T>(generator);
+    _backendsRegistry.registerTyped<T>(backend, key: key);
+  }
+
+  /// Creates instance of type [T] and fixes it as a result for subsequent activation calls for type [T] with customization [key].
+  ///
+  /// Uses current state of customization for [key]. Subsequent customization changes will not affect fixed value.
+  /// To override fixed value call this method again.
+  void useGeneratedSingleton<T>({Object key}) {
+    var detachedContext = _backendsRegistry.clone();
+    var context = _createContext(null);
+    var currentBackend = detachedContext.get(T, context);
+    var value = currentBackend.get(context);
+
+    useSingleton(value, key: key);
+  }
+
+  /// Fixes passed [value] as a result for subsequent activation calls for type [T] with customization [key].
+  void useSingleton<T>(T value, {Object key}) {
+    var backend = new SingletonBackend<T>(value);
+    _backendsRegistry.registerTyped<T>(backend, key: key);
+  }
+
+  /// Marks [TTarget] as replacement for [TSource] activation calls.
+  ///
+  /// Allows to use [TTarget] type as activation target for [TSource] activation.
+  /// [TTarget] should implements [TSource].
+  void replaceSupperClass<TSource, TTarget extends TSource>() => _typeAliasesRegistry.setAlias(TSource, TTarget);
+
+  ///Registers [List] of [T].
+  ///
+  /// Need to be called to add [List] of [T] activation ability due to Dart reflection limitations.
+  /// By default also register [Iterable] of [T]. Pass [addIterableAlias]=[false] to disable [Iterable] of [T] support.
+  void registerArray<T>({bool addIterableAlias = true}) {
+    if (addIterableAlias) {
+      _typeAliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
+    }
+    _backendsRegistry.registerArray<T>();
+  }
+
+  /// Registers [Map] of [K] and [V].
+  ///
+  /// Need to be called to add [Map] support due to Dart reflection limitations.
   void registerMap<K, V>() => _backendsRegistry.registerMap<K, V>();
 
-  void useParamsObject<TValue, TParamsObj extends Params<TValue>>() {
+  /// Register [Params] object.
+  ///
+  /// [Params] object implements [TValue] activation and stores arguments used to activate instance.
+  /// [Params] object should be passed to activation methods as a key to pass parameters into resolve method.
+  void registerParamsObject<TValue, TParamsObj extends Params<TValue>>() {
     var backend = new ParamsObjectBackend<TValue>();
     _backendsRegistry.registerTyped<TValue>(backend, key: TParamsObj);
   }
+
+  /// Returns default customization which is used to activate not customized object types.
+  /// Use returned value to customize default activation options.
+  TypeCustomization get defaultCustomization => _customizationsRegistry.get(null, key: null);
+
+  /// Returns customization for specified type [T] and [key].
+  /// If [key] is not specified type default configuration will be returned.
+  /// Type default configuration is used while activation in next cases:
+  ///  * if key is not provided as parameter for activation call;
+  ///  * if key specified while activation call was not configured.
+  ///  Use returned value to customize activation options for type [T] and [key] pair.
+  TypeCustomization customize<T>({Object key = null}) => _customizationsRegistry.get(T, key: key);
+
+  //endregion
 
   ActivationContext _createContext(Object key) =>
       new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);

@@ -1,6 +1,8 @@
 ## v0.0.22
 - Implemented take and takeTyped methods to select random item from Iterable
 - Documentation improvements
+- Params object related classes moved to separate files
+- Entry points refactored
 
 ## v0.0.21
 - Bugfix and pubspec update

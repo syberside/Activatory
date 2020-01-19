@@ -1,6 +1,8 @@
 import 'dart:collection';
 
 import 'package:activatory/activatory.dart';
+import 'package:activatory/params_object.dart';
+import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
@@ -9,7 +11,7 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'task_params.dart';
-import 'test-classes.dart';
+import 'test_classes.dart';
 
 void main() {
   Type _getType<T>() => T;
@@ -34,7 +36,7 @@ void main() {
     var supportedPrimitiveTypes = [String, int, bool, DateTime, double, TestEnum];
     for (var type in supportedPrimitiveTypes) {
       test(type, () {
-        var result = _activatory.get(type);
+        var result = _activatory.getUntyped(type);
         expect(result, isNotNull);
         expect(result.runtimeType, same(type));
       });
@@ -43,30 +45,30 @@ void main() {
 
   group('Can create complex object', () {
     test('with default (implicit) ctor', () {
-      var result = _activatory.getTyped<DefaultCtor>();
+      var result = _activatory.get<DefaultCtor>();
       expect(result, isNotNull);
     });
 
     test('with primitives only in ctor parameters', () {
-      var result = _activatory.getTyped<PrimitiveComplexObject>();
+      var result = _activatory.get<PrimitiveComplexObject>();
       assertComplexObjectIsNotNull(result);
     });
 
     test('with not only primitives in ctor parameters', () {
-      var result = _activatory.getTyped<NonPrimitiveComplexObject>();
+      var result = _activatory.get<NonPrimitiveComplexObject>();
       expect(result, isNotNull);
       expect(result.intField, isNotNull);
       assertComplexObjectIsNotNull(result.primitiveComplexObject);
     });
 
     test('with named ctor', () {
-      var result = _activatory.getTyped<NamedCtor>();
+      var result = _activatory.get<NamedCtor>();
       expect(result, isNotNull);
       expect(result.stringField, isNotNull);
     });
 
     test('with factory ctor', () {
-      var result = _activatory.getTyped<FactoryCtor>();
+      var result = _activatory.get<FactoryCtor>();
       expect(result, isNotNull);
       expect(result.stringField, isNotNull);
       expect(result.nonFactoryField, isNull);
@@ -75,18 +77,18 @@ void main() {
 
   group('Cant create', () {
     test('abstract class', () {
-      expect(() => _activatory.getTyped<AbstractClass>(), throwsA(TypeMatcher<ActivationException>()));
+      expect(() => _activatory.get<AbstractClass>(), throwsA(TypeMatcher<ActivationException>()));
     });
 
     test('class without public ctor', () {
-      expect(() => _activatory.getTyped<NoPublicCtor>(), throwsA(TypeMatcher<ActivationException>()));
+      expect(() => _activatory.get<NoPublicCtor>(), throwsA(TypeMatcher<ActivationException>()));
     });
   });
 
   group("Default values of", () {
     group("positional arguments are", () {
       test("ignored if they are nulls and used if not", () {
-        var result = _activatory.getTyped<DefaultPositionalValues>();
+        var result = _activatory.get<DefaultPositionalValues>();
         expect(result, isNotNull);
         expect(result.notNullSetStringValue, equals(DefaultPositionalValues.defaultStringValue));
         expect(result.nullSetStringValue, isNotNull);
@@ -97,7 +99,7 @@ void main() {
 
     group("named arguments are", () {
       test("ignored if they are nulls and used if not", () {
-        var result = _activatory.getTyped<DefaultNamedValues>();
+        var result = _activatory.get<DefaultNamedValues>();
         expect(result, isNotNull);
         expect(result.notNullSetString, equals(DefaultNamedValues.defaultValue));
         expect(result.nullSetString, isNotNull);
@@ -114,19 +116,19 @@ void main() {
 
     group("with explicit factory for", () {
       test("primitive type", () {
-        var expected = _activatory.getTyped<int>();
-        _activatory.override((_) => expected);
-        var result1 = _activatory.getTyped<int>();
-        var result2 = _activatory.getTyped<int>();
+        var expected = _activatory.get<int>();
+        _activatory.useFunction((_) => expected);
+        var result1 = _activatory.get<int>();
+        var result2 = _activatory.get<int>();
         expect(result1, equals(expected));
         expect(result2, equals(expected));
       });
 
       test("complex type", () {
         var expected = new DefaultCtor();
-        _activatory.override((_) => expected);
-        var result1 = _activatory.getTyped<DefaultCtor>();
-        var result2 = _activatory.getTyped<DefaultCtor>();
+        _activatory.useFunction((_) => expected);
+        var result1 = _activatory.get<DefaultCtor>();
+        var result2 = _activatory.get<DefaultCtor>();
         expect(result1, same(expected));
         expect(result2, same(expected));
       });
@@ -134,35 +136,35 @@ void main() {
 
     group("with pin for", () {
       test("primitive type", () {
-        _activatory.pin<DateTime>();
-        var result1 = _activatory.getTyped<DateTime>();
-        var result2 = _activatory.getTyped<DateTime>();
+        _activatory.useGeneratedSingleton<DateTime>();
+        var result1 = _activatory.get<DateTime>();
+        var result2 = _activatory.get<DateTime>();
         expect(result1, equals(result2));
       });
 
       test("complex type", () {
-        _activatory.pin<DefaultCtor>();
-        var result1 = _activatory.getTyped<DefaultCtor>();
-        var result2 = _activatory.getTyped<DefaultCtor>();
+        _activatory.useGeneratedSingleton<DefaultCtor>();
+        var result1 = _activatory.get<DefaultCtor>();
+        var result2 = _activatory.get<DefaultCtor>();
         expect(result1, same(result2));
       });
     });
 
     group("with pined value for", () {
       test("primitive type", () {
-        var expected = _activatory.getTyped<int>();
-        _activatory.pinValue(expected);
-        var result1 = _activatory.getTyped<int>();
-        var result2 = _activatory.getTyped<int>();
+        var expected = _activatory.get<int>();
+        _activatory.useSingleton(expected);
+        var result1 = _activatory.get<int>();
+        var result2 = _activatory.get<int>();
         expect(result1, equals(expected));
         expect(result2, equals(expected));
       });
 
       test("complex type", () {
         var expected = new DefaultCtor();
-        _activatory.pinValue(expected);
-        var result1 = _activatory.getTyped<DefaultCtor>();
-        var result2 = _activatory.getTyped<DefaultCtor>();
+        _activatory.useSingleton(expected);
+        var result1 = _activatory.get<DefaultCtor>();
+        var result2 = _activatory.get<DefaultCtor>();
         expect(result1, same(expected));
         expect(result2, same(expected));
       });
@@ -172,12 +174,12 @@ void main() {
   group('Can use labels to define', () {
     group('pined values to use:', () {
       void testLabels<TKey, TValue>(TKey key1, TValue value1, TKey key2, TValue value2) {
-        _activatory.pinValue(value1, key: key1);
-        _activatory.pinValue(value2, key: key2);
+        _activatory.useSingleton(value1, key: key1);
+        _activatory.useSingleton(value2, key: key2);
 
-        var result1 = _activatory.get(TValue, key1);
-        var result2 = _activatory.get(TValue, key2);
-        var result = _activatory.get(TValue);
+        var result1 = _activatory.getUntyped(TValue, key1);
+        var result2 = _activatory.getUntyped(TValue, key2);
+        var result = _activatory.getUntyped(TValue);
 
         expect(result1, equals(value1));
         expect(result2, equals(value2));
@@ -189,15 +191,15 @@ void main() {
         testLabels('key1', 10, 'key2', 22);
       });
       test('primitive key, complex value', () {
-        var value1 = _activatory.get(PrimitiveComplexObject);
-        var value2 = _activatory.get(PrimitiveComplexObject);
+        var value1 = _activatory.getUntyped(PrimitiveComplexObject);
+        var value2 = _activatory.getUntyped(PrimitiveComplexObject);
         testLabels('key1', value1, 'key2', value2);
       });
       test('complex key, complex value', () {
-        var key1 = _activatory.get(PrimitiveComplexObject);
-        var key2 = _activatory.get(PrimitiveComplexObject);
-        var value1 = _activatory.get(PrimitiveComplexObject);
-        var value2 = _activatory.get(PrimitiveComplexObject);
+        var key1 = _activatory.getUntyped(PrimitiveComplexObject);
+        var key2 = _activatory.getUntyped(PrimitiveComplexObject);
+        var value1 = _activatory.getUntyped(PrimitiveComplexObject);
+        var value2 = _activatory.getUntyped(PrimitiveComplexObject);
         testLabels(key1, value1, key2, value2);
       });
     });
@@ -206,12 +208,12 @@ void main() {
       var key1 = 'key1';
       var value2 = 'value1';
       var key2 = 'key2';
-      _activatory.override<String>((ctx) => value1, key: key1);
-      _activatory.override<String>((ctx) => value2, key: key2);
+      _activatory.useFunction<String>((ctx) => value1, key: key1);
+      _activatory.useFunction<String>((ctx) => value2, key: key2);
 
-      var result1 = _activatory.get(String, key1);
-      var result2 = _activatory.get(String, key2);
-      var result = _activatory.get(String);
+      var result1 = _activatory.getUntyped(String, key1);
+      var result2 = _activatory.getUntyped(String, key2);
+      var result = _activatory.getUntyped(String);
 
       expect(result1, equals(value1));
       expect(result2, equals(value2));
@@ -222,17 +224,17 @@ void main() {
     test('defined values to use', () {
       var key1 = 'key1';
       var key2 = 'key2';
-      _activatory.pin<String>(key: key1);
-      _activatory.pin<String>(key: key2);
+      _activatory.useGeneratedSingleton<String>(key: key1);
+      _activatory.useGeneratedSingleton<String>(key: key2);
       //NOTE: The order does matter
-      _activatory.pin<String>();
+      _activatory.useGeneratedSingleton<String>();
 
-      var result_1a = _activatory.get(String, key1);
-      var result_1b = _activatory.get(String, key1);
-      var result_2a = _activatory.get(String, key2);
-      var result_2b = _activatory.get(String, key2);
-      var result_a = _activatory.get(String);
-      var result_b = _activatory.get(String);
+      var result_1a = _activatory.getUntyped(String, key1);
+      var result_1b = _activatory.getUntyped(String, key1);
+      var result_2a = _activatory.getUntyped(String, key2);
+      var result_2b = _activatory.getUntyped(String, key2);
+      var result_a = _activatory.getUntyped(String);
+      var result_b = _activatory.getUntyped(String);
 
       expect(result_1a, equals(result_1b));
       expect(result_2a, equals(result_2b));
@@ -263,7 +265,7 @@ void main() {
       };
       for (var type in primitiveArrayTypes.keys) {
         test(type, () {
-          var items = _activatory.get(type) as List;
+          var items = _activatory.getUntyped(type) as List;
 
           _assertArray(items, primitiveArrayTypes[type]);
         });
@@ -271,7 +273,7 @@ void main() {
 
       test('of enums with explicit array registration', () {
         _activatory.registerArray<TestEnum>();
-        var items = _activatory.getTyped<List<TestEnum>>();
+        var items = _activatory.get<List<TestEnum>>();
 
         _assertArray(items, TestEnum);
         for (var item in items) {
@@ -281,20 +283,20 @@ void main() {
     });
     test('of complex object with explicit registration', () {
       _activatory.registerArray<PrimitiveComplexObject>();
-      var items = _activatory.getTyped<List<PrimitiveComplexObject>>();
+      var items = _activatory.get<List<PrimitiveComplexObject>>();
 
       _assertArray(items, PrimitiveComplexObject);
     });
     group('required in ctor', () {
       test('(concret array requirement)', () {
-        var result = _activatory.getTyped<IntArrayInCtor>();
+        var result = _activatory.get<IntArrayInCtor>();
 
         expect(result, isNotNull);
         _assertArray(result.listField, int);
       });
 
       test('(closed by inheritance generic array requirement)', () {
-        var result = _activatory.getTyped<ClosedByInheritanceGeneric>();
+        var result = _activatory.get<ClosedByInheritanceGeneric>();
 
         expect(result, isNotNull);
         _assertArray(result.listField, String);
@@ -303,20 +305,20 @@ void main() {
   });
 
   test('Cant create array of complex type without explicit registration', () {
-    expect(() => _activatory.getTyped<List<PrimitiveComplexObject>>(), throwsA(TypeMatcher<ActivationException>()));
+    expect(() => _activatory.get<List<PrimitiveComplexObject>>(), throwsA(TypeMatcher<ActivationException>()));
   });
 
   group('Can use generics with explicit overriding', () {
-    void overrideGeneric<T>() => _activatory.override((ctx) => new Generic<T>(ctx.createTyped<T>(ctx)));
+    void overrideGeneric<T>() => _activatory.useFunction((ctx) => new Generic<T>(ctx.createTyped<T>(ctx)));
     void overrideGenericArray<T>() =>
-        _activatory.override((ctx) => new GenericArrayInCtor<T>(ctx.createTyped<List<T>>(ctx)));
+        _activatory.useFunction((ctx) => new GenericArrayInCtor<T>(ctx.createTyped<List<T>>(ctx)));
 
     test('for ctor argument', () {
       overrideGeneric<bool>();
       overrideGeneric<int>();
 
-      var genericResult1 = _activatory.getTyped<Generic<bool>>();
-      var genericResult2 = _activatory.getTyped<Generic<int>>();
+      var genericResult1 = _activatory.get<Generic<bool>>();
+      var genericResult2 = _activatory.get<Generic<int>>();
 
       expect(genericResult1, isNotNull);
       expect(genericResult1.field, isNotNull);
@@ -329,8 +331,8 @@ void main() {
       overrideGenericArray<bool>();
       overrideGenericArray<int>();
 
-      var genericResult1 = _activatory.getTyped<GenericArrayInCtor<bool>>();
-      var genericResult2 = _activatory.getTyped<GenericArrayInCtor<int>>();
+      var genericResult1 = _activatory.get<GenericArrayInCtor<bool>>();
+      var genericResult2 = _activatory.get<GenericArrayInCtor<int>>();
 
       expect(genericResult1, isNotNull);
       expect(genericResult1.listField, isNotNull);
@@ -346,30 +348,30 @@ void main() {
 
   group('Can create recursive graph ', () {
     test('for object with same object in ctor', () {
-      var linked = _activatory.getTyped<LinkedNode>();
+      var linked = _activatory.get<LinkedNode>();
 
       _assertLinkedNode(linked);
     });
 
     test('with pinned generated values', () {
-      _activatory.pin<LinkedNode>();
-      var linked1 = _activatory.getTyped<LinkedNode>();
-      var linked2 = _activatory.getTyped<LinkedNode>();
+      _activatory.useGeneratedSingleton<LinkedNode>();
+      var linked1 = _activatory.get<LinkedNode>();
+      var linked2 = _activatory.get<LinkedNode>();
 
       _assertLinkedNode(linked1);
       expect(linked1, same(linked2));
     });
 
     test('with overrided factory recursion call', () {
-      _activatory.override<LinkedNode>((ctx) => ctx.create(LinkedNode, ctx));
-      var linked = _activatory.getTyped<LinkedNode>();
+      _activatory.useFunction<LinkedNode>((ctx) => ctx.create(LinkedNode, ctx));
+      var linked = _activatory.get<LinkedNode>();
 
       expect(linked, isNull);
     });
 
     test('for object with array in ctor', () {
       _activatory.registerArray<TreeNode>();
-      var tree = _activatory.getTyped<TreeNode>();
+      var tree = _activatory.get<TreeNode>();
 
       _assertTreeNode(tree, 3);
       for (var node1 in tree.children) {
@@ -385,7 +387,7 @@ void main() {
 
     test('for array of objects with array in ctor', () {
       _activatory.registerArray<TreeNode>();
-      var tree = _activatory.getTyped<List<TreeNode>>();
+      var tree = _activatory.get<List<TreeNode>>();
 
       for (var node1 in tree) {
         _assertTreeNode(node1, 3);
@@ -404,10 +406,13 @@ void main() {
 
   group('Can use ParamsObject', () {
     test('for complex type', () {
-      _activatory.useParamsObject<Task, TaskParams>();
-      var title = _activatory.getTyped<String>();
+      _activatory.registerParamsObject<Task, TaskParams>();
+      var title = _activatory.get<String>();
 
-      var result = _activatory.getTyped<Task>(TaskParams(title: v(title), isTemplate: v(null)));
+      var result = _activatory.get<Task>(TaskParams(
+        title: Value(title),
+        isTemplate: NullValue(),
+      ));
 
       expect(result, isNotNull);
       expect(result.id, isNotNull);
@@ -418,18 +423,18 @@ void main() {
     });
 
     test('for generic type', () {
-      _activatory.useParamsObject<Generic<int>, GenericParams<int>>();
+      _activatory.registerParamsObject<Generic<int>, GenericParams<int>>();
 
-      var result = _activatory.getTyped<Generic<int>>(GenericParams<int>());
+      var result = _activatory.get<Generic<int>>(GenericParams<int>());
 
       expect(result, isNotNull);
       expect(result.field, isNotNull);
     });
 
     test('for generic type with generic array in ctor', () {
-      _activatory.useParamsObject<GenericArrayInCtor<int>, GenericArrayInCtorParams<int>>();
+      _activatory.registerParamsObject<GenericArrayInCtor<int>, GenericArrayInCtorParams<int>>();
 
-      var result = _activatory.getTyped<GenericArrayInCtor<int>>(GenericArrayInCtorParams<int>());
+      var result = _activatory.get<GenericArrayInCtor<int>>(GenericArrayInCtorParams<int>());
 
       expect(result, isNotNull);
       expect(result.listField, isNotNull);
@@ -439,7 +444,7 @@ void main() {
   });
 
   test('Can use library to create mock', () {
-    var result = _activatory.getTyped<TaskMock>();
+    var result = _activatory.get<TaskMock>();
     when(result.isRecurrent).thenReturn(true);
 
     expect(result, isNotNull);
@@ -451,11 +456,11 @@ void main() {
     group('backends', () {
       group('without overrides', () {
         test('take first for complex type to take first ctor', () {
-          _activatory.pinValue('E');
+          _activatory.useSingleton('E');
           _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy =
               BackendResolutionStrategy.TakeFirstDefined;
 
-          var items = List.generate(15, (_) => _activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
 
           var expected = ['E'];
@@ -466,7 +471,7 @@ void main() {
           _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy =
               BackendResolutionStrategy.TakeRandomNamedCtor;
 
-          var items = List.generate(15, (_) => _activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
 
           var expected = ['A', 'B', 'C', 'D'];
@@ -475,9 +480,9 @@ void main() {
 
         test('take random for complex type to take random ctor', () {
           _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy = BackendResolutionStrategy.TakeRandom;
-          _activatory.pinValue<String>('E');
+          _activatory.useSingleton<String>('E');
 
-          var items = List.generate(200, (_) => _activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var items = List.generate(200, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
 
           var expected = ['A', 'B', 'C', 'D', 'E'];
@@ -487,9 +492,9 @@ void main() {
         test('take default ctor for type with default ctor', () {
           _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy =
               BackendResolutionStrategy.TakeDefaultCtor;
-          _activatory.pinValue<String>('E');
+          _activatory.useSingleton<String>('E');
 
-          var items = List.generate(15, (_) => _activatory.getTyped<NamedCtorsAndDefaultCtor>());
+          var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
 
           var expected = ['E'];
@@ -498,9 +503,9 @@ void main() {
 
         test('take default for class with factory', () {
           _activatory.customize<NamedCtorsAndFactory>().resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
-          _activatory.pinValue<String>('E');
+          _activatory.useSingleton<String>('E');
 
-          var items = List.generate(15, (_) => _activatory.getTyped<NamedCtorsAndFactory>());
+          var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndFactory>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
 
           var expected = ['E'];
@@ -510,9 +515,9 @@ void main() {
         test('take default for class with const ctor', () {
           _activatory.customize<NamedCtorsAndConstCtor>().resolutionStrategy =
               BackendResolutionStrategy.TakeDefaultCtor;
-          _activatory.pinValue<String>('E');
+          _activatory.useSingleton<String>('E');
 
-          var items = List.generate(15, (_) => _activatory.getTyped<NamedCtorsAndConstCtor>());
+          var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndConstCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
 
           var expected = ['E'];
@@ -522,15 +527,15 @@ void main() {
 
       group('with overrides', () {
         test('take random to take random from overrides', () {
-          _activatory.pinValue(10);
-          _activatory.override((ctx) => 20);
-          _activatory.pinValue(30);
-          _activatory.override((ctx) => 40);
+          _activatory.useSingleton(10);
+          _activatory.useFunction((ctx) => 20);
+          _activatory.useSingleton(30);
+          _activatory.useFunction((ctx) => 40);
           _activatory.customize<int>()
             ..arraySize = 30
             ..resolutionStrategy = BackendResolutionStrategy.TakeRandom;
 
-          final generated = _activatory.getTyped<List<int>>();
+          final generated = _activatory.get<List<int>>();
           var result = SplayTreeSet.from(generated);
 
           const expected = [10, 20, 30, 40];
@@ -538,15 +543,15 @@ void main() {
         });
 
         test('take random to take random from overrides', () {
-          _activatory.pinValue(10);
-          _activatory.override((ctx) => 20);
-          _activatory.pinValue(30);
-          _activatory.override((ctx) => 40);
+          _activatory.useSingleton(10);
+          _activatory.useFunction((ctx) => 20);
+          _activatory.useSingleton(30);
+          _activatory.useFunction((ctx) => 40);
           _activatory.customize<int>()
             ..arraySize = 15
             ..resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
 
-          final generated = _activatory.getTyped<List<int>>();
+          final generated = _activatory.get<List<int>>();
           var result = SplayTreeSet.from(generated);
 
           const expected = [40];
@@ -561,8 +566,8 @@ void main() {
       _activatory.customize<int>().arraySize = expectedIntArraySize;
       _activatory.customize<Null>().arraySize = expectedNullSize;
 
-      final intArray = _activatory.getTyped<List<int>>();
-      final nullArray = _activatory.getTyped<List<Null>>();
+      final intArray = _activatory.get<List<int>>();
+      final nullArray = _activatory.get<List<Null>>();
 
       expect(intArray, hasLength(expectedIntArraySize));
       expect(nullArray, hasLength(expectedNullSize));
@@ -572,7 +577,7 @@ void main() {
       final defaultSize = 5;
       _activatory.defaultCustomization.arraySize = defaultSize;
 
-      final intList = _activatory.getTyped<List<int>>();
+      final intList = _activatory.get<List<int>>();
 
       expect(intList, hasLength(defaultSize));
     });
@@ -584,8 +589,8 @@ void main() {
       _activatory.customize<TreeNode>().maxRecursion = expectedArrayRecursionLimit;
       _activatory.customize<LinkedNode>().maxRecursion = expectedRefRecursionLimit;
 
-      final tree = _activatory.getTyped<TreeNode>();
-      final linkedNode = _activatory.getTyped<LinkedNode>();
+      final tree = _activatory.get<TreeNode>();
+      final linkedNode = _activatory.get<LinkedNode>();
 
       _assertTreeNode(tree, 3);
       for (var node1 in tree.children) {
@@ -609,7 +614,7 @@ void main() {
   test('Can create map with explicit registration', () {
     _activatory.registerMap<String, int>();
 
-    final result = _activatory.getTyped<Map<String, int>>();
+    final result = _activatory.get<Map<String, int>>();
 
     expect(result, isNotNull);
     expect(result, hasLength(_activatory.defaultCustomization.arraySize));
@@ -620,7 +625,7 @@ void main() {
       _activatory.customize<FactoryWithFixedValues>()..whenArgument<String>().than(useCallback: (ctx) => 'A');
       _activatory.registerArray<FactoryWithFixedValues>();
 
-      final items = _activatory.getTyped<List<FactoryWithFixedValues>>();
+      final items = _activatory.get<List<FactoryWithFixedValues>>();
       var result = SplayTreeSet.from(items.map((item) => item.field));
 
       final expected = ['A'];
@@ -632,7 +637,7 @@ void main() {
         ..whenArgument<String>('_b').than(useCallback: (ctx) => 'B')
         ..whenArgument<String>().than(useCallback: (ctx) => 'A');
 
-      final result = _activatory.getTyped<CtorWithTwoStringArgs>();
+      final result = _activatory.get<CtorWithTwoStringArgs>();
 
       expect(result.a, equals('A'));
       expect(result.b, equals('B'));
@@ -644,7 +649,7 @@ void main() {
         ..whenArgument<String>().than(usePool: ['A', 'B', 'C']);
       _activatory.registerArray<FactoryWithFixedValues>();
 
-      final items = _activatory.getTyped<List<FactoryWithFixedValues>>();
+      final items = _activatory.get<List<FactoryWithFixedValues>>();
       var result = SplayTreeSet.from(items.map((item) => item.field));
 
       final expected = ['A', 'B', 'C'];
@@ -658,7 +663,7 @@ void main() {
         ..whenArgument<String>().than(usePool: ['A']);
       _activatory.registerArray<CtorWithTwoStringArgs>();
 
-      final items = _activatory.getTyped<List<CtorWithTwoStringArgs>>();
+      final items = _activatory.get<List<CtorWithTwoStringArgs>>();
       var resultA = SplayTreeSet.from(items.map((item) => item.a));
       var resultB = SplayTreeSet.from(items.map((item) => item.b));
 
@@ -689,7 +694,7 @@ void main() {
     });
     test('with customized key', () {
       var key = 'key';
-      _activatory.pinValue(10, key: key);
+      _activatory.useSingleton(10, key: key);
       var result = _activatory.getManyTyped<int>(key: key);
       expect(result, isNotNull);
       expect(result, hasLength(3));
@@ -700,7 +705,7 @@ void main() {
 
   group('Type aliases', () {
     test('allow iterable of primitive type activation without setup', () {
-      var result = _activatory.getTyped<PrimitiveIterableInCtor>();
+      var result = _activatory.get<PrimitiveIterableInCtor>();
 
       expect(result, isNotNull);
       expect(result.field, isNotEmpty);
@@ -710,7 +715,7 @@ void main() {
 
     test('allow iterable of complex type activation with setup', () {
       _activatory.registerArray<PrimitiveIterableInCtor>();
-      var result = _activatory.getTyped<ComplexIterableInCtor>();
+      var result = _activatory.get<ComplexIterableInCtor>();
 
       expect(result, isNotNull);
       expect(result.field, isNotEmpty);
@@ -719,9 +724,9 @@ void main() {
     });
 
     test('allow use subtype activation strategy for parent type', () {
-      _activatory.registerAlias<ParentClass, ChildClass>();
+      _activatory.replaceSupperClass<ParentClass, ChildClass>();
 
-      var result = _activatory.getTyped<ParentClass>();
+      var result = _activatory.get<ParentClass>();
 
       expect(result, isNotNull);
       expect(result, TypeMatcher<ChildClass>());
@@ -746,7 +751,7 @@ void main() {
         _activatory.customize<DefaultPositionalValues>().defaultValuesHandlingStrategy =
             DefaultValuesHandlingStrategy.ReplaceNulls;
 
-        var result = _activatory.getTyped<DefaultPositionalValues>();
+        var result = _activatory.get<DefaultPositionalValues>();
 
         expect(result, isNotNull);
         expect(result.notNullSetStringValue, equals(DefaultPositionalValues.defaultStringValue));
@@ -759,7 +764,7 @@ void main() {
         _activatory.customize<DefaultPositionalValues>().defaultValuesHandlingStrategy =
             DefaultValuesHandlingStrategy.ReplaceAll;
 
-        var result = _activatory.getTyped<DefaultPositionalValues>();
+        var result = _activatory.get<DefaultPositionalValues>();
 
         expect(result, isNotNull);
         expect(result.notNullSetStringValue, isNot(equals(DefaultPositionalValues.defaultStringValue)));
@@ -772,7 +777,7 @@ void main() {
         _activatory.customize<DefaultPositionalValues>().defaultValuesHandlingStrategy =
             DefaultValuesHandlingStrategy.UseAll;
 
-        var result = _activatory.getTyped<DefaultPositionalValues>();
+        var result = _activatory.get<DefaultPositionalValues>();
 
         expect(result, isNotNull);
         expect(result.notNullSetStringValue, equals(DefaultPositionalValues.defaultStringValue));
@@ -787,7 +792,7 @@ void main() {
         _activatory.customize<DefaultNamedValues>().defaultValuesHandlingStrategy =
             DefaultValuesHandlingStrategy.ReplaceNulls;
 
-        var result = _activatory.getTyped<DefaultNamedValues>();
+        var result = _activatory.get<DefaultNamedValues>();
 
         expect(result, isNotNull);
         expect(result.notNullSetString, equals(DefaultNamedValues.defaultValue));
@@ -800,7 +805,7 @@ void main() {
         _activatory.customize<DefaultNamedValues>().defaultValuesHandlingStrategy =
             DefaultValuesHandlingStrategy.ReplaceAll;
 
-        var result = _activatory.getTyped<DefaultNamedValues>();
+        var result = _activatory.get<DefaultNamedValues>();
 
         expect(result, isNotNull);
         expect(result.notNullSetString, isNot(equals(DefaultNamedValues.defaultValue)));
@@ -813,7 +818,7 @@ void main() {
         _activatory.customize<DefaultNamedValues>().defaultValuesHandlingStrategy =
             DefaultValuesHandlingStrategy.UseAll;
 
-        var result = _activatory.getTyped<DefaultNamedValues>();
+        var result = _activatory.get<DefaultNamedValues>();
 
         expect(result, isNotNull);
         expect(result.notNullSetString, equals(DefaultNamedValues.defaultValue));
@@ -828,9 +833,9 @@ void main() {
     _activatory.customize<int>(key: 'A').arraySize = 10;
     _activatory.customize<int>(key: 'B').arraySize = 1;
 
-    var resultA = _activatory.getTyped<List<int>>('A');
-    var resultB = _activatory.getTyped<List<int>>('B');
-    var resultC = _activatory.getTyped<List<int>>();
+    var resultA = _activatory.get<List<int>>('A');
+    var resultB = _activatory.get<List<int>>('B');
+    var resultC = _activatory.get<List<int>>();
 
     expect(resultA, hasLength(10));
     expect(resultB, hasLength(1));
@@ -838,7 +843,7 @@ void main() {
   });
 
   test('Can fill fields', () {
-    var result = _activatory.getTyped<FiledsWithPublicSetters>();
+    var result = _activatory.get<FiledsWithPublicSetters>();
 
     expect(result.finalField, isNotNull);
     expect(result.publicField, isNotNull);
@@ -849,7 +854,7 @@ void main() {
     test('FieldsAndSetters', () {
       _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.FieldsAndSetters;
 
-      var result = _activatory.getTyped<FiledsWithPublicSetters>();
+      var result = _activatory.get<FiledsWithPublicSetters>();
 
       expect(result.finalField, isNotNull);
       expect(result.publicField, isNotNull);
@@ -859,7 +864,7 @@ void main() {
     test('fields only', () {
       _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.Fields;
 
-      var result = _activatory.getTyped<FiledsWithPublicSetters>();
+      var result = _activatory.get<FiledsWithPublicSetters>();
 
       expect(result.finalField, isNotNull);
       expect(result.publicField, isNotNull);
@@ -869,7 +874,7 @@ void main() {
     test('none', () {
       _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.None;
 
-      var result = _activatory.getTyped<FiledsWithPublicSetters>();
+      var result = _activatory.get<FiledsWithPublicSetters>();
 
       expect(result.finalField, isNotNull);
       expect(result.publicField, isNull);

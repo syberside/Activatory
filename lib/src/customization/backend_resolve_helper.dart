@@ -1,4 +1,4 @@
-import 'package:activatory/activatory.dart';
+import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/generator_backend_wrapper.dart';
 

@@ -1,7 +1,8 @@
 import 'package:activatory/activatory.dart';
+import 'package:activatory/params_object.dart';
 import 'package:mockito/mockito.dart';
 
-import 'test-classes.dart';
+import 'test_classes.dart';
 
 class TaskMock extends Mock implements Task {}
 

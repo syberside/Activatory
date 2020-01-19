@@ -1,7 +1,6 @@
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/aliases/type_alias_registry.dart';
 import 'package:activatory/src/backend_store.dart';
-import 'package:activatory/src/resolve_key.dart';
 import 'package:activatory/src/backends/array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/map_backend.dart';
@@ -9,7 +8,8 @@ import 'package:activatory/src/backends/recursion_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/customization/backend_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
-import 'package:activatory/src/params_object.dart';
+import 'package:activatory/src/params_object/params_object.dart';
+import 'package:activatory/src/resolve_key.dart';
 
 class BackendsRegistry {
   BackendStore _store = new BackendStore();
@@ -20,6 +20,7 @@ class BackendsRegistry {
 
   BackendsRegistry(
       this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory, this._aliasesRegistry);
+
   BackendsRegistry._fromStore(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory,
       this._aliasesRegistry, this._store);
 

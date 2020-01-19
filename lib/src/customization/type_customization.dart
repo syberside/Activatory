@@ -8,9 +8,13 @@ class TypeCustomization {
       new Map<_ArgumentKey, ArgumentCustomization>();
 
   BackendResolutionStrategy resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
+
   int arraySize = 3;
+
   int maxRecursion = 3;
+
   DefaultValuesHandlingStrategy defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
+
   FieldsAutoFill fieldsAutoFill = FieldsAutoFill.Fields;
 
   TypeCustomization clone() {
@@ -55,6 +59,7 @@ class _ArgumentKey {
 
   @override
   int get hashCode => _type.hashCode ^ _name.hashCode;
+
   String get name => _name;
 
   Type get type => _type;
