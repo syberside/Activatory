@@ -1,3 +1,7 @@
+## v0.0.22
+- Implemented take and takeTyped methods to select random item from Iterable
+- Documentation improvements
+
 ## v0.0.21
 - Bugfix and pubspec update
 - Changelog sorting reverted

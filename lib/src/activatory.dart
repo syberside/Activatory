@@ -37,6 +37,11 @@ class Activatory {
 
   TypeCustomization get defaultCustomization => _customizationsRegistry.get(null, key: null);
 
+  /// Get customization for specified type and key.
+  /// If key is not provided type default configuration will be returned.
+  /// Type default configuration is used:
+  /// 1. if key is not provided while activating called
+  /// 2. if key specified while activating called was not configured
   TypeCustomization customize<T>({Object key = null}) => _customizationsRegistry.get(T, key: key);
 
   Object get(Type type, [Object key = null]) {
@@ -86,6 +91,16 @@ class Activatory {
       _aliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
     }
     _backendsRegistry.registerArray<T>();
+  }
+
+  /// Returns random item from iterable. Variations iterable will be iterated while choosing item.
+  T takeTyped<T>(Iterable<T> variations) => take(variations) as T;
+
+  /// Returns random item from iterable. Variations iterable will be iterated while choosing item.
+  Object take(Iterable variations) {
+    final items = variations.toList();
+    final index = _random.nextInt(items.length);
+    return items[index];
   }
 
   void registerMap<K, V>() => _backendsRegistry.registerMap<K, V>();

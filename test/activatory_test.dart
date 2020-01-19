@@ -667,27 +667,27 @@ void main() {
     });
   });
 
-  group('Can create arrays without explicit regestration',(){
-    test('with default length',(){
+  group('Can create arrays without explicit regestration', () {
+    test('with default length', () {
       var result = _activatory.getManyTyped<int>();
       expect(result, isNotNull);
       expect(result, hasLength(3));
       expect(result, isNot(contains(null)));
     });
-    test('with parametrized length',(){
+    test('with parametrized length', () {
       var result = _activatory.getManyTyped<int>(count: 2);
       expect(result, isNotNull);
       expect(result, hasLength(2));
       expect(result, isNot(contains(null)));
     });
-    test('with customized per type length',(){
+    test('with customized per type length', () {
       _activatory.customize<int>().arraySize = 10;
       var result = _activatory.getManyTyped<int>();
       expect(result, isNotNull);
       expect(result, hasLength(10));
       expect(result, isNot(contains(null)));
     });
-    test('with customized key',(){
+    test('with customized key', () {
       var key = 'key';
       _activatory.pinValue(10, key: key);
       var result = _activatory.getManyTyped<int>(key: key);
@@ -698,8 +698,8 @@ void main() {
     });
   });
 
-  group('Type aliases',(){
-    test('allow iterable of primitive type activation without setup',(){
+  group('Type aliases', () {
+    test('allow iterable of primitive type activation without setup', () {
       var result = _activatory.getTyped<PrimitiveIterableInCtor>();
 
       expect(result, isNotNull);
@@ -708,7 +708,7 @@ void main() {
       expect(result.field, isNot(contains(null)));
     });
 
-    test('allow iterable of complex type activation with setup',(){
+    test('allow iterable of complex type activation with setup', () {
       _activatory.registerArray<PrimitiveIterableInCtor>();
       var result = _activatory.getTyped<ComplexIterableInCtor>();
 
@@ -718,7 +718,7 @@ void main() {
       expect(result.field, isNot(contains(null)));
     });
 
-    test('allow use subtype activation strategy for parent type',(){
+    test('allow use subtype activation strategy for parent type', () {
       _activatory.registerAlias<ParentClass, ChildClass>();
 
       var result = _activatory.getTyped<ParentClass>();
@@ -728,7 +728,7 @@ void main() {
     });
   });
 
-  group('Can customize default values usage',(){
+  group('Can customize default values usage', () {
     //Positional
     //Named
 
@@ -743,9 +743,8 @@ void main() {
   group("Can customize default values usage for", () {
     group("positional arguments", () {
       test("with ReplaceNulls", () {
-        _activatory.customize<DefaultPositionalValues>()
-          .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
-
+        _activatory.customize<DefaultPositionalValues>().defaultValuesHandlingStrategy =
+            DefaultValuesHandlingStrategy.ReplaceNulls;
 
         var result = _activatory.getTyped<DefaultPositionalValues>();
 
@@ -757,8 +756,8 @@ void main() {
       });
 
       test("with ReplaceAll", () {
-        _activatory.customize<DefaultPositionalValues>()
-            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceAll;
+        _activatory.customize<DefaultPositionalValues>().defaultValuesHandlingStrategy =
+            DefaultValuesHandlingStrategy.ReplaceAll;
 
         var result = _activatory.getTyped<DefaultPositionalValues>();
 
@@ -770,8 +769,8 @@ void main() {
       });
 
       test("with UseAll", () {
-        _activatory.customize<DefaultPositionalValues>()
-            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.UseAll;
+        _activatory.customize<DefaultPositionalValues>().defaultValuesHandlingStrategy =
+            DefaultValuesHandlingStrategy.UseAll;
 
         var result = _activatory.getTyped<DefaultPositionalValues>();
 
@@ -785,8 +784,8 @@ void main() {
 
     group("named arguments", () {
       test("with ReplaceNulls", () {
-        _activatory.customize<DefaultNamedValues>()
-            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
+        _activatory.customize<DefaultNamedValues>().defaultValuesHandlingStrategy =
+            DefaultValuesHandlingStrategy.ReplaceNulls;
 
         var result = _activatory.getTyped<DefaultNamedValues>();
 
@@ -798,8 +797,8 @@ void main() {
       });
 
       test("with ReplaceAll", () {
-        _activatory.customize<DefaultNamedValues>()
-            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceAll;
+        _activatory.customize<DefaultNamedValues>().defaultValuesHandlingStrategy =
+            DefaultValuesHandlingStrategy.ReplaceAll;
 
         var result = _activatory.getTyped<DefaultNamedValues>();
 
@@ -811,8 +810,8 @@ void main() {
       });
 
       test("with UseAll", () {
-        _activatory.customize<DefaultNamedValues>()
-            .defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.UseAll;
+        _activatory.customize<DefaultNamedValues>().defaultValuesHandlingStrategy =
+            DefaultValuesHandlingStrategy.UseAll;
 
         var result = _activatory.getTyped<DefaultNamedValues>();
 
@@ -825,7 +824,7 @@ void main() {
     });
   });
 
-  test('Can customize per key',(){
+  test('Can customize per key', () {
     _activatory.customize<int>(key: 'A').arraySize = 10;
     _activatory.customize<int>(key: 'B').arraySize = 1;
 
@@ -838,7 +837,7 @@ void main() {
     expect(resultC, hasLength(3));
   });
 
-  test('Can fill fields',(){
+  test('Can fill fields', () {
     var result = _activatory.getTyped<FiledsWithPublicSetters>();
 
     expect(result.finalField, isNotNull);
@@ -846,8 +845,8 @@ void main() {
     expect(result.publicProperty, isNull);
   });
 
-  group('Can customize fields usage',(){
-    test('FieldsAndSetters', (){
+  group('Can customize fields usage', () {
+    test('FieldsAndSetters', () {
       _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.FieldsAndSetters;
 
       var result = _activatory.getTyped<FiledsWithPublicSetters>();
@@ -857,7 +856,7 @@ void main() {
       expect(result.publicProperty, isNotNull);
     });
 
-    test('fields only', (){
+    test('fields only', () {
       _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.Fields;
 
       var result = _activatory.getTyped<FiledsWithPublicSetters>();
@@ -867,7 +866,7 @@ void main() {
       expect(result.publicProperty, isNull);
     });
 
-    test('none', (){
+    test('none', () {
       _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.None;
 
       var result = _activatory.getTyped<FiledsWithPublicSetters>();
@@ -875,6 +874,20 @@ void main() {
       expect(result.finalField, isNotNull);
       expect(result.publicField, isNull);
       expect(result.publicProperty, isNull);
+    });
+  });
+
+  group('Can select item from predefined iterable', () {
+    test('with typed api', () {
+      final variants = _activatory.getManyTyped<int>();
+      final result = _activatory.takeTyped<int>(variants);
+      expect(variants, contains(result));
+    });
+
+    test('with not typed api', () {
+      final variants = _activatory.getManyTyped<int>();
+      final result = _activatory.take(variants);
+      expect(variants, contains(result));
     });
   });
 }
