@@ -20,7 +20,7 @@ import 'package:activatory/src/value_generator_impl.dart';
 class Activatory {
   final Random _random = new Random(DateTime.now().millisecondsSinceEpoch);
   ValueGeneratorImpl _valueGenerator;
-  BackendsRegistry _backendsRegistry;
+  BackendsRegistry _backendRegistry;
   TypeCustomizationRegistry _customizationsRegistry;
   BackendResolverFactory _backendResolverFactory;
   TypeAliasesRegistry _typeAliasesRegistry;
@@ -30,9 +30,9 @@ class Activatory {
     _customizationsRegistry = new TypeCustomizationRegistry();
     _backendResolverFactory = new BackendResolverFactory(_random);
     var backendFactory = new BackendsFactory(_random);
-    _backendsRegistry =
+    _backendRegistry =
         new BackendsRegistry(backendFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry);
-    _valueGenerator = new ValueGeneratorImpl(_backendsRegistry, new FieldsFiller());
+    _valueGenerator = new ValueGeneratorImpl(_backendRegistry, new FieldsFiller());
   }
 
   // region Activation members
@@ -82,7 +82,7 @@ class Activatory {
   /// Registers function to be called to activate instance of type [T] with [key].
   void useFunction<T>(GeneratorDelegate<T> generator, {Object key}) {
     var backend = new ExplicitBackend<T>(generator);
-    _backendsRegistry.registerTyped<T>(backend, key: key);
+    _backendRegistry.registerTyped<T>(backend, key: key);
   }
 
   /// Creates instance of type [T] and fixes it as a result for subsequent activation calls for type [T] with customization [key].
@@ -90,7 +90,7 @@ class Activatory {
   /// Uses current state of customization for [key]. Subsequent customization changes will not affect fixed value.
   /// To override fixed value call this method again.
   void useGeneratedSingleton<T>({Object key}) {
-    var detachedContext = _backendsRegistry.clone();
+    var detachedContext = _backendRegistry.clone();
     var context = _createContext(null);
     var currentBackend = detachedContext.get(T, context);
     var value = currentBackend.get(context);
@@ -101,7 +101,7 @@ class Activatory {
   /// Fixes passed [value] as a result for subsequent activation calls for type [T] with customization [key].
   void useSingleton<T>(T value, {Object key}) {
     var backend = new SingletonBackend<T>(value);
-    _backendsRegistry.registerTyped<T>(backend, key: key);
+    _backendRegistry.registerTyped<T>(backend, key: key);
   }
 
   /// Marks [TTarget] as replacement for [TSource] activation calls.
@@ -118,13 +118,13 @@ class Activatory {
     if (addIterableAlias) {
       _typeAliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
     }
-    _backendsRegistry.registerArray<T>();
+    _backendRegistry.registerArray<T>();
   }
 
   /// Registers [Map] of [K] and [V].
   ///
   /// Need to be called to add [Map] support due to Dart reflection limitations.
-  void registerMap<K, V>() => _backendsRegistry.registerMap<K, V>();
+  void registerMap<K, V>() => _backendRegistry.registerMap<K, V>();
 
   /// Register [Params] object.
   ///
@@ -132,7 +132,7 @@ class Activatory {
   /// [Params] object should be passed to activation methods as a key to pass parameters into resolve method.
   void registerParamsObject<TValue, TParamsObj extends Params<TValue>>() {
     var backend = new ParamsObjectBackend<TValue>();
-    _backendsRegistry.registerTyped<TValue>(backend, key: TParamsObj);
+    _backendRegistry.registerTyped<TValue>(backend, key: TParamsObj);
   }
 
   /// Returns default customization which is used to activate not customized object types.
