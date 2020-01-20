@@ -30,6 +30,24 @@ main() {
   // If constructor parameter or getter type is custom class it will be created in same way.
   assert(myComplexGraphClass.myClassFieldWithPublicSetter.intFieldWithPublicSetter != null);
 
+  // Activatory can create multiple objects at one call.
+  var intArray = activatory.getManyTyped<int>();
+  assert(intArray.length == 3); //default array length is 3
+
+  // List, iterables and map parameters or fields are also supported, but requires explicit registration due to Dart reflection limitations.
+  activatory
+    ..registerArray<int>() //Registers both List and Iterable by default
+    ..registerMap<int, String>(); //Without this line activation will fail
+  var explicitRegistrationSample = activatory.get<MyClassWithArrayIterableAndMapParameters>();
+  assert(explicitRegistrationSample.intArray.length == 3); //default array length is 3
+  assert(explicitRegistrationSample.intIterable.length == 3); //default iterable length is 3
+  assert(explicitRegistrationSample.intToStringMap.length == 3); //default map length is 3
+
+  // Generics are also supported but requires explicit registration too.
+  activatory.useFunction((ctx) => new MyGenericClass<int>(ctx.createTyped<int>(ctx)));
+  var genericClassInstance = activatory.get<MyGenericClass<int>>();
+  assert(genericClassInstance.value != null);
+
   // Activatory support all constructor types:
   // 1. Default constructor
   var myClassWithDefaultConstructor = activatory.get<MyClassWithDefaultConstructor>();
@@ -51,18 +69,6 @@ main() {
   assert(withPositionParameters.positionalArgumentWithDefaultValue ==
       MyClassWithPositionalParameters.positionalArgumentDefaultValue);
   assert(withPositionParameters.positionalArgumentWithoutDefaultValue != null);
-
-  // Activatory can create multiple objects at one call.
-  var intArray = activatory.getManyTyped<int>();
-  assert(intArray.length == 3); //default array length is 3
-  // Array, iterable and map parameters or fields requires explicit registration due to Dart reflection limitations.
-  activatory
-    ..registerArray<int>() //Registers both List and Iterable
-    ..registerMap<int, String>(); //Without this line activation will fail
-  var explicitRegistrationSample = activatory.get<MyClassWithArrayIterableAndMapParameters>();
-  assert(explicitRegistrationSample.intArray.length == 3); //default array length is 3
-  assert(explicitRegistrationSample.intIterable.length == 3); //default iterable length is 3
-  assert(explicitRegistrationSample.intToStringMap.length == 3); //default map length is 3
 
   // Default object creation strategy can be customized.
   // 1. With explicit function to completely control object creation
@@ -94,7 +100,7 @@ main() {
   assert(goodNumberStr == '42');
   var notGoodNumberStr = activatory.get<String>('not good number');
   assert(notGoodNumberStr == '10');
-  // Key can be any type of object. It's value can be accessed through ActivationContext.
+  // Key can be any type of object. It's value can be accessed through ActivationContext if required.
   var now = DateTime.now();
   activatory.useFunction((ctx) => ctx.key as DateTime, key: now);
   var today = activatory.get<DateTime>(now);
@@ -141,8 +147,10 @@ class MyClassWithPositionalParameters {
   final String positionalArgumentWithDefaultValue;
   final String positionalArgumentWithoutDefaultValue;
 
-  MyClassWithPositionalParameters(this.positionalArgumentWithoutDefaultValue,
-      [this.positionalArgumentWithDefaultValue = positionalArgumentDefaultValue]);
+  MyClassWithPositionalParameters(
+    this.positionalArgumentWithoutDefaultValue, [
+    this.positionalArgumentWithDefaultValue = positionalArgumentDefaultValue,
+  ]);
 }
 
 class MyClassWithNamedParameter {
@@ -150,8 +158,10 @@ class MyClassWithNamedParameter {
   final String namedArgumentWithDefaultValue;
   final String namedArgumentWithoutDefaultValue;
 
-  MyClassWithNamedParameter(this.namedArgumentWithoutDefaultValue,
-      {this.namedArgumentWithDefaultValue = namedArgumentDefaultValue});
+  MyClassWithNamedParameter(
+    this.namedArgumentWithoutDefaultValue, {
+    this.namedArgumentWithDefaultValue = namedArgumentDefaultValue,
+  });
 }
 
 class MyClassWithArrayIterableAndMapParameters {
@@ -160,6 +170,12 @@ class MyClassWithArrayIterableAndMapParameters {
   final Map<int, String> intToStringMap;
 
   MyClassWithArrayIterableAndMapParameters(this.intArray, this.intIterable, this.intToStringMap);
+}
+
+class MyGenericClass<T> {
+  final T value;
+
+  MyGenericClass(this.value);
 }
 
 enum MyEnum { A, B, C }
