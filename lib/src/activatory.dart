@@ -95,7 +95,7 @@ class Activatory {
     var currentBackend = detachedContext.get(T, context);
     var value = currentBackend.get(context);
 
-    useSingleton(value, key: key);
+    useSingleton<T>(value, key: key);
   }
 
   /// Fixes passed [value] as a result for subsequent activation calls for type [T] with customization [key].
