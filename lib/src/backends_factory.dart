@@ -3,7 +3,8 @@ import 'dart:mirrors';
 
 import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/argument_info.dart';
-import 'package:activatory/src/backends/array_backend.dart';
+import 'package:activatory/src/backends/array/explicit_array_backend.dart';
+import 'package:activatory/src/backends/array/reflective_array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
@@ -28,12 +29,12 @@ class BackendsFactory {
     _predefinedFactories[DateTime] = () => new RandomDateTimeBackend(_random);
     _predefinedFactories[Null] = () => new NullBackend();
 
-    _predefinedFactories[getType<List<bool>>()] = () => new ArrayBackend<bool>();
-    _predefinedFactories[getType<List<int>>()] = () => new ArrayBackend<int>();
-    _predefinedFactories[getType<List<double>>()] = () => new ArrayBackend<double>();
-    _predefinedFactories[getType<List<String>>()] = () => new ArrayBackend<String>();
-    _predefinedFactories[getType<List<DateTime>>()] = () => new ArrayBackend<DateTime>();
-    _predefinedFactories[getType<List<Null>>()] = () => new ArrayBackend<Null>();
+    _predefinedFactories[getType<List<bool>>()] = () => new ExplicitArrayBackend<bool>();
+    _predefinedFactories[getType<List<int>>()] = () => new ExplicitArrayBackend<int>();
+    _predefinedFactories[getType<List<double>>()] = () => new ExplicitArrayBackend<double>();
+    _predefinedFactories[getType<List<String>>()] = () => new ExplicitArrayBackend<String>();
+    _predefinedFactories[getType<List<DateTime>>()] = () => new ExplicitArrayBackend<DateTime>();
+    _predefinedFactories[getType<List<Null>>()] = () => new ExplicitArrayBackend<Null>();
   }
 
   List<GeneratorBackend> create(Type type) {
@@ -42,7 +43,7 @@ class BackendsFactory {
       return [predefinedFactory()];
     }
 
-    var classMirror = reflectClass(type);
+    var classMirror = reflectType(type) as ClassMirror;
     if (classMirror.isEnum) {
       return [_createEnumBackend(classMirror)];
     } else {
@@ -51,8 +52,10 @@ class BackendsFactory {
   }
 
   List<GeneratorBackend> _createComplexObjectBackend(ClassMirror classMirror, Type type) {
-    if (classMirror.isSubtypeOf(_listMirror)) {
-      throw new ActivationException('Arrays should be registrered explicitly');
+    // We need to make sure that we are using original class mirror, not generic subtype
+    // Otherwise subtype check will return false
+    if (reflectClass(type).isSubtypeOf(_listMirror)) {
+      return [new ReflectiveArrayBackend(classMirror.typeArguments.first.reflectedType)];
     }
     if (classMirror.isAbstract) {
       throw new ActivationException("Cant create instance of abstract class ${classMirror}");
@@ -89,9 +92,7 @@ class BackendsFactory {
 
     for (var method in constructors) {
       if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
-        var arguments = method.parameters
-            .map(constructArgumentInfo)
-            .toList();
+        var arguments = method.parameters.map(constructArgumentInfo).toList();
         var name = method.constructorName;
         CtorType ctorType = _getCtorType(method);
         yield new CtorInfo(classMirror, name, arguments, ctorType, type);

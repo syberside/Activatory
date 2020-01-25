@@ -1,3 +1,5 @@
+import 'dart:mirrors';
+
 import 'package:activatory/src/type_helper.dart';
 
 class TypeAliasesRegistry {
@@ -10,21 +12,34 @@ class TypeAliasesRegistry {
     getType<Iterable<Null>>(): getType<List<Null>>(),
   };
 
-  Type getAlias(Type type){
+  final _iterableMirror = reflectClass(Iterable);
+
+  Type getAlias(Type type) {
     var result = _aliases[type];
-    if(result == null){
-      result = type;
-      _aliases[type] = type;
+    if (result != null) {
+      return result;
     }
+
+    final classMirror = reflectClass(type);
+    if (classMirror.isSubclassOf(_iterableMirror)) {
+      final typeArg = reflectType(type).typeArguments.first.reflectedType;
+      final listType = reflectType(List, [typeArg]).reflectedType;
+      _aliases[type] = listType;
+      return listType;
+    }
+
+    result = type;
+    _aliases[type] = type;
     return result;
   }
-  void setAlias(Type source, Type target){
+
+  void setAlias(Type source, Type target) {
     _aliases[source] = target;
   }
 
-  void putIfAbsent(Type source, Type target){
+  void putIfAbsent(Type source, Type target) {
     var currentRegistration = getAlias(source);
-    if(source!=currentRegistration){
+    if (source != currentRegistration) {
       return;
     }
     setAlias(source, target);

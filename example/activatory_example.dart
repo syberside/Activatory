@@ -35,17 +35,15 @@ main() {
   assert(intArray.length == 3); //default array length is 3
 
   // List, iterables and map parameters or fields are also supported, but requires explicit registration due to Dart reflection limitations.
-  activatory
-    ..registerArray<int>() //Registers both List and Iterable by default
-    ..registerMap<int, String>(); //Without this line activation will fail
+  activatory.registerMap<int, String>(); //Without this line activation will fail
   var explicitRegistrationSample = activatory.get<MyClassWithArrayIterableAndMapParameters>();
   assert(explicitRegistrationSample.intArray.length == 3); //default array length is 3
   assert(explicitRegistrationSample.intIterable.length == 3); //default iterable length is 3
   assert(explicitRegistrationSample.intToStringMap.length == 3); //default map length is 3
 
   // Generics are also supported but requires explicit registration too.
-  activatory.useFunction((ctx) => new MyGenericClass<int>(ctx.createTyped<int>(ctx)));
-  var genericClassInstance = activatory.get<MyGenericClass<int>>();
+  //activatory.useFunction((ctx) => new MyGenericClass<int>(ctx.createTyped<int>(ctx)));
+  var genericClassInstance = activatory.get<MyGenericClass<MyGenericClass<int>>>();
   assert(genericClassInstance.value != null);
 
   // Activatory support all constructor types:

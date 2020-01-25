@@ -270,19 +270,18 @@ void main() {
           _assertArray(items, primitiveArrayTypes[type]);
         });
       }
-
-      test('of enums with explicit array registration', () {
-        _activatory.registerArray<TestEnum>();
-        var items = _activatory.get<List<TestEnum>>();
-
-        _assertArray(items, TestEnum);
-        for (var item in items) {
-          expect(TestEnum.values, contains(item));
-        }
-      });
     });
-    test('of complex object with explicit registration', () {
-      _activatory.registerArray<PrimitiveComplexObject>();
+
+    test('of enums', () {
+      var items = _activatory.get<List<TestEnum>>();
+
+      _assertArray(items, TestEnum);
+      for (var item in items) {
+        expect(TestEnum.values, contains(item));
+      }
+    });
+
+    test('of complex object', () {
       var items = _activatory.get<List<PrimitiveComplexObject>>();
 
       _assertArray(items, PrimitiveComplexObject);
@@ -301,11 +300,14 @@ void main() {
         expect(result, isNotNull);
         _assertArray(result.listField, String);
       });
-    });
-  });
 
-  test('Cant create array of complex type without explicit registration', () {
-    expect(() => _activatory.get<List<PrimitiveComplexObject>>(), throwsA(TypeMatcher<ActivationException>()));
+      test('(with complex type)', () {
+        var result = _activatory.get<GenericArrayInCtor<GenericArrayInCtor<int>>>();
+
+        expect(result, isNotNull);
+        _assertArray(result.listField, _getType<GenericArrayInCtor<int>>());
+      });
+    });
   });
 
   group('Can use generics with explicit overriding', () {
@@ -370,7 +372,6 @@ void main() {
     });
 
     test('for object with array in ctor', () {
-      _activatory.registerArray<TreeNode>();
       var tree = _activatory.get<TreeNode>();
 
       _assertTreeNode(tree, 3);
@@ -386,7 +387,6 @@ void main() {
     });
 
     test('for array of objects with array in ctor', () {
-      _activatory.registerArray<TreeNode>();
       var tree = _activatory.get<List<TreeNode>>();
 
       for (var node1 in tree) {
@@ -583,7 +583,6 @@ void main() {
     });
 
     test('recursion limit per type', () {
-      _activatory.registerArray<TreeNode>();
       var expectedArrayRecursionLimit = 5;
       var expectedRefRecursionLimit = 0;
       _activatory.customize<TreeNode>().maxRecursion = expectedArrayRecursionLimit;
@@ -623,7 +622,6 @@ void main() {
   group('Can customize', () {
     test('argument by type with delegate', () {
       _activatory.customize<FactoryWithFixedValues>()..whenArgument<String>().than(useCallback: (ctx) => 'A');
-      _activatory.registerArray<FactoryWithFixedValues>();
 
       final items = _activatory.get<List<FactoryWithFixedValues>>();
       var result = SplayTreeSet.from(items.map((item) => item.field));
@@ -647,7 +645,6 @@ void main() {
       _activatory.customize<FactoryWithFixedValues>()
         ..arraySize = 15
         ..whenArgument<String>().than(usePool: ['A', 'B', 'C']);
-      _activatory.registerArray<FactoryWithFixedValues>();
 
       final items = _activatory.get<List<FactoryWithFixedValues>>();
       var result = SplayTreeSet.from(items.map((item) => item.field));
@@ -661,7 +658,6 @@ void main() {
         ..arraySize = 15
         ..whenArgument<String>('_b').than(usePool: ['B', 'C'])
         ..whenArgument<String>().than(usePool: ['A']);
-      _activatory.registerArray<CtorWithTwoStringArgs>();
 
       final items = _activatory.get<List<CtorWithTwoStringArgs>>();
       var resultA = SplayTreeSet.from(items.map((item) => item.a));
@@ -704,7 +700,7 @@ void main() {
   });
 
   group('Type aliases', () {
-    test('allow iterable of primitive type activation without setup', () {
+    test('allow iterable of primitive type activation', () {
       var result = _activatory.get<PrimitiveIterableInCtor>();
 
       expect(result, isNotNull);
@@ -713,8 +709,7 @@ void main() {
       expect(result.field, isNot(contains(null)));
     });
 
-    test('allow iterable of complex type activation with setup', () {
-      _activatory.registerArray<PrimitiveIterableInCtor>();
+    test('allow iterable of complex type activation', () {
       var result = _activatory.get<ComplexIterableInCtor>();
 
       expect(result, isNotNull);

@@ -1,7 +1,7 @@
 import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/backends/array_backend.dart';
+import 'package:activatory/src/backends/array/array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/generator_backend_wrapper.dart';
 
@@ -19,7 +19,7 @@ class RecursionLimiter<T> implements GeneratorBackend<T>, GeneratorBackendWrappe
   T get(ActivationContext context) {
     if (context.isVisitLimitReached(_type)) {
       var classMirror = reflectClass(_type);
-      if(classMirror.isSubclassOf(_listMirror)){
+      if (classMirror.isSubclassOf(_listMirror)) {
         return (_wrapped as ArrayBackend).empty() as T;
       }
       return null;

@@ -1,7 +1,7 @@
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/aliases/type_alias_registry.dart';
 import 'package:activatory/src/backend_store.dart';
-import 'package:activatory/src/backends/array_backend.dart';
+import 'package:activatory/src/backends/array/explicit_array_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/map_backend.dart';
 import 'package:activatory/src/backends/recursion_limiter.dart';
@@ -56,7 +56,7 @@ class BackendsRegistry {
     return wrapped;
   }
 
-  void registerArray<T>() => registerTyped(new ArrayBackend<T>());
+  void registerArray<T>() => registerTyped(new ExplicitArrayBackend<T>());
 
   void registerMap<K, V>() => registerTyped(new MapBackend<K, V>());
 

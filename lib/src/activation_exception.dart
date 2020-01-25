@@ -4,4 +4,7 @@ class ActivationException implements Exception {
   ActivationException(this._message);
 
   String get message => _message;
+
+  @override
+  String toString() => 'ActivationException: $message';
 }

@@ -14,7 +14,6 @@ import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/params_object/params_object.dart';
 import 'package:activatory/src/post_activation/fields_filler.dart';
-import 'package:activatory/src/type_helper.dart';
 import 'package:activatory/src/value_generator_impl.dart';
 
 class Activatory {
@@ -109,17 +108,6 @@ class Activatory {
   /// Allows to use [TTarget] type as activation target for [TSource] activation.
   /// [TTarget] should implements [TSource].
   void replaceSupperClass<TSource, TTarget extends TSource>() => _typeAliasesRegistry.setAlias(TSource, TTarget);
-
-  ///Registers [List] of [T].
-  ///
-  /// Need to be called to add [List] of [T] activation ability due to Dart reflection limitations.
-  /// By default also register [Iterable] of [T]. Pass [addIterableAlias]=[false] to disable [Iterable] of [T] support.
-  void registerArray<T>({bool addIterableAlias = true}) {
-    if (addIterableAlias) {
-      _typeAliasesRegistry.putIfAbsent(getType<Iterable<T>>(), getType<List<T>>());
-    }
-    _backendRegistry.registerArray<T>();
-  }
 
   /// Registers [Map] of [K] and [V].
   ///
