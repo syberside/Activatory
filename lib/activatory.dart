@@ -5,4 +5,4 @@
 
 export 'src/activation_context.dart' show ActivationContext;
 export 'src/activatory.dart' show Activatory;
-export 'src/post_activation/fields_auto_fill.dart' show FieldsAutoFill;
+export 'src/post_activation/fields_auto_filling_strategy.dart' show FieldsAutoFillingStrategy;

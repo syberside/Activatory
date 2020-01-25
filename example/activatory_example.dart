@@ -1,5 +1,9 @@
 import 'package:activatory/activatory.dart';
+import 'package:activatory/params_object.dart';
 import 'package:activatory/src/activatory.dart';
+import 'package:activatory/src/customization/backend_resolution_strategy.dart';
+import 'package:activatory/src/customization/default_values_handling_strategy.dart';
+import 'package:activatory/src/customization/type_customization.dart';
 
 main() {
   var activatory = new Activatory();
@@ -29,6 +33,10 @@ main() {
   assert(myComplexGraphClass.dateTimeFieldWithPublicSetter != null);
   // If constructor parameter or getter type is custom class it will be created in same way.
   assert(myComplexGraphClass.myClassFieldWithPublicSetter.intFieldWithPublicSetter != null);
+
+  // Recursive graphs are also handled.
+  final myLinkedList = activatory.get<LinkedNode<int>>();
+  assert(myLinkedList.next.next.next.value != null); // Default recursion limit is 3.
 
   // Activatory can create multiple objects at one call.
   var intArray = activatory.getManyTyped<int>();
@@ -103,6 +111,27 @@ main() {
   var today = activatory.get<DateTime>(now);
   assert(today == now);
 
+  // Params can be used as key if substitution value from test to specific activation call is required.
+  // See [Params] class documentation for more info.
+  final task = activatory.get<Task>(new TaskParams(type: Value('specific value')));
+  assert(task.title == 'random =)');
+  assert(task.id == null);
+  assert(task.type == 'specific value');
+
+  // Activation behavior can be customized for all types or per type.
+  TypeCustomization defaultCustomization = activatory.defaultCustomization;
+  defaultCustomization
+    ..arraySize = 100500
+    ..defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceAll
+    ..fieldsAutoFillingStrategy = FieldsAutoFillingStrategy.FieldsAndSetters
+    ..maxRecursionLevel = 10
+    ..resolutionStrategy = BackendResolutionStrategy.TakeRandomNamedCtor;
+  // TypeCustomization allows to bind some configuration directly to argument by name. It can be unsafe because arguments can be renamed.
+  TypeCustomization typeCustomization = activatory.customize<MyClass>();
+  typeCustomization
+    ..whenArgument('finalStringFieldFilledWithCtor').than(usePool: [DateTime.now()])
+    ..whenArgument('intFieldWithPublicSetter').than(useCallback: (ctx) => 10);
+
   //See activatory_test.dart for more examples
 }
 
@@ -176,3 +205,43 @@ class MyGenericClass<T> {
 }
 
 enum MyEnum { A, B, C }
+
+class LinkedNode<T> {
+  final T value;
+  final LinkedNode<T> next;
+
+  LinkedNode(this.value, this.next);
+}
+
+class Task {
+  final int id;
+  final String title;
+  final String type;
+
+  Task(this.id, this.title, this.type);
+}
+
+class TaskParams extends Params<Task> {
+  Value<int> _id;
+  Value<String> _title;
+  Value<String> _type;
+
+  TaskParams({
+    Value<int> id = const NullValue(),
+    Value<String> title = const Value('random =)'),
+    Value<String> type,
+  }) {
+    _id = id;
+    _title = title;
+    _type = type;
+  }
+
+  @override
+  Task resolve(ActivationContext ctx) {
+    return new Task(
+      get(_id, ctx),
+      get(_title, ctx),
+      get(_type, ctx),
+    );
+  }
+}

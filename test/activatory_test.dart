@@ -6,7 +6,7 @@ import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
-import 'package:activatory/src/post_activation/fields_auto_fill.dart';
+import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -110,10 +110,6 @@ void main() {
   });
 
   group("Can override default factory resolution logic ", () {
-    tearDown(() {
-      _activatory = new Activatory();
-    });
-
     group("with explicit factory for", () {
       test("primitive type", () {
         var expected = _activatory.get<int>();
@@ -310,15 +306,8 @@ void main() {
     });
   });
 
-  group('Can use generics with explicit overriding', () {
-    void overrideGeneric<T>() => _activatory.useFunction((ctx) => new Generic<T>(ctx.createTyped<T>(ctx)));
-    void overrideGenericArray<T>() =>
-        _activatory.useFunction((ctx) => new GenericArrayInCtor<T>(ctx.createTyped<List<T>>(ctx)));
-
+  group('Can use generics', () {
     test('for ctor argument', () {
-      overrideGeneric<bool>();
-      overrideGeneric<int>();
-
       var genericResult1 = _activatory.get<Generic<bool>>();
       var genericResult2 = _activatory.get<Generic<int>>();
 
@@ -330,9 +319,6 @@ void main() {
     });
 
     test('for ctor array argument', () {
-      overrideGenericArray<bool>();
-      overrideGenericArray<int>();
-
       var genericResult1 = _activatory.get<GenericArrayInCtor<bool>>();
       var genericResult2 = _activatory.get<GenericArrayInCtor<int>>();
 
@@ -578,8 +564,8 @@ void main() {
     test('recursion limit per type', () {
       var expectedArrayRecursionLimit = 5;
       var expectedRefRecursionLimit = 0;
-      _activatory.customize<TreeNode>().maxRecursion = expectedArrayRecursionLimit;
-      _activatory.customize<LinkedNode>().maxRecursion = expectedRefRecursionLimit;
+      _activatory.customize<TreeNode>().maxRecursionLevel = expectedArrayRecursionLimit;
+      _activatory.customize<LinkedNode>().maxRecursionLevel = expectedRefRecursionLimit;
 
       final tree = _activatory.get<TreeNode>();
       final linkedNode = _activatory.get<LinkedNode>();
@@ -719,18 +705,6 @@ void main() {
     });
   });
 
-  group('Can customize default values usage', () {
-    //Positional
-    //Named
-
-    //Nulls
-    //NotNulls
-
-    // UseDefaultValue
-    // ReplaceNulls
-    // ReplaceAll
-  });
-
   group("Can customize default values usage for", () {
     group("positional arguments", () {
       test("with ReplaceNulls", () {
@@ -838,7 +812,8 @@ void main() {
 
   group('Can customize fields usage', () {
     test('FieldsAndSetters', () {
-      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.FieldsAndSetters;
+      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFillingStrategy =
+          FieldsAutoFillingStrategy.FieldsAndSetters;
 
       var result = _activatory.get<FiledsWithPublicSetters>();
 
@@ -848,7 +823,7 @@ void main() {
     });
 
     test('fields only', () {
-      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.Fields;
+      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFillingStrategy = FieldsAutoFillingStrategy.Fields;
 
       var result = _activatory.get<FiledsWithPublicSetters>();
 
@@ -858,7 +833,7 @@ void main() {
     });
 
     test('none', () {
-      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFill = FieldsAutoFill.None;
+      _activatory.customize<FiledsWithPublicSetters>().fieldsAutoFillingStrategy = FieldsAutoFillingStrategy.None;
 
       var result = _activatory.get<FiledsWithPublicSetters>();
 

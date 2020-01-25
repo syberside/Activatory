@@ -1,12 +1,12 @@
 import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/post_activation/fields_auto_fill.dart';
+import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
 
 class FieldsFiller {
   void fill(Object object, ActivationContext ctx) {
     var fieldsStrategy = ctx.fieldsAutoFill(object.runtimeType);
-    if (fieldsStrategy == FieldsAutoFill.None) {
+    if (fieldsStrategy == FieldsAutoFillingStrategy.None) {
       return;
     }
 
@@ -20,7 +20,7 @@ class FieldsFiller {
       var value = ctx.create(field.type.reflectedType, ctx);
       reflected.setField(field.simpleName, value);
     }
-    if (fieldsStrategy == FieldsAutoFill.Fields) {
+    if (fieldsStrategy == FieldsAutoFillingStrategy.Fields) {
       return;
     }
 

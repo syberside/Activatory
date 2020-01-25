@@ -4,7 +4,7 @@ import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
-import 'package:activatory/src/post_activation/fields_auto_fill.dart';
+import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
 import 'package:activatory/src/value_generator.dart';
 
 class ActivationContext implements ValueGenerator {
@@ -17,11 +17,13 @@ class ActivationContext implements ValueGenerator {
   ActivationContext(this._valueGenerator, this._random, this._key, this._customizationsRegistry);
 
   Object get key => _key;
+
   Random get random => _random;
 
   int arraySize(Type type) => _customizationsRegistry.get(type, key: key).arraySize;
 
-  DefaultValuesHandlingStrategy defaultValuesHandlingStrategy(Type type)=> _customizationsRegistry.get(type, key: key).defaultValuesHandlingStrategy;
+  DefaultValuesHandlingStrategy defaultValuesHandlingStrategy(Type type) =>
+      _customizationsRegistry.get(type, key: key).defaultValuesHandlingStrategy;
 
   int countVisits(Type type) => _stackTrace.where((t) => t == type).length;
 
@@ -53,12 +55,13 @@ class ActivationContext implements ValueGenerator {
 
   bool isVisitLimitReached(Type type) {
     final customization = _customizationsRegistry.get(type, key: key);
-    return countVisits(type) > customization.maxRecursion;
+    return countVisits(type) > customization.maxRecursionLevel;
   }
 
   void notifyVisited(Type type) => _stackTrace.removeAt(_stackTrace.lastIndexOf(type));
 
   void notifyVisiting(Type type) => _stackTrace.add(type);
 
-  FieldsAutoFill fieldsAutoFill(Type type)=> _customizationsRegistry.get(type, key: key).fieldsAutoFill;
+  FieldsAutoFillingStrategy fieldsAutoFill(Type type) =>
+      _customizationsRegistry.get(type, key: key).fieldsAutoFillingStrategy;
 }
