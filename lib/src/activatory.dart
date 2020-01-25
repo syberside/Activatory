@@ -109,11 +109,6 @@ class Activatory {
   /// [TTarget] should implements [TSource].
   void replaceSupperClass<TSource, TTarget extends TSource>() => _typeAliasesRegistry.setAlias(TSource, TTarget);
 
-  /// Registers [Map] of [K] and [V].
-  ///
-  /// Need to be called to add [Map] support due to Dart reflection limitations.
-  void registerMap<K, V>() => _backendRegistry.registerMap<K, V>();
-
   /// Register [Params] object.
   ///
   /// [Params] object implements [TValue] activation and stores arguments used to activate instance.

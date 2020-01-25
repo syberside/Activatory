@@ -7,6 +7,7 @@ import 'package:activatory/src/backends/array/explicit_array_backend.dart';
 import 'package:activatory/src/backends/array/reflective_array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/backends/map_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
@@ -20,6 +21,7 @@ class BackendsFactory {
   final Map<Type, _GeneratorBackendFactory> _predefinedFactories = new Map<Type, _GeneratorBackendFactory>();
 
   final _listMirror = reflectClass(List);
+  final _mapClass = reflectClass(Map);
 
   BackendsFactory(this._random) {
     _predefinedFactories[bool] = () => new RandomBoolBackend(_random);
@@ -54,8 +56,15 @@ class BackendsFactory {
   List<GeneratorBackend> _createComplexObjectBackend(ClassMirror classMirror, Type type) {
     // We need to make sure that we are using original class mirror, not generic subtype
     // Otherwise subtype check will return false
-    if (reflectClass(type).isSubtypeOf(_listMirror)) {
-      return [new ReflectiveArrayBackend(classMirror.typeArguments.first.reflectedType)];
+    final originalClassMirror = reflectClass(type);
+    if (originalClassMirror.isSubtypeOf(_listMirror)) {
+      var typeArg = classMirror.typeArguments.first.reflectedType;
+      return [new ReflectiveArrayBackend(typeArg)];
+    }
+    if (originalClassMirror.isSubclassOf(_mapClass)) {
+      var typeArg1 = classMirror.typeArguments[0].reflectedType;
+      var typeArg2 = classMirror.typeArguments[1].reflectedType;
+      return [new MapBackend(typeArg1, typeArg2)];
     }
     if (classMirror.isAbstract) {
       throw new ActivationException("Cant create instance of abstract class ${classMirror}");

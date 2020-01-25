@@ -610,9 +610,7 @@ void main() {
     });
   });
 
-  test('Can create map with explicit registration', () {
-    _activatory.registerMap<String, int>();
-
+  test('Can create map', () {
     final result = _activatory.get<Map<String, int>>();
 
     expect(result, isNotNull);

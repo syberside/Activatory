@@ -34,8 +34,7 @@ main() {
   var intArray = activatory.getManyTyped<int>();
   assert(intArray.length == 3); //default array length is 3
 
-  // List, iterables and map parameters or fields are also supported, but requires explicit registration due to Dart reflection limitations.
-  activatory.registerMap<int, String>(); //Without this line activation will fail
+  // List, iterables and map parameters or fields are also supported.
   var explicitRegistrationSample = activatory.get<MyClassWithArrayIterableAndMapParameters>();
   assert(explicitRegistrationSample.intArray.length == 3); //default array length is 3
   assert(explicitRegistrationSample.intIterable.length == 3); //default iterable length is 3

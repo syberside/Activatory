@@ -3,6 +3,7 @@
 - Documentation improvements
 - Params object related classes moved to separate files
 - Entry points refactored
+- Fixed issues with list, iterable, map and generic class activation. Pre configuration is not required any more.
 
 ## v0.0.21
 - Bugfix and pubspec update
