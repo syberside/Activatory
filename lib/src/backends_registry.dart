@@ -30,14 +30,14 @@ class BackendsRegistry {
 
   GeneratorBackend get(Type type, ActivationContext context) {
     Object key = context.key;
-    if (context.key is Params) {
+    if (key is Params) {
       key = key.runtimeType;
     }
     var affectedType = _aliasesRegistry.getAlias(type);
     var storeKey = new ResolveKey(affectedType, key);
     var backends = _store.find(storeKey);
     if (backends == null) {
-      backends = _factory.create(affectedType);
+      backends = _factory.create(affectedType, context);
       backends = backends.reversed.map((b) => register(b, affectedType, key: key)).toList();
       return get(affectedType, context);
     }

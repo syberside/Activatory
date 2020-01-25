@@ -1,3 +1,5 @@
+import 'dart:mirrors';
+
 import 'package:activatory/activatory.dart';
 import 'package:activatory/params_object.dart';
 
@@ -135,12 +137,18 @@ class GenericArrayInCtor<T> {
 
 class GenericArrayInCtorParams<T> extends Params<GenericArrayInCtor<T>> {
   GenericArrayInCtor<T> resolve(ActivationContext ctx) {
+    if (T == reflectType(int).reflectedType) {
+      return new GenericArrayInCtor<int>([42]) as GenericArrayInCtor<T>;
+    }
     return new GenericArrayInCtor(ctx.createTyped<List<T>>(ctx));
   }
 }
 
 class GenericParams<T> extends Params<Generic<T>> {
   Generic<T> resolve(ActivationContext ctx) {
+    if (T == reflectType(int).reflectedType) {
+      return new Generic<int>(42) as Generic<T>;
+    }
     return new Generic(ctx.createTyped<T>(ctx));
   }
 }

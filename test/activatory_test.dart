@@ -406,7 +406,6 @@ void main() {
 
   group('Can use ParamsObject', () {
     test('for complex type', () {
-      _activatory.registerParamsObject<Task, TaskParams>();
       var title = _activatory.get<String>();
 
       var result = _activatory.get<Task>(TaskParams(
@@ -423,23 +422,17 @@ void main() {
     });
 
     test('for generic type', () {
-      _activatory.registerParamsObject<Generic<int>, GenericParams<int>>();
-
       var result = _activatory.get<Generic<int>>(GenericParams<int>());
 
       expect(result, isNotNull);
-      expect(result.field, isNotNull);
+      expect(result.field, equals(42));
     });
 
     test('for generic type with generic array in ctor', () {
-      _activatory.registerParamsObject<GenericArrayInCtor<int>, GenericArrayInCtorParams<int>>();
-
       var result = _activatory.get<GenericArrayInCtor<int>>(GenericArrayInCtorParams<int>());
 
       expect(result, isNotNull);
-      expect(result.listField, isNotNull);
-      expect(result.listField, hasLength(3));
-      expect(result.listField, isNot(contains(null)));
+      expect(result.listField, equals([42]));
     });
   });
 

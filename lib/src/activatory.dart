@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/aliases/type_alias_registry.dart';
 import 'package:activatory/src/backends/explicit_backend.dart';
-import 'package:activatory/src/backends/params_object_backend.dart';
 import 'package:activatory/src/backends/singleton_backend.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/backends_registry.dart';
@@ -12,7 +11,6 @@ import 'package:activatory/src/customization/backend_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/generator_delegate.dart';
-import 'package:activatory/src/params_object/params_object.dart';
 import 'package:activatory/src/post_activation/fields_filler.dart';
 import 'package:activatory/src/value_generator_impl.dart';
 
@@ -108,15 +106,6 @@ class Activatory {
   /// Allows to use [TTarget] type as activation target for [TSource] activation.
   /// [TTarget] should implements [TSource].
   void replaceSupperClass<TSource, TTarget extends TSource>() => _typeAliasesRegistry.setAlias(TSource, TTarget);
-
-  /// Register [Params] object.
-  ///
-  /// [Params] object implements [TValue] activation and stores arguments used to activate instance.
-  /// [Params] object should be passed to activation methods as a key to pass parameters into resolve method.
-  void registerParamsObject<TValue, TParamsObj extends Params<TValue>>() {
-    var backend = new ParamsObjectBackend<TValue>();
-    _backendRegistry.registerTyped<TValue>(backend, key: TParamsObj);
-  }
 
   /// Returns default customization which is used to activate not customized object types.
   /// Use returned value to customize default activation options.
