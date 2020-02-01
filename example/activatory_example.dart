@@ -34,7 +34,7 @@ main() {
   assert(myLinkedList.next.next.next.value != null); // Default recursion limit is 3.
 
   // Activatory can create multiple objects at one call.
-  var intArray = activatory.getManyTyped<int>();
+  var intArray = activatory.getMany<int>();
   assert(intArray.length == 3); //default array length is 3
 
   // List, iterables and map parameters or fields are also supported.
@@ -113,11 +113,6 @@ main() {
     ..fieldsAutoFillingStrategy = FieldsAutoFillingStrategy.FieldsAndSetters
     ..maxRecursionLevel = 10
     ..resolutionStrategy = BackendResolutionStrategy.TakeRandomNamedCtor;
-  // TypeCustomization allows to bind some configuration directly to argument by name. It can be unsafe because arguments can be renamed.
-  TypeCustomization typeCustomization = activatory.customize<MyClass>();
-  typeCustomization
-    ..whenArgument('finalStringFieldFilledWithCtor').than(usePool: [DateTime.now()])
-    ..whenArgument('intFieldWithPublicSetter').than(useCallback: (ctx) => 10);
 
   //See activatory_test.dart for more examples
 }

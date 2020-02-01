@@ -48,7 +48,7 @@ class Activatory {
   /// Creates and returns multiple instances of specified [type] filled with random data recursively.
   /// Returns [List] of size [count]. If [count] is not specified default strategy will be used.
   /// Uses [key] to select configuration.
-  List getMany(Type type, {int count, Object key}) {
+  List getManyUntyped(Type type, {int count, Object key}) {
     var countToCreate = count ?? _customizationsRegistry.get(type, key: key).arraySize;
     return List.generate(countToCreate, (int index) => getUntyped(type, key));
   }
@@ -56,21 +56,27 @@ class Activatory {
   /// Creates and returns multiple instances of specified type [T] filled with random data recursively.
   /// Returns [List] of size [count]. If [count] is not specified default strategy will be used.
   /// Uses [key] to select configuration.
-  List<T> getManyTyped<T>({int count, Object key}) {
-    var dynamicResult = getMany(T, count: count, key: key);
+  List<T> getMany<T>({int count, Object key}) {
+    var dynamicResult = getManyUntyped(T, count: count, key: key);
     //Cast result from List<dynamic> to List<T> through array creation
     return new List<T>.from(dynamicResult);
   }
 
-  /// Returns random item from iterable. Variations iterable will be iterated while choosing item.
-  Object take(Iterable variations) {
+  /// Returns random item from iterable. [variations] value will be iterated while choosing item.
+  Object takeUntyped(Iterable variations) {
     final items = variations.toList();
     final index = _random.nextInt(items.length);
     return items[index];
   }
 
-  /// Returns random item from iterable. Variations iterable will be iterated while choosing item.
-  T takeTyped<T>(Iterable<T> variations) => take(variations) as T;
+  /// Returns random item from iterable.  [variations] value will be iterated while choosing item.
+  T take<T>(Iterable<T> variations) => takeUntyped(variations) as T;
+
+  /// Returns random items from iterable. [variations] value will be iterated while choosing item.
+  List<Object> takeManyUntyped(int count, Iterable variations) => List.generate(count, (_) => takeUntyped(variations));
+
+  /// Returns random items from iterable.  [variations] value will be iterated while choosing item.
+  List<T> takeMany<T>(int count, Iterable<T> variations) => takeManyUntyped(count, variations) as List<T>;
 
   // endregion
 

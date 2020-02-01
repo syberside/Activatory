@@ -554,20 +554,20 @@ void main() {
 
   group('Can create arrays without explicit regestration', () {
     test('with default length', () {
-      var result = _activatory.getManyTyped<int>();
+      var result = _activatory.getMany<int>();
       expect(result, isNotNull);
       expect(result, hasLength(3));
       expect(result, isNot(contains(null)));
     });
     test('with parametrized length', () {
-      var result = _activatory.getManyTyped<int>(count: 2);
+      var result = _activatory.getMany<int>(count: 2);
       expect(result, isNotNull);
       expect(result, hasLength(2));
       expect(result, isNot(contains(null)));
     });
     test('with customized per type length', () {
       _activatory.customize<int>().arraySize = 10;
-      var result = _activatory.getManyTyped<int>();
+      var result = _activatory.getMany<int>();
       expect(result, isNotNull);
       expect(result, hasLength(10));
       expect(result, isNot(contains(null)));
@@ -575,7 +575,7 @@ void main() {
     test('with customized key', () {
       var key = 'key';
       _activatory.useSingleton(10, key: key);
-      var result = _activatory.getManyTyped<int>(key: key);
+      var result = _activatory.getMany<int>(key: key);
       expect(result, isNotNull);
       expect(result, hasLength(3));
       var unique = new Set.from(result);
@@ -752,14 +752,14 @@ void main() {
 
   group('Can select item from predefined iterable', () {
     test('with typed api', () {
-      final variants = _activatory.getManyTyped<int>();
-      final result = _activatory.takeTyped<int>(variants);
+      final variants = _activatory.getMany<int>();
+      final result = _activatory.take<int>(variants);
       expect(variants, contains(result));
     });
 
     test('with not typed api', () {
-      final variants = _activatory.getManyTyped<int>();
-      final result = _activatory.take(variants);
+      final variants = _activatory.getMany<int>();
+      final result = _activatory.takeUntyped(variants);
       expect(variants, contains(result));
     });
   });

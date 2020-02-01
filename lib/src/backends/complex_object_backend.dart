@@ -27,11 +27,6 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
   }
 
   Object _generateValues(ArgumentInfo arg, ActivationContext context) {
-    final overrideDelegate = context.getArgumentOverride(_ctorInfo.classType, arg.type, arg.name);
-    if (overrideDelegate != null) {
-      return overrideDelegate(context);
-    }
-
     final defaultValuesStrategy = context.defaultValuesHandlingStrategy(_ctorInfo.classType);
     switch (defaultValuesStrategy) {
       case DefaultValuesHandlingStrategy.UseAll:
