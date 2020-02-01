@@ -6,7 +6,6 @@ import 'package:activatory/src/backends/recursion_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/customization/backend_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
-import 'package:activatory/src/params_object/params_object.dart';
 import 'package:activatory/src/resolve_key.dart';
 
 class BackendsRegistry {
@@ -30,9 +29,6 @@ class BackendsRegistry {
 
   GeneratorBackend get(Type type, ActivationContext context) {
     Object key = context.key;
-    if (key is Params) {
-      key = key.runtimeType;
-    }
     var affectedType = _aliasesRegistry.getAlias(type);
     var storeKey = new ResolveKey(affectedType, key);
     var backends = _store.find(storeKey);

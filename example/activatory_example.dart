@@ -1,5 +1,4 @@
 import 'package:activatory/activatory.dart';
-import 'package:activatory/params_object.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
@@ -111,13 +110,6 @@ main() {
   var today = activatory.get<DateTime>(now);
   assert(today == now);
 
-  // [Params] can be used as a key to activate object using passed from test arguments.
-  // See [params_example.dart] for more complex example.
-  final task = activatory.get<Task>(new TaskParams(type: Value('specific value')));
-  assert(task.title == 'random =)');
-  assert(task.id == null);
-  assert(task.type == 'specific value');
-
   // Activation behavior can be customized for all types or per type.
   TypeCustomization defaultCustomization = activatory.defaultCustomization;
   defaultCustomization
@@ -211,45 +203,4 @@ class LinkedNode<T> {
   final LinkedNode<T> next;
 
   LinkedNode(this.value, this.next);
-}
-
-class Task {
-  final int id;
-  final String title;
-  final String type;
-  final String a1;
-  final String a2;
-  final String a3;
-  final String a4;
-
-  Task(this.id, this.title, this.type, this.a1, this.a2, this.a3, this.a4);
-}
-
-class TaskParams extends Params<Task> {
-  Value<int> _id;
-  Value<String> _title;
-  Value<String> _type;
-
-  TaskParams({
-    Value<int> id = const NullValue(),
-    Value<String> title = const Value('random =)'),
-    Value<String> type,
-  }) {
-    _id = id;
-    _title = title;
-    _type = type;
-  }
-
-  @override
-  Task resolve(ActivationContext ctx) {
-    return new Task(
-      get(_id, ctx),
-      get(_title, ctx),
-      get(_type, ctx),
-      ctx.createTyped<String>(ctx),
-      ctx.createTyped<String>(ctx),
-      ctx.createTyped<String>(ctx),
-      ctx.createTyped<String>(ctx),
-    );
-  }
 }

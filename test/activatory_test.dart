@@ -1,16 +1,13 @@
 import 'dart:collection';
 
 import 'package:activatory/activatory.dart';
-import 'package:activatory/params_object.dart';
 import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/activatory.dart';
 import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
 import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'task_params.dart';
 import 'test_classes.dart';
 
 void main() {
@@ -388,47 +385,6 @@ void main() {
         }
       }
     });
-  });
-
-  group('Can use ParamsObject', () {
-    test('for complex type', () {
-      var title = _activatory.get<String>();
-
-      var result = _activatory.get<Task>(TaskParams(
-        title: Value(title),
-        isTemplate: NullValue(),
-      ));
-
-      expect(result, isNotNull);
-      expect(result.id, isNotNull);
-      expect(result.title, equals(title));
-      expect(result.isRecurrent, isNotNull);
-      expect(result.isTemplate, isNull);
-      expect(result.dueDate, isNull);
-    });
-
-    test('for generic type', () {
-      var result = _activatory.get<Generic<int>>(GenericParams<int>());
-
-      expect(result, isNotNull);
-      expect(result.field, equals(42));
-    });
-
-    test('for generic type with generic array in ctor', () {
-      var result = _activatory.get<GenericArrayInCtor<int>>(GenericArrayInCtorParams<int>());
-
-      expect(result, isNotNull);
-      expect(result.listField, equals([42]));
-    });
-  });
-
-  test('Can use library to create mock', () {
-    var result = _activatory.get<TaskMock>();
-    when(result.isRecurrent).thenReturn(true);
-
-    expect(result, isNotNull);
-    expect(result.isRecurrent, isTrue);
-    expect(result.isTemplate, isNull);
   });
 
   group('Can customize', () {

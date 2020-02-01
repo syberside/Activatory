@@ -9,11 +9,9 @@ import 'package:activatory/src/backends/array/reflective_array_backend.dart';
 import 'package:activatory/src/backends/complex_object_backend.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/backends/map_backend.dart';
-import 'package:activatory/src/backends/params_object_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
-import 'package:activatory/src/params_object/params_object.dart';
 import 'package:activatory/src/type_helper.dart';
 
 typedef GeneratorBackend _GeneratorBackendFactory();
@@ -25,7 +23,6 @@ class BackendsFactory {
 
   final _listMirror = reflectClass(List);
   final _mapMirror = reflectClass(Map);
-  final _paramsObjectMirror = reflectClass(Params);
 
   BackendsFactory(this._random) {
     _predefinedFactories[bool] = () => new RandomBoolBackend(_random);
@@ -47,10 +44,6 @@ class BackendsFactory {
     var predefinedFactory = _predefinedFactories[type];
     if (predefinedFactory != null) {
       return [predefinedFactory()];
-    }
-
-    if (context.key is Params) {
-      return [new ParamsObjectBackend()];
     }
     var classMirror = reflectType(type) as ClassMirror;
     if (classMirror.isEnum) {
