@@ -28,7 +28,7 @@ class ActivationContext implements ValueGenerator {
   int countVisits(Type type) => _stackTrace.where((t) => t == type).length;
 
   @override
-  Object create(Type type, ActivationContext context) => _valueGenerator.create(type, context);
+  Object create(Type type, ActivationContext context) => _valueGenerator.create(type, this);
 
   @override
   T createTyped<T>(ActivationContext context) => create(T, context);

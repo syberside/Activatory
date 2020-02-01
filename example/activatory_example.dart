@@ -111,8 +111,8 @@ main() {
   var today = activatory.get<DateTime>(now);
   assert(today == now);
 
-  // Params can be used as key if substitution value from test to specific activation call is required.
-  // See [Params] class documentation for more info.
+  // [Params] can be used as a key to activate object using passed from test arguments.
+  // See [params_example.dart] for more complex example.
   final task = activatory.get<Task>(new TaskParams(type: Value('specific value')));
   assert(task.title == 'random =)');
   assert(task.id == null);
@@ -217,8 +217,12 @@ class Task {
   final int id;
   final String title;
   final String type;
+  final String a1;
+  final String a2;
+  final String a3;
+  final String a4;
 
-  Task(this.id, this.title, this.type);
+  Task(this.id, this.title, this.type, this.a1, this.a2, this.a3, this.a4);
 }
 
 class TaskParams extends Params<Task> {
@@ -242,6 +246,10 @@ class TaskParams extends Params<Task> {
       get(_id, ctx),
       get(_title, ctx),
       get(_type, ctx),
+      ctx.createTyped<String>(ctx),
+      ctx.createTyped<String>(ctx),
+      ctx.createTyped<String>(ctx),
+      ctx.createTyped<String>(ctx),
     );
   }
 }
