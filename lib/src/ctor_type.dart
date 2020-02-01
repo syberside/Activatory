@@ -1,0 +1,4 @@
+enum CtorType {
+  Default,
+  Named,
+}

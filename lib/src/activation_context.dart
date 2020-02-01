@@ -1,9 +1,7 @@
 import 'dart:math';
 
-import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
-import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
 import 'package:activatory/src/value_generator.dart';
 
@@ -32,26 +30,6 @@ class ActivationContext implements ValueGenerator {
 
   @override
   T createTyped<T>(ActivationContext context) => create(T, context);
-
-  GeneratorDelegate getArgumentOverride<T>(Type resolveType, Type argumentType, String argumentName) {
-    final typeCustomization = _customizationsRegistry.get(resolveType, key: key);
-    final argumentCustomization = typeCustomization.getArgumentCustomization(argumentType, argumentName);
-
-    if (argumentCustomization == null) {
-      return null;
-    }
-
-    if (argumentCustomization.callback != null) {
-      return argumentCustomization.callback;
-    }
-
-    if (argumentCustomization.pool != null) {
-      final randomItemBackend = new RandomArrayItemBackend(argumentCustomization.pool);
-      return (ctx) => randomItemBackend.get(ctx);
-    }
-
-    return null;
-  }
 
   bool isVisitLimitReached(Type type) {
     final customization = _customizationsRegistry.get(type, key: key);

@@ -1,3 +1,4 @@
+/// Defines behavior for fields auto filling.
 enum FieldsAutoFillingStrategy {
   /// Ignore fields
   None,

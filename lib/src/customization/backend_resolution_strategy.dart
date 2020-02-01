@@ -1,24 +1,27 @@
+import 'package:activatory/src/activation_exception.dart';
+
+/// Defines strategy of selecting backend for activation.
 enum BackendResolutionStrategy {
-  /// Take first available backend. If overrides was provided than first available is latest override.
-  /// If no overrides are provided than first backend from created by BackendFactory backends will be used:
-  ///  - random for primitive types;
-  ///  - random enum value for enums;
-  ///  - fist defined ctor for complex type/
+  /// Take first available backend. If overrides was provided latest one will be used.
+  /// If no overrides are provided will be used:
+  ///  - random value generator for primitive types;
+  ///  - random value generator enums;
+  ///  - fist defined ctor for complex type.
   TakeFirstDefined,
 
   /// Take random named ctor for complex type.
-  /// If type doesn't have public named ctor or is not complex type than exception will be thrown.
+  /// If type doesn't have public named ctor or type is not complex [ActivationException] will be thrown.
   TakeRandomNamedCtor,
 
-  /// Take random available backend. If overrides was provided than random backend will be chosen from overrides.
-  /// If no overrides are provided than random backend from created by BackendFactory backends will be used:
-  ///  - random for primitive types;
-  ///  - random enum value for enums;
-  ///  - random defined ctor for complex type/
+  /// Take random available backend. If overrides was provided random backend will be chosen from overrides.
+  /// If no overrides are provided will be used:
+  ///  - random value generator for primitive types;
+  ///  - random value generator enums;
+  ///  - random defined ctor for complex type.
   TakeRandom,
 
   /// Take default ctor for complex type.
-  /// It can be factory method, default ctor or const ctor.
-  /// If type doesn't have public const ctor or is not complex type than exception will be thrown.
+  /// Default ctor is the one called during evaluating `new T()` expression. This can be factory, const or usual ctor.
+  /// If type doesn't have public default ctor or type is not complex [ActivationException] will be thrown.
   TakeDefaultCtor
 }

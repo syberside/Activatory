@@ -12,6 +12,7 @@ import 'package:activatory/src/backends/map_backend.dart';
 import 'package:activatory/src/backends/primitive_random_backends.dart';
 import 'package:activatory/src/backends/random_array_item_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
+import 'package:activatory/src/ctor_type.dart';
 import 'package:activatory/src/type_helper.dart';
 
 typedef GeneratorBackend _GeneratorBackendFactory();

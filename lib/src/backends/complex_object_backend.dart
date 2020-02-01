@@ -2,6 +2,7 @@ import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/argument_info.dart';
 import 'package:activatory/src/backends/generator_backend.dart';
 import 'package:activatory/src/ctor_info.dart';
+import 'package:activatory/src/ctor_type.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
 
 class ComplexObjectBackend implements GeneratorBackend<Object> {

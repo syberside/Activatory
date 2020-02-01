@@ -1,8 +1,4 @@
 import 'package:activatory/activatory.dart';
-import 'package:activatory/src/activatory.dart';
-import 'package:activatory/src/customization/backend_resolution_strategy.dart';
-import 'package:activatory/src/customization/default_values_handling_strategy.dart';
-import 'package:activatory/src/customization/type_customization.dart';
 
 main() {
   var activatory = new Activatory();
@@ -28,12 +24,12 @@ main() {
 
   // Activatory can create complex graph of objects. No pre-configuration required.
   var myComplexGraphClass = activatory.get<ComplexGraphClass>();
-  // Activatory automatically supply random data to constructor parameters and public setters.
+  // Activatory supply random data to constructor parameters and public setters.
   assert(myComplexGraphClass.dateTimeFieldWithPublicSetter != null);
-  // If constructor parameter or getter type is custom class it will be created in same way.
+  // If constructor parameter or setter is user defined class it will be created in the same way.
   assert(myComplexGraphClass.myClassFieldWithPublicSetter.intFieldWithPublicSetter != null);
 
-  // Recursive graphs are also handled.
+  // Recursive graphs are also supported.
   final myLinkedList = activatory.get<LinkedNode<int>>();
   assert(myLinkedList.next.next.next.value != null); // Default recursion limit is 3.
 
@@ -47,8 +43,7 @@ main() {
   assert(explicitRegistrationSample.intIterable.length == 3); //default iterable length is 3
   assert(explicitRegistrationSample.intToStringMap.length == 3); //default map length is 3
 
-  // Generics are also supported but requires explicit registration too.
-  //activatory.useFunction((ctx) => new MyGenericClass<int>(ctx.createTyped<int>(ctx)));
+  // Generics are also supported. No pre-configuration required.
   var genericClassInstance = activatory.get<MyGenericClass<MyGenericClass<int>>>();
   assert(genericClassInstance.value != null);
 
@@ -63,12 +58,12 @@ main() {
   var myClassWithFactoryConstructor = activatory.get<MyClassWithFactoryConstructor>();
   assert(myClassWithFactoryConstructor.someData != null);
 
-  // Default parameters are used while they are not nulls:
-  // 1. For named parameters
+  // Default parameter values are used while they are not nulls. But this behavior can be customized (see below).
+  // 1. Named parameters
   var withNamedParameters = activatory.get<MyClassWithNamedParameter>();
   assert(withNamedParameters.namedArgumentWithDefaultValue == MyClassWithNamedParameter.namedArgumentDefaultValue);
   assert(withNamedParameters.namedArgumentWithoutDefaultValue != null);
-  // 2. For position parameters
+  // 2. Position parameters
   var withPositionParameters = activatory.get<MyClassWithPositionalParameters>();
   assert(withPositionParameters.positionalArgumentWithDefaultValue ==
       MyClassWithPositionalParameters.positionalArgumentDefaultValue);
@@ -97,7 +92,7 @@ main() {
   // This can be accomplished with using key parameter of customization/activation methods.
   activatory.useSingleton(42, key: 'good number');
   activatory.useSingleton(10, key: 'not good number');
-  //TODO: should works without key specification
+  //TODO: Lines below should works without key specification. See https://github.com/syberside/Activatory/issues/30 for details.
   activatory.useFunction((ctx) => ctx.createTyped<int>(ctx).toString(), key: 'good number');
   activatory.useFunction((ctx) => ctx.createTyped<int>(ctx).toString(), key: 'not good number');
   var goodNumberStr = activatory.get<String>('good number');

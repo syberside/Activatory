@@ -31,7 +31,7 @@ class BackendResolverFactory {
       case BackendResolutionStrategy.TakeRandom:
         return new RandomResolver(_random);
       case BackendResolutionStrategy.TakeDefaultCtor:
-        return new DefaultCtorResolver();
+        return new AutoCtorResolver();
       default:
         throw ArgumentError.value(strategy);
     }
