@@ -1,9 +1,11 @@
 import 'dart:math';
 
-import 'package:activatory/src/value-generator/value_generator.dart';
-
-abstract class ActivationContext implements ValueGenerator {
+abstract class ActivationContext {
   Object get key;
 
   Random get random;
+
+  Object createUntyped(Type type);
+
+  T create<T>();
 }

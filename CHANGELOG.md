@@ -1,3 +1,8 @@
+## v0.0.23
+- Analyser options configured. Analyzer issues fixed.
+- Activation contexts mismatch fixed
+- Few refactorings applied
+
 ## v0.0.22
 - Implemented take and takeTyped methods to select random item from Iterable
 - Public API documentation improved

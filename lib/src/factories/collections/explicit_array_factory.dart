@@ -11,7 +11,7 @@ class ExplicitArrayFactory<T> extends Factory<List<T>> {
     }
 
     for (var i = 0; i < context.arraySize(T); i++) {
-      value.add(context.createUntyped(T, context) as T);
+      value.add(context.createUntyped(T) as T);
     }
     return value;
   }

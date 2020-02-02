@@ -79,7 +79,7 @@ void main() {
   assert(goodNumber == 42);
   // Function accept activation context that can be used in complex scenarios to activate other types, read settings and etc.
   activatory.useFunction((ActivationContext ctx) => 'This string contains 34 characters');
-  activatory.useFunction((ActivationContext ctx) => ctx.create<String>(ctx).length);
+  activatory.useFunction((ActivationContext ctx) => ctx.create<String>().length);
   final int thirtyFour = activatory.get<int>();
   assert(thirtyFour == 34);
   // 2.1. With singleton value generated automatically
@@ -96,8 +96,8 @@ void main() {
   activatory.useSingleton(42, key: 'good number');
   activatory.useSingleton(10, key: 'not good number');
   //TODO: Lines below should works without key specification. See https://github.com/syberside/Activatory/issues/30 for details.
-  activatory.useFunction((ctx) => ctx.create<int>(ctx).toString(), key: 'good number');
-  activatory.useFunction((ctx) => ctx.create<int>(ctx).toString(), key: 'not good number');
+  activatory.useFunction((ctx) => ctx.create<int>().toString(), key: 'good number');
+  activatory.useFunction((ctx) => ctx.create<int>().toString(), key: 'not good number');
   final String goodNumberStr = activatory.get<String>('good number');
   assert(goodNumberStr == '42');
   final String notGoodNumberStr = activatory.get<String>('not good number');

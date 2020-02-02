@@ -16,7 +16,7 @@ class ReflectiveFieldsFiller {
         .where((VariableMirror v) => v.isFinal == false && v.isStatic == false && v.isPrivate == false)
         .toList();
     for (var field in publicFields) {
-      final value = ctx.createUntyped(field.type.reflectedType, ctx);
+      final value = ctx.createUntyped(field.type.reflectedType);
       reflected.setField(field.simpleName, value);
     }
     if (fieldsStrategy == FieldsAutoFillingStrategy.Fields) {
@@ -34,7 +34,7 @@ class ReflectiveFieldsFiller {
       name = name.substring(0, name.length - 1);
       final symbol = MirrorSystem.getSymbol(name);
 
-      final value = ctx.createUntyped(setter.parameters.first.type.reflectedType, ctx);
+      final value = ctx.createUntyped(setter.parameters.first.type.reflectedType);
       reflected.setField(symbol, value);
     }
   }

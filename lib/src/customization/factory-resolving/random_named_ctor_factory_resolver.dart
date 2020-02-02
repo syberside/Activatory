@@ -15,8 +15,8 @@ class RandomNamedCtorFactoryResolver implements FactoryResolver {
   Factory resolve(List<Factory> factories) {
     final filteredFactories = _filterWrappedFactories(factories).toList();
     assertAnyFactoryFound(filteredFactories);
-    final index = _random.nextInt(factories.length);
-    return factories[index];
+    final index = _random.nextInt(filteredFactories.length);
+    return filteredFactories[index];
   }
 
   Iterable<Factory> _filterWrappedFactories(List<Factory> factories) sync* {

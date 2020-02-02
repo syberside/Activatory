@@ -4,7 +4,7 @@ import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
 import 'package:activatory/src/post-activation/fields_auto_filling_strategy.dart';
-import 'package:activatory/src/value-generator/value_generator.dart';
+import 'package:activatory/src/value_generator.dart';
 
 class InternalActivationContext implements ActivationContext {
   final ValueGenerator _valueGenerator;
@@ -32,10 +32,10 @@ class InternalActivationContext implements ActivationContext {
       _customizationsRegistry.getCustomization(type, key: key).defaultValuesHandlingStrategy;
 
   @override
-  Object createUntyped(Type type, InternalActivationContext context) => _valueGenerator.createUntyped(type, this);
+  Object createUntyped(Type type) => _valueGenerator.createUntyped(type, this);
 
   @override
-  T create<T>(InternalActivationContext context) => createUntyped(T, context) as T;
+  T create<T>() => createUntyped(T) as T;
 
   FieldsAutoFillingStrategy fieldsAutoFill(Type type) =>
       _customizationsRegistry.getCustomization(type, key: key).fieldsAutoFillingStrategy;

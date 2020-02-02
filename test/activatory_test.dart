@@ -349,7 +349,7 @@ void main() {
     });
 
     test('with overrided factory recursion call', () {
-      _activatory.useFunction<LinkedNode>((ctx) => ctx.createUntyped(LinkedNode, ctx) as LinkedNode);
+      _activatory.useFunction<LinkedNode>((ctx) => ctx.createUntyped(LinkedNode) as LinkedNode);
       final linked = _activatory.get<LinkedNode>();
 
       expect(linked, isNull);

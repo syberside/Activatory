@@ -5,6 +5,7 @@ import 'package:activatory/src/internal_activation_context.dart';
 
 class ReflectiveArrayFactory extends Factory<List<Object>> {
   final Type _type;
+  static const _emptyConstructorName = const Symbol('');
 
   ReflectiveArrayFactory(this._type);
 
@@ -17,7 +18,7 @@ class ReflectiveArrayFactory extends Factory<List<Object>> {
     }
 
     for (var i = 0; i < context.arraySize(_type); i++) {
-      value.add(context.createUntyped(_type, context));
+      value.add(context.createUntyped(_type));
     }
     return value;
   }
@@ -25,6 +26,6 @@ class ReflectiveArrayFactory extends Factory<List<Object>> {
   @override
   List<Object> getDefaultValue() {
     final reflectedList = reflectType(List, [_type]);
-    return (reflectedList as ClassMirror).newInstance(const Symbol(''), <Object>[]).reflectee as List;
+    return (reflectedList as ClassMirror).newInstance(_emptyConstructorName, <Object>[]).reflectee as List;
   }
 }

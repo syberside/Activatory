@@ -13,11 +13,11 @@ import 'package:activatory/src/factories/singleton_factory.dart';
 import 'package:activatory/src/internal_activation_context.dart';
 import 'package:activatory/src/post-activation/reflective_fields_filler.dart';
 import 'package:activatory/src/type-aliasing/reflective_type_alias_registry.dart';
-import 'package:activatory/src/value-generator/value_generator_impl.dart';
+import 'package:activatory/src/value_generator.dart';
 
 class Activatory {
   final Random _random = new Random(DateTime.now().millisecondsSinceEpoch);
-  ValueGeneratorImpl _valueGenerator;
+  ValueGenerator _valueGenerator;
   FactoriesRegistry _factoriesRegistry;
   TypeCustomizationRegistry _customizationsRegistry;
   FactoryResolverFactory _backendResolverFactory;
@@ -30,7 +30,7 @@ class Activatory {
     final factoriesFactory = new FactoriesFactory(_random);
     _factoriesRegistry = new FactoriesRegistry(
         factoriesFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry, new FactoriesStore());
-    _valueGenerator = new ValueGeneratorImpl(_factoriesRegistry, new ReflectiveFieldsFiller());
+    _valueGenerator = new ValueGenerator(_factoriesRegistry, new ReflectiveFieldsFiller());
   }
 
   // region Activation members

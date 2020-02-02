@@ -6,6 +6,7 @@ import 'package:activatory/src/internal_activation_context.dart';
 class ReflectiveMapFactory implements Factory<Map<Object, Object>> {
   final Type _keyType;
   final Type _valueType;
+  static const _emptyConstructorName = const Symbol('');
 
   ReflectiveMapFactory(this._keyType, this._valueType);
 
@@ -18,8 +19,8 @@ class ReflectiveMapFactory implements Factory<Map<Object, Object>> {
     }
 
     for (var i = 0; i < context.arraySize(_valueType); i++) {
-      final key = context.createUntyped(_keyType, context);
-      final value = context.createUntyped(_valueType, context);
+      final key = context.createUntyped(_keyType);
+      final value = context.createUntyped(_valueType);
       result[key] = value;
     }
     return result;
@@ -27,7 +28,7 @@ class ReflectiveMapFactory implements Factory<Map<Object, Object>> {
 
   Map createEmptyMap() {
     final reflectedList = reflectType(Map, [_keyType, _valueType]);
-    return (reflectedList as ClassMirror).newInstance(const Symbol(''), <Object>[]).reflectee as Map;
+    return (reflectedList as ClassMirror).newInstance(_emptyConstructorName, <Object>[]).reflectee as Map;
   }
 
   @override
