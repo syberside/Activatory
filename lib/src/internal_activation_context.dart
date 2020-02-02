@@ -10,7 +10,7 @@ class InternalActivationContext implements ActivationContext {
   final ValueGenerator _valueGenerator;
   final Object _key;
   final Random _random;
-  final List<Type> _stackTrace = new List<Type>();
+  final List<Type> _stackTrace = <Type>[];
   final TypeCustomizationRegistry _customizationsRegistry;
 
   InternalActivationContext(
@@ -35,7 +35,7 @@ class InternalActivationContext implements ActivationContext {
   Object createUntyped(Type type, InternalActivationContext context) => _valueGenerator.createUntyped(type, this);
 
   @override
-  T create<T>(InternalActivationContext context) => createUntyped(T, context);
+  T create<T>(InternalActivationContext context) => createUntyped(T, context) as T;
 
   FieldsAutoFillingStrategy fieldsAutoFill(Type type) =>
       _customizationsRegistry.getCustomization(type, key: key).fieldsAutoFillingStrategy;

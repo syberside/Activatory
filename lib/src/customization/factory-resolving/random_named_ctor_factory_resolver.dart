@@ -6,7 +6,6 @@ import 'package:activatory/src/factories/ctor/ctor_type.dart';
 import 'package:activatory/src/factories/ctor/reflective_object_factory.dart';
 import 'package:activatory/src/factories/factory.dart';
 
-// TODO: Remove duplication between strategies
 class RandomNamedCtorFactoryResolver implements FactoryResolver {
   final Random _random;
 
@@ -14,9 +13,9 @@ class RandomNamedCtorFactoryResolver implements FactoryResolver {
 
   @override
   Factory resolve(List<Factory> factories) {
-    factories = _filterWrappedFactories(factories).toList();
-    assertAnyFactoryFound(factories);
-    var index = _random.nextInt(factories.length);
+    final filteredFactories = _filterWrappedFactories(factories).toList();
+    assertAnyFactoryFound(filteredFactories);
+    final index = _random.nextInt(factories.length);
     return factories[index];
   }
 

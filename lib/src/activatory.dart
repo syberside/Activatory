@@ -18,7 +18,7 @@ import 'package:activatory/src/value-generator/value_generator_impl.dart';
 class Activatory {
   final Random _random = new Random(DateTime.now().millisecondsSinceEpoch);
   ValueGeneratorImpl _valueGenerator;
-  FactoriesRegistry _backendRegistry;
+  FactoriesRegistry _factoriesRegistry;
   TypeCustomizationRegistry _customizationsRegistry;
   FactoryResolverFactory _backendResolverFactory;
   ReflectiveTypeAliasesRegistry _typeAliasesRegistry;
@@ -27,30 +27,30 @@ class Activatory {
     _typeAliasesRegistry = new ReflectiveTypeAliasesRegistry();
     _customizationsRegistry = new TypeCustomizationRegistry();
     _backendResolverFactory = new FactoryResolverFactory(_random);
-    var backendFactory = new FactoriesFactory(_random);
-    _backendRegistry = new FactoriesRegistry(
-        backendFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry, new FactoriesStore());
-    _valueGenerator = new ValueGeneratorImpl(_backendRegistry, new ReflectiveFieldsFiller());
+    final factoriesFactory = new FactoriesFactory(_random);
+    _factoriesRegistry = new FactoriesRegistry(
+        factoriesFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry, new FactoriesStore());
+    _valueGenerator = new ValueGeneratorImpl(_factoriesRegistry, new ReflectiveFieldsFiller());
   }
 
   // region Activation members
 
-  /// Creates and returns instance of specified [type] filled with random data recursively.
+  /// Creates and returns instance of specified type [T] filled with random data recursively.
   /// Uses [key] to select configuration.
-  T get<T>([Object key = null]) => getUntyped(T, key) as T;
+  T get<T>([Object key]) => getUntyped(T, key) as T;
 
   /// Creates and returns instance of specified [type] filled with random data recursively.
   /// Uses [key] to select configuration.
-  Object getUntyped(Type type, [Object key = null]) {
-    var context = _createContext(key);
+  Object getUntyped(Type type, [Object key]) {
+    final context = _createContext(key);
     return _valueGenerator.createUntyped(type, context);
   }
 
   /// Creates and returns multiple instances of specified [type] filled with random data recursively.
   /// Returns [List] of size [count]. If [count] is not specified default strategy will be used.
   /// Uses [key] to select configuration.
-  List getManyUntyped(Type type, {int count, Object key}) {
-    var countToCreate = count ?? _customizationsRegistry.getCustomization(type, key: key).arraySize;
+  List<Object> getManyUntyped(Type type, {int count, Object key}) {
+    final countToCreate = count ?? _customizationsRegistry.getCustomization(type, key: key).arraySize;
     return List.generate(countToCreate, (int index) => getUntyped(type, key));
   }
 
@@ -58,7 +58,7 @@ class Activatory {
   /// Returns [List] of size [count]. If [count] is not specified default strategy will be used.
   /// Uses [key] to select configuration.
   List<T> getMany<T>({int count, Object key}) {
-    var dynamicResult = getManyUntyped(T, count: count, key: key);
+    final dynamicResult = getManyUntyped(T, count: count, key: key);
     //Cast result from List<dynamic> to List<T> through array creation
     return new List<T>.from(dynamicResult);
   }
@@ -85,8 +85,8 @@ class Activatory {
 
   /// Registers function to be called to activate instance of type [T] with [key].
   void useFunction<T>(FactoryDelegate<T> generator, {Object key}) {
-    var backend = new ExplicitFactory<T>(generator);
-    _backendRegistry.register<T>(backend, key: key);
+    final backend = new ExplicitFactory<T>(generator);
+    _factoriesRegistry.register<T>(backend, key: key);
   }
 
   /// Creates instance of type [T] and fixes it as a result for subsequent activation calls for type [T] with customization [key].
@@ -94,18 +94,18 @@ class Activatory {
   /// Uses current state of customization for [key]. Subsequent customization changes will not affect fixed value.
   /// To override fixed value call this method again.
   void useGeneratedSingleton<T>({Object key}) {
-    var detachedContext = _backendRegistry.clone();
-    var context = _createContext(null);
-    var currentBackend = detachedContext.getFactory(T, context.key);
-    var value = currentBackend.get(context);
+    final detachedContext = _factoriesRegistry.clone();
+    final context = _createContext(null);
+    final currentFactory = detachedContext.getFactory(T, context.key);
+    final value = currentFactory.get(context) as T;
 
     useSingleton<T>(value, key: key);
   }
 
   /// Fixes passed [value] as a result for subsequent activation calls for type [T] with customization [key].
   void useSingleton<T>(T value, {Object key}) {
-    var backend = new SingletonFactory<T>(value);
-    _backendRegistry.register<T>(backend, key: key);
+    final factory = new SingletonFactory<T>(value);
+    _factoriesRegistry.register<T>(factory, key: key);
   }
 
   /// Marks [TTarget] as replacement for [TSource] activation calls.
@@ -124,7 +124,7 @@ class Activatory {
   ///  * if key is not provided as parameter for activation call;
   ///  * if key specified while activation call was not configured.
   ///  Use returned value to customize activation options for type [T] and [key] pair.
-  TypeCustomization customize<T>({Object key = null}) => _customizationsRegistry.getCustomization(T, key: key);
+  TypeCustomization customize<T>({Object key}) => _customizationsRegistry.getCustomization(T, key: key);
 
   //endregion
 

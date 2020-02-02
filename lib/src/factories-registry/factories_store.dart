@@ -2,7 +2,7 @@ import 'package:activatory/src/factories-registry/resolve_key.dart';
 import 'package:activatory/src/factories/factory.dart';
 
 class FactoriesStore {
-  final Map<ResolveKey, List<Factory>> _factories = new Map<ResolveKey, List<Factory>>();
+  final Map<ResolveKey, List<Factory>> _factories = <ResolveKey, List<Factory>>{};
 
   FactoriesStore();
 
@@ -10,10 +10,7 @@ class FactoriesStore {
     _factories.addAll(factories);
   }
 
-  FactoriesStore clone() {
-    var copy = new FactoriesStore._fromMap(_factories);
-    return copy;
-  }
+  FactoriesStore clone() => new FactoriesStore._fromMap(_factories);
 
   List<Factory> find(ResolveKey key) {
     return _factories[key];
@@ -22,7 +19,7 @@ class FactoriesStore {
   void store(Factory backend, ResolveKey key) {
     var itemsList = _factories[key];
     if (itemsList == null) {
-      itemsList = new List<Factory>();
+      itemsList = <Factory>[];
       _factories[key] = itemsList;
     }
     itemsList.insert(0, backend);

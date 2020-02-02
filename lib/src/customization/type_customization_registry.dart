@@ -2,7 +2,7 @@ import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/factories-registry/resolve_key.dart';
 
 class TypeCustomizationRegistry {
-  final Map<ResolveKey, TypeCustomization> _store = new Map<ResolveKey, TypeCustomization>();
+  final Map<ResolveKey, TypeCustomization> _store = <ResolveKey, TypeCustomization>{};
   final ResolveKey _defaultKey = new ResolveKey(null, null);
 
   TypeCustomizationRegistry() {
@@ -10,7 +10,7 @@ class TypeCustomizationRegistry {
   }
 
   TypeCustomization getCustomization(Type type, {Object key}) {
-    var customizationKey = new ResolveKey(type, key);
+    final customizationKey = new ResolveKey(type, key);
     var result = _store[customizationKey];
     if (result == null) {
       result = _getDefaultForType(type).clone();
@@ -20,7 +20,7 @@ class TypeCustomizationRegistry {
   }
 
   TypeCustomization _getDefaultForType(Type type) {
-    var customizationKey = new ResolveKey(type, null);
+    final customizationKey = new ResolveKey(type, null);
     var result = _store[customizationKey];
     if (result == null) {
       result = _getDefault().clone();

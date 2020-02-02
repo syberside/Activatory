@@ -14,12 +14,12 @@ class ValueGeneratorImpl implements ValueGenerator {
 
   @override
   Object createUntyped(Type type, InternalActivationContext context) {
-    var factory = _factoriesRegistry.getFactory(type, context.key);
-    var value = factory.get(context);
+    final factory = _factoriesRegistry.getFactory(type, context.key);
+    final Object value = factory.get(context);
     _fieldsFiller.fill(value, context);
     return value;
   }
 
   @override
-  T create<T>(InternalActivationContext context) => createUntyped(T, context);
+  T create<T>(InternalActivationContext context) => createUntyped(T, context) as T;
 }

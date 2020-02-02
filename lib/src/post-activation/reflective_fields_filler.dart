@@ -5,28 +5,26 @@ import 'package:activatory/src/post-activation/fields_auto_filling_strategy.dart
 
 class ReflectiveFieldsFiller {
   void fill(Object object, InternalActivationContext ctx) {
-    var fieldsStrategy = ctx.fieldsAutoFill(object.runtimeType);
+    final fieldsStrategy = ctx.fieldsAutoFill(object.runtimeType);
     if (fieldsStrategy == FieldsAutoFillingStrategy.None) {
       return;
     }
 
-    var reflected = reflect(object);
-    var publicFields = reflected.type.declarations.values
-        .where((DeclarationMirror d) => d is VariableMirror)
-        .cast<VariableMirror>()
+    final reflected = reflect(object);
+    final publicFields = reflected.type.declarations.values
+        .whereType<VariableMirror>()
         .where((VariableMirror v) => v.isFinal == false && v.isStatic == false && v.isPrivate == false)
         .toList();
     for (var field in publicFields) {
-      var value = ctx.createUntyped(field.type.reflectedType, ctx);
+      final value = ctx.createUntyped(field.type.reflectedType, ctx);
       reflected.setField(field.simpleName, value);
     }
     if (fieldsStrategy == FieldsAutoFillingStrategy.Fields) {
       return;
     }
 
-    var publicSetters = reflected.type.declarations.values
-        .where((DeclarationMirror d) => d is MethodMirror)
-        .cast<MethodMirror>()
+    final publicSetters = reflected.type.declarations.values
+        .whereType<MethodMirror>()
         .where((MethodMirror m) => m.isStatic == false && m.isPrivate == false && m.isSetter)
         .toList();
     for (var setter in publicSetters) {
@@ -34,9 +32,9 @@ class ReflectiveFieldsFiller {
       //See https://github.com/dart-lang/sdk/issues/13083 for details
       var name = MirrorSystem.getName(setter.simpleName);
       name = name.substring(0, name.length - 1);
-      var symbol = MirrorSystem.getSymbol(name);
+      final symbol = MirrorSystem.getSymbol(name);
 
-      var value = ctx.createUntyped(setter.parameters.first.type.reflectedType, ctx);
+      final value = ctx.createUntyped(setter.parameters.first.type.reflectedType, ctx);
       reflected.setField(symbol, value);
     }
   }

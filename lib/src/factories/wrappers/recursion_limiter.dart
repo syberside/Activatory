@@ -4,7 +4,8 @@ import 'package:activatory/src/internal_activation_context.dart';
 
 class RecursionLimiter implements Factory<Object>, FactoryWrapper<Object> {
   final Type _type;
-  final Factory wrapped;
+  @override
+  final Factory<Object> wrapped;
 
   RecursionLimiter(
     this._type,

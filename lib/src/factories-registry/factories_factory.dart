@@ -19,12 +19,12 @@ import 'package:activatory/src/factories/primitives/random_string_factory.dart';
 import 'package:activatory/src/factories/random_array_item_factory.dart';
 import 'package:activatory/src/helpers/type_helper.dart';
 
-typedef Factory _GeneratorBackendFactory();
+typedef _GeneratorBackendFactory = Factory Function();
 
 class FactoriesFactory {
   static const _emptySymbol = const Symbol('');
   final Random _random;
-  final Map<Type, _GeneratorBackendFactory> _predefinedFactories = new Map<Type, _GeneratorBackendFactory>();
+  final Map<Type, _GeneratorBackendFactory> _predefinedFactories = <Type, _GeneratorBackendFactory>{};
 
   final _listMirror = reflectClass(List);
   final _mapMirror = reflectClass(Map);
@@ -47,11 +47,11 @@ class FactoriesFactory {
   }
 
   List<Factory> create(Type type) {
-    var predefinedFactory = _predefinedFactories[type];
+    final predefinedFactory = _predefinedFactories[type];
     if (predefinedFactory != null) {
       return [predefinedFactory()];
     }
-    var classMirror = reflectType(type) as ClassMirror;
+    final classMirror = reflectType(type) as ClassMirror;
     if (classMirror.isEnum) {
       return [_createEnumBackend(classMirror)];
     } else {
@@ -64,30 +64,29 @@ class FactoriesFactory {
     // Otherwise subtype check will return false
     final originalClassMirror = reflectClass(type);
     if (originalClassMirror.isSubtypeOf(_listMirror)) {
-      var typeArg = classMirror.typeArguments.first.reflectedType;
+      final typeArg = classMirror.typeArguments.first.reflectedType;
       return [new ReflectiveArrayFactory(typeArg)];
     }
     if (originalClassMirror.isSubclassOf(_mapMirror)) {
-      var typeArg1 = classMirror.typeArguments[0].reflectedType;
-      var typeArg2 = classMirror.typeArguments[1].reflectedType;
+      final typeArg1 = classMirror.typeArguments[0].reflectedType;
+      final typeArg2 = classMirror.typeArguments[1].reflectedType;
       return [new ReflectiveMapFactory(typeArg1, typeArg2)];
     }
     if (classMirror.isAbstract) {
-      throw new ActivationException("Cant create instance of abstract class (${classMirror})");
+      throw new ActivationException('Cant create instance of abstract class (${classMirror})');
     }
 
-    var ctors = _extractCtors(classMirror, type).toList();
-    if (ctors.isEmpty) {
-      throw new ActivationException("Cant find constructor for type ${classMirror}");
+    final constructors = _extractConstructors(classMirror, type).toList();
+    if (constructors.isEmpty) {
+      throw new ActivationException('Cant find constructor for type ${classMirror}');
     }
 
-    return ctors.map((ctorInfo) => new ReflectiveObjectFactory(ctorInfo)).toList();
+    return constructors.map((ctorInfo) => new ReflectiveObjectFactory(ctorInfo)).toList();
   }
 
   Factory _createEnumBackend(ClassMirror classMirror) {
-    var declaration = classMirror.declarations.values
-        .where((d) => d is VariableMirror)
-        .cast<VariableMirror>()
+    final declaration = classMirror.declarations.values
+        .whereType<VariableMirror>()
         .where((d) => d.isStatic && d.simpleName == #values)
         .first;
     if (declaration == null) {
@@ -95,38 +94,30 @@ class FactoriesFactory {
     }
 
     final allValues = classMirror.getField(declaration.simpleName).reflectee as List;
-    if (allValues.length == 0) {
+    if (allValues.isEmpty) {
       throw new ActivationException('Enum ${classMirror} values found but empty');
     }
 
     return new RandomArrayItemFactory(allValues);
   }
 
-  Iterable<CtorInfo> _extractCtors(ClassMirror classMirror, Type type) sync* {
-    var constructors = classMirror.declarations.values;
+  Iterable<CtorInfo> _extractConstructors(ClassMirror classMirror, Type type) sync* {
+    final constructors = classMirror.declarations.values;
 
     for (var method in constructors) {
       if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
-        var arguments = method.parameters.map(constructArgumentInfo).toList();
-        var name = method.constructorName;
-        CtorType ctorType = _getCtorType(method);
+        final arguments = method.parameters.map(constructArgumentInfo).toList();
+        final name = method.constructorName;
+        final ctorType = method.constructorName != _emptySymbol ? CtorType.Named : CtorType.Default;
         yield new CtorInfo(classMirror, name, arguments, ctorType, type);
       }
     }
   }
 
-  ArgumentInfo constructArgumentInfo(ParameterMirror p) {
-    var argType = p.type.reflectedType;
-    var defaultValue = p.defaultValue?.reflectee;
-    var isNamed = p.isNamed;
-    return new ArgumentInfo(defaultValue, isNamed, p.simpleName, argType);
-  }
-
-  CtorType _getCtorType(MethodMirror method) {
-    var name = method.constructorName;
-    if (name != _emptySymbol) {
-      return CtorType.Named;
-    }
-    return CtorType.Default;
+  ArgumentInfo constructArgumentInfo(ParameterMirror parameter) {
+    final argType = parameter.type.reflectedType;
+    final Object defaultValue = parameter.defaultValue?.reflectee;
+    final isNamed = parameter.isNamed;
+    return new ArgumentInfo(defaultValue, isNamed, parameter.simpleName, argType);
   }
 }

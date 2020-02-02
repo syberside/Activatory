@@ -23,7 +23,7 @@ class FactoriesRegistry {
   );
 
   FactoriesRegistry clone() {
-    var storeCopy = _store.clone();
+    final storeCopy = _store.clone();
     return new FactoriesRegistry(
       _factory,
       _customizationsRegistry,
@@ -34,13 +34,13 @@ class FactoriesRegistry {
   }
 
   Factory getFactory(Type type, Object key) {
-    var affectedType = _aliasesRegistry.getAlias(type);
-    var storeKey = new ResolveKey(affectedType, key);
+    final affectedType = _aliasesRegistry.getAlias(type);
+    final storeKey = new ResolveKey(affectedType, key);
     var factories = _store.find(storeKey);
     if (factories != null) {
-      var customization = _customizationsRegistry.getCustomization(affectedType, key: key);
-      var ctorResolveStrategy = _ctorResolveStrategyFactory.getResolver(customization.resolvingStrategy);
-      var backend = ctorResolveStrategy.resolve(factories);
+      final customization = _customizationsRegistry.getCustomization(affectedType, key: key);
+      final ctorResolveStrategy = _ctorResolveStrategyFactory.getResolver(customization.resolvingStrategy);
+      final backend = ctorResolveStrategy.resolve(factories);
       return backend;
     }
 
@@ -52,8 +52,8 @@ class FactoriesRegistry {
   }
 
   void _registerUntyped(Factory backend, Type type, {Object key}) {
-    var wrapped = new RecursionLimiter(type, backend);
-    var resolveKey = new ResolveKey(type, key);
+    final wrapped = new RecursionLimiter(type, backend);
+    final resolveKey = new ResolveKey(type, key);
     _store.store(wrapped, resolveKey);
   }
 

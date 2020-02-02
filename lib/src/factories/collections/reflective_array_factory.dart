@@ -16,7 +16,7 @@ class ReflectiveArrayFactory extends Factory<List<Object>> {
       return value;
     }
 
-    for (int i = 0; i < context.arraySize(_type); i++) {
+    for (var i = 0; i < context.arraySize(_type); i++) {
       value.add(context.createUntyped(_type, context));
     }
     return value;
@@ -25,6 +25,6 @@ class ReflectiveArrayFactory extends Factory<List<Object>> {
   @override
   List<Object> getDefaultValue() {
     final reflectedList = reflectType(List, [_type]);
-    return (reflectedList as ClassMirror).newInstance(Symbol(''), []).reflectee as List;
+    return (reflectedList as ClassMirror).newInstance(const Symbol(''), <Object>[]).reflectee as List;
   }
 }

@@ -10,7 +10,7 @@ void assertAnyFactoryFound(List<Factory> factories) {
 
 Factory unwrap(Factory backend) {
   if (backend is FactoryWrapper) {
-    var casted = backend as FactoryWrapper;
+    final casted = backend as FactoryWrapper;
     return unwrap(casted.wrapped);
   }
   return backend;

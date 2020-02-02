@@ -38,7 +38,7 @@ class ReflectiveTypeAliasesRegistry {
   }
 
   void putIfAbsent(Type source, Type target) {
-    var currentRegistration = getAlias(source);
+    final currentRegistration = getAlias(source);
     if (source != currentRegistration) {
       return;
     }

@@ -1,7 +1,7 @@
 abstract class AbstractClass {
-  int _intField;
+  final int intField;
 
-  AbstractClass(this._intField);
+  AbstractClass(this.intField);
 }
 
 class ClosedByInheritanceGeneric extends GenericArrayInCtor<String> {
@@ -22,7 +22,7 @@ class CtorWithTwoStringArgs {
 class DefaultCtor {}
 
 class DefaultNamedValues {
-  static const String defaultValue = "defaultValue is not generated";
+  static const String defaultValue = 'defaultValue is not generated';
 
   String _nullSetString;
   PrimitiveComplexObject _notSetObject;
@@ -33,8 +33,8 @@ class DefaultNamedValues {
 
   DefaultNamedValues(
       {PrimitiveComplexObject notSetObject,
-      PrimitiveComplexObject nullSetObject = null,
-      String nullSetString = null,
+      PrimitiveComplexObject nullSetObject = null, // ignore: avoid_init_to_null
+      String nullSetString = null, // ignore: avoid_init_to_null
       String notNullSetString = defaultValue}) {
     _nullSetString = nullSetString;
     _notSetObject = notSetObject;
@@ -60,8 +60,8 @@ class DefaultPositionalValues {
 
   DefaultPositionalValues(
       [this._notSetObject,
-      this._nullSetObject = null,
-      this._nullSetString = null,
+      this._nullSetObject = null, // ignore: avoid_init_to_null
+      this._nullSetString = null, // ignore: avoid_init_to_null
       this._notNullString = defaultStringValue]);
 
   PrimitiveComplexObject get notSetObject => _notSetObject;
@@ -89,10 +89,10 @@ class FactoryCtor {
 }
 
 class FactoryWithFixedValues {
-  static final FactoryWithFixedValues a = new FactoryWithFixedValues._("A");
-  static final FactoryWithFixedValues b = new FactoryWithFixedValues._("B");
+  static final FactoryWithFixedValues a = new FactoryWithFixedValues._('A');
+  static final FactoryWithFixedValues b = new FactoryWithFixedValues._('B');
 
-  static final FactoryWithFixedValues c = new FactoryWithFixedValues._("C");
+  static final FactoryWithFixedValues c = new FactoryWithFixedValues._('C');
 
   String _field;
 
@@ -147,11 +147,9 @@ class LinkedNode {
 }
 
 class NamedCtor {
-  String _stringField;
+  final String stringField;
 
-  NamedCtor.nonDefaultName(this._stringField);
-
-  String get stringField => _stringField;
+  NamedCtor.nonDefaultName(this.stringField);
 }
 
 class NamedCtorsAndConstCtor {
@@ -173,13 +171,13 @@ class NamedCtorsAndDefaultCtor {
 
   NamedCtorsAndDefaultCtor(this._field);
 
-  NamedCtorsAndDefaultCtor.createA() : this("A");
+  NamedCtorsAndDefaultCtor.createA() : this('A');
 
-  NamedCtorsAndDefaultCtor.createB() : this("B");
+  NamedCtorsAndDefaultCtor.createB() : this('B');
 
-  NamedCtorsAndDefaultCtor.createC() : this("C");
+  NamedCtorsAndDefaultCtor.createC() : this('C');
 
-  NamedCtorsAndDefaultCtor.createD() : this("D");
+  NamedCtorsAndDefaultCtor.createD() : this('D');
 
   String get field => _field;
 }
@@ -192,7 +190,7 @@ class NamedCtorsAndFactory {
   }
 
   NamedCtorsAndFactory.createA() {
-    _field = "A";
+    _field = 'A';
   }
 
   NamedCtorsAndFactory._internal(String arg) {
@@ -203,46 +201,28 @@ class NamedCtorsAndFactory {
 }
 
 class NonPrimitiveComplexObject {
-  PrimitiveComplexObject _primitiveComplexObject;
-  int _intField;
+  final PrimitiveComplexObject primitiveComplexObject;
+  final int intField;
 
-  NonPrimitiveComplexObject(this._primitiveComplexObject, this._intField);
-
-  int get intField => _intField;
-
-  PrimitiveComplexObject get primitiveComplexObject => _primitiveComplexObject;
+  NonPrimitiveComplexObject(this.primitiveComplexObject, this.intField);
 }
 
 class NoPublicCtor {
-  String _stringField;
+  final String stringField;
 
-  NoPublicCtor._internal(this._stringField);
-
-  String get stringField => _stringField;
+  NoPublicCtor._internal(this.stringField);
 }
 
 class PrimitiveComplexObject {
-  int _intField;
-  String _stringField;
-  double _doubleField;
-  bool _boolField;
-  DateTime _dateTimeField;
-  TestEnum _enumField;
+  final int intField;
+  final String stringField;
+  final double doubleField;
+  final bool boolField;
+  final DateTime dateTimeField;
+  final TestEnum enumField;
 
   PrimitiveComplexObject(
-      this._intField, this._stringField, this._doubleField, this._boolField, this._dateTimeField, this._enumField);
-
-  bool get boolField => _boolField;
-
-  DateTime get dateTimeField => _dateTimeField;
-
-  double get doubleField => _doubleField;
-
-  TestEnum get enumField => _enumField;
-
-  int get intField => _intField;
-
-  String get stringField => _stringField;
+      this.intField, this.stringField, this.doubleField, this.boolField, this.dateTimeField, this.enumField);
 }
 
 abstract class Task {
@@ -298,7 +278,7 @@ class FiledsWithPublicSetters {
 
   String _publicProperty;
 
-  String get publicProperty => _publicProperty;
+  String get publicProperty => _publicProperty; //ignore: unnecessary_getters_setters
 
-  void set publicProperty(String value) => _publicProperty = value;
+  set publicProperty(String value) => _publicProperty = value; //ignore: unnecessary_getters_setters
 }

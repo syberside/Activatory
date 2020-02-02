@@ -12,8 +12,8 @@ class RandomDateTimeFactory implements Factory<DateTime> {
 
   @override
   DateTime get(InternalActivationContext context) {
-    var days = _random.nextInt(_maxDays);
-    var milliseconds = _random.nextInt(_maxMilliseconds);
+    final days = _random.nextInt(_maxDays);
+    final milliseconds = _random.nextInt(_maxMilliseconds);
     return DateTime.fromMillisecondsSinceEpoch(0).add(new Duration(days: days, milliseconds: milliseconds));
   }
 

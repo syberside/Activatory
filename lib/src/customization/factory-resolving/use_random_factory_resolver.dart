@@ -12,7 +12,7 @@ class UseRandomFactoryResolver implements FactoryResolver {
   @override
   Factory resolve(List<Factory> factories) {
     assertAnyFactoryFound(factories);
-    var index = _random.nextInt(factories.length);
+    final index = _random.nextInt(factories.length);
     return factories[index];
   }
 }

@@ -17,7 +17,7 @@ class ReflectiveObjectFactory implements Factory<Object> {
   @override
   Object get(InternalActivationContext context) {
     final positionalArguments = <Object>[];
-    final namedArguments = new Map<Symbol, Object>();
+    final namedArguments = <Symbol, Object>{};
     for (final arg in _ctorInfo.args) {
       final value = _generateValues(arg, context);
       if (arg.isNamed) {
@@ -27,7 +27,7 @@ class ReflectiveObjectFactory implements Factory<Object> {
       }
     }
 
-    var result = _ctorInfo.classMirror.newInstance(_ctorInfo.ctor, positionalArguments, namedArguments);
+    final result = _ctorInfo.classMirror.newInstance(_ctorInfo.ctor, positionalArguments, namedArguments);
     return result.reflectee;
   }
 
