@@ -1,16 +1,20 @@
 language: dart
 dart:
- - stable
+  - stable
 
 dart_task:
- - test
+  - test
 # - dartanalyzer
 # - dartfmt: -w lib/ test/
+
+branches:
+  only:
+    - master
 
 script: ./tool/cover.sh
 
 before_install:
- - chmod -R +x ./tool
+  - chmod -R +x ./tool
 
 deploy:
   provider: script
@@ -21,5 +25,5 @@ deploy:
 
 cache:
   directories:
-  - $HOME/.pub-cache
-  - .dart_tool/build
+    - $HOME/.pub-cache
+    - .dart_tool/build
