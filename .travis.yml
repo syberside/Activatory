@@ -7,10 +7,6 @@ dart_task:
 # - dartanalyzer
 # - dartfmt: -w lib/ test/
 
-branches:
-  only:
-    - master
-
 script: ./tool/cover.sh
 
 before_install:
