@@ -1,33 +1,35 @@
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/aliases/type_alias_registry.dart';
-import 'package:activatory/src/backend_store.dart';
-import 'package:activatory/src/backends/generator_backend.dart';
-import 'package:activatory/src/backends/recursion_limiter.dart';
 import 'package:activatory/src/backends_factory.dart';
 import 'package:activatory/src/customization/backend_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
+import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/factories/recursion_limiter.dart';
+import 'package:activatory/src/factories_store.dart';
 import 'package:activatory/src/resolve_key.dart';
 
-class BackendsRegistry {
-  BackendStore _store = new BackendStore();
+class FactoriesRegistry {
+  final FactoriesStore _store;
   final BackendsFactory _factory;
   final TypeCustomizationRegistry _customizationsRegistry;
   final BackendResolverFactory _ctorResolveStrategyFactory;
   final TypeAliasesRegistry _aliasesRegistry;
 
-  BackendsRegistry(
-      this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory, this._aliasesRegistry);
+  FactoriesRegistry(
+    this._factory,
+    this._customizationsRegistry,
+    this._ctorResolveStrategyFactory,
+    this._aliasesRegistry,
+    this._store,
+  );
 
-  BackendsRegistry._fromStore(this._factory, this._customizationsRegistry, this._ctorResolveStrategyFactory,
-      this._aliasesRegistry, this._store);
-
-  BackendsRegistry clone() {
+  FactoriesRegistry clone() {
     var storeCopy = _store.clone();
-    return new BackendsRegistry._fromStore(
+    return new FactoriesRegistry(
         _factory, _customizationsRegistry, _ctorResolveStrategyFactory, _aliasesRegistry, storeCopy);
   }
 
-  GeneratorBackend get(Type type, ActivationContext context) {
+  Factory get(Type type, ActivationContext context) {
     Object key = context.key;
     var affectedType = _aliasesRegistry.getAlias(type);
     var storeKey = new ResolveKey(affectedType, key);
@@ -44,11 +46,11 @@ class BackendsRegistry {
     return backend;
   }
 
-  GeneratorBackend register(GeneratorBackend backend, Type type, {Object key}) {
+  Factory register(Factory backend, Type type, {Object key}) {
     var wrapped = new RecursionLimiter(type, backend);
     _store.store(wrapped, new ResolveKey(type, key));
     return wrapped;
   }
 
-  void registerTyped<T>(GeneratorBackend<T> backend, {Object key}) => register(backend, T, key: key);
+  void registerTyped<T>(Factory<T> backend, {Object key}) => register(backend, T, key: key);
 }

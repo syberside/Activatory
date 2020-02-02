@@ -1,29 +1,34 @@
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/argument_info.dart';
-import 'package:activatory/src/backends/generator_backend.dart';
-import 'package:activatory/src/ctor_info.dart';
-import 'package:activatory/src/ctor_type.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
+import 'package:activatory/src/factories/ctor/argument_info.dart';
+import 'package:activatory/src/factories/ctor/ctor_info.dart';
+import 'package:activatory/src/factories/ctor/ctor_type.dart';
+import 'package:activatory/src/factories/factory.dart';
 
-class ComplexObjectBackend implements GeneratorBackend<Object> {
+class ReflectiveObjectFactory implements Factory<Object> {
   final CtorInfo _ctorInfo;
 
-  ComplexObjectBackend(this._ctorInfo);
+  ReflectiveObjectFactory(
+    this._ctorInfo,
+  );
 
   CtorType get ctorType => _ctorInfo.type;
 
   @override
   Object get(ActivationContext context) {
-    var positionalArguments =
-        _ctorInfo.args.where((arg) => !arg.isNamed).map((arg) => _generateValues(arg, context)).toList();
+    final positionalArguments = <Object>[];
+    final namedArguments = new Map<Symbol, Object>();
+    for (final arg in _ctorInfo.args) {
+      final value = _generateValues(arg, context);
+      if (arg.isNamed) {
+        namedArguments[arg.name] = value;
+      } else {
+        positionalArguments.add(value);
+      }
+    }
 
-    var namedArguments = new Map<Symbol, Object>();
-    _ctorInfo.args
-        .where((args) => args.isNamed)
-        .forEach((arg) => namedArguments[new Symbol(arg.name)] = _generateValues(arg, context));
-
-    var result = _ctorInfo.classMirror.newInstance(_ctorInfo.ctor, positionalArguments, namedArguments).reflectee;
-    return result;
+    var result = _ctorInfo.classMirror.newInstance(_ctorInfo.ctor, positionalArguments, namedArguments);
+    return result.reflectee;
   }
 
   Object _generateValues(ArgumentInfo arg, ActivationContext context) {
@@ -39,4 +44,7 @@ class ComplexObjectBackend implements GeneratorBackend<Object> {
         throw new UnsupportedError('${defaultValuesStrategy.toString()} is not supported');
     }
   }
+
+  @override
+  Object getDefaultValue() => null;
 }

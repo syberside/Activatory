@@ -3,13 +3,14 @@ import 'dart:math';
 
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/aliases/type_alias_registry.dart';
-import 'package:activatory/src/backends/explicit_backend.dart';
-import 'package:activatory/src/backends/singleton_backend.dart';
 import 'package:activatory/src/backends_factory.dart';
-import 'package:activatory/src/backends_registry.dart';
 import 'package:activatory/src/customization/backend_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
+import 'package:activatory/src/factories/explicit_factory.dart';
+import 'package:activatory/src/factories/singleton_factory.dart';
+import 'package:activatory/src/factories_registry.dart';
+import 'package:activatory/src/factories_store.dart';
 import 'package:activatory/src/generator_delegate.dart';
 import 'package:activatory/src/post_activation/fields_filler.dart';
 import 'package:activatory/src/value_generator_impl.dart';
@@ -17,7 +18,7 @@ import 'package:activatory/src/value_generator_impl.dart';
 class Activatory {
   final Random _random = new Random(DateTime.now().millisecondsSinceEpoch);
   ValueGeneratorImpl _valueGenerator;
-  BackendsRegistry _backendRegistry;
+  FactoriesRegistry _backendRegistry;
   TypeCustomizationRegistry _customizationsRegistry;
   BackendResolverFactory _backendResolverFactory;
   TypeAliasesRegistry _typeAliasesRegistry;
@@ -27,8 +28,8 @@ class Activatory {
     _customizationsRegistry = new TypeCustomizationRegistry();
     _backendResolverFactory = new BackendResolverFactory(_random);
     var backendFactory = new BackendsFactory(_random);
-    _backendRegistry =
-        new BackendsRegistry(backendFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry);
+    _backendRegistry = new FactoriesRegistry(
+        backendFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry, new FactoriesStore());
     _valueGenerator = new ValueGeneratorImpl(_backendRegistry, new FieldsFiller());
   }
 
@@ -84,7 +85,7 @@ class Activatory {
 
   /// Registers function to be called to activate instance of type [T] with [key].
   void useFunction<T>(GeneratorDelegate<T> generator, {Object key}) {
-    var backend = new ExplicitBackend<T>(generator);
+    var backend = new ExplicitFactory<T>(generator);
     _backendRegistry.registerTyped<T>(backend, key: key);
   }
 
@@ -103,7 +104,7 @@ class Activatory {
 
   /// Fixes passed [value] as a result for subsequent activation calls for type [T] with customization [key].
   void useSingleton<T>(T value, {Object key}) {
-    var backend = new SingletonBackend<T>(value);
+    var backend = new SingletonFactory<T>(value);
     _backendRegistry.registerTyped<T>(backend, key: key);
   }
 

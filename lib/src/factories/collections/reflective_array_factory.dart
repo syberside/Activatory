@@ -1,16 +1,16 @@
 import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/backends/array/array_backend.dart';
+import 'package:activatory/src/factories/factory.dart';
 
-class ReflectiveArrayBackend extends ArrayBackend<Object> {
+class ReflectiveArrayFactory extends Factory<List<Object>> {
   final Type _type;
 
-  ReflectiveArrayBackend(this._type);
+  ReflectiveArrayFactory(this._type);
 
   @override
   List get(ActivationContext context) {
-    final value = empty();
+    final value = getDefaultValue();
     if (context.isVisitLimitReached(_type)) {
       return value;
     }
@@ -22,7 +22,7 @@ class ReflectiveArrayBackend extends ArrayBackend<Object> {
   }
 
   @override
-  List<Object> empty() {
+  List<Object> getDefaultValue() {
     final reflectedList = reflectType(List, [_type]);
     return (reflectedList as ClassMirror).newInstance(Symbol(''), []).reflectee as List;
   }

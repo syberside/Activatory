@@ -1,16 +1,16 @@
 import 'package:activatory/src/activation_exception.dart';
-import 'package:activatory/src/backends/generator_backend.dart';
-import 'package:activatory/src/backends/generator_backend_wrapper.dart';
+import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/factories/factory_wrapper.dart';
 
-void assertBackendsNotEmpty(List<GeneratorBackend> ctors) {
+void assertBackendsNotEmpty(List<Factory> ctors) {
   if (ctors.isEmpty) {
     throw ActivationException('Cant resolve ctor strategy because no matching ctors found');
   }
 }
 
-GeneratorBackend unwrap(GeneratorBackend backend) {
-  if (backend is GeneratorBackendWrapper) {
-    var casted = backend as GeneratorBackendWrapper;
+Factory unwrap(Factory backend) {
+  if (backend is FactoryWrapper) {
+    var casted = backend as FactoryWrapper;
     return unwrap(casted.wrapped);
   }
   return backend;

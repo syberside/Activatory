@@ -1,16 +1,24 @@
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/backends/complex_object_backend.dart';
-import 'package:activatory/src/backends/generator_backend.dart';
-import 'package:activatory/src/ctor_type.dart';
 import 'package:activatory/src/customization/backend_resolve_helper.dart';
 import 'package:activatory/src/customization/backend_resolver.dart';
+import 'package:activatory/src/factories/ctor/ctor_type.dart';
+import 'package:activatory/src/factories/ctor/reflective_object_factory.dart';
+import 'package:activatory/src/factories/factory.dart';
 
-class AutoCtorResolver implements BackendResolver {
+class DefaultCtorResolver implements BackendResolver {
   @override
-  GeneratorBackend resolve(List<GeneratorBackend> ctors, ActivationContext context) {
-    var filtered =
-        ctors.map((c) => unwrap(c)).where((c) => c is ComplexObjectBackend && c.ctorType == CtorType.Default).toList();
+  Factory resolve(List<Factory> ctors, ActivationContext context) {
+    final filtered = _filterWrappedCtors(ctors).toList();
     assertBackendsNotEmpty(filtered);
     return filtered[0];
+  }
+
+  Iterable<Factory> _filterWrappedCtors(List<Factory> ctors) sync* {
+    for (final ctor in ctors) {
+      final unwrapped = unwrap(ctor);
+      if (unwrapped is ReflectiveObjectFactory && unwrapped.ctorType == CtorType.Default) {
+        yield ctor;
+      }
+    }
   }
 }

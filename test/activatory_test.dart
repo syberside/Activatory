@@ -388,7 +388,7 @@ void main() {
   });
 
   group('Can customize', () {
-    group('backends', () {
+    group('factories', () {
       group('without overrides', () {
         test('take first for complex type to take first ctor', () {
           _activatory.useSingleton('E');

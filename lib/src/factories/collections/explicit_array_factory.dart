@@ -1,10 +1,10 @@
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/backends/array/array_backend.dart';
+import 'package:activatory/src/factories/factory.dart';
 
-class ExplicitArrayBackend<T> extends ArrayBackend<T> {
+class ExplicitArrayFactory<T> extends Factory<List<T>> {
   @override
   List<T> get(ActivationContext context) {
-    List value = empty();
+    List<T> value = getDefaultValue();
     if (context.isVisitLimitReached(T)) {
       return value;
     }
@@ -16,5 +16,5 @@ class ExplicitArrayBackend<T> extends ArrayBackend<T> {
   }
 
   @override
-  List<T> empty() => new List<T>();
+  List<T> getDefaultValue() => new List<T>();
 }

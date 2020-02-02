@@ -1,17 +1,17 @@
 import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/backends/generator_backend.dart';
+import 'package:activatory/src/factories/factory.dart';
 
-class MapBackend extends GeneratorBackend<Map<Object, Object>> {
+class ReflectiveMapFactory<TKey, TValue> implements Factory<Map<TKey, TValue>> {
   final Type _keyType;
   final Type _valueType;
 
-  MapBackend(this._keyType, this._valueType);
+  ReflectiveMapFactory(this._keyType, this._valueType);
 
   @override
-  Map<Object, Object> get(ActivationContext context) {
-    final result = empty();
+  Map<TKey, TValue> get(ActivationContext context) {
+    final result = createEmptyMap();
     if (context.isVisitLimitReached(_keyType) || context.isVisitLimitReached(_valueType)) {
       return result;
     }
@@ -24,8 +24,11 @@ class MapBackend extends GeneratorBackend<Map<Object, Object>> {
     return result;
   }
 
-  Map<Object, Object> empty() {
+  Map<TKey, TValue> createEmptyMap() {
     final reflectedList = reflectType(Map, [_keyType, _valueType]);
-    return (reflectedList as ClassMirror).newInstance(Symbol(''), []).reflectee as Map;
+    return (reflectedList as ClassMirror).newInstance(Symbol(''), []).reflectee as Map<TKey, TValue>;
   }
+
+  @override
+  Map<TKey, TValue> getDefaultValue() => createEmptyMap();
 }
