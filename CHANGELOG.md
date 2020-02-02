@@ -1,9 +1,11 @@
 ## v0.0.22
 - Implemented take and takeTyped methods to select random item from Iterable
-- Documentation improvements
-- Params object related classes moved to separate files
+- Public API documentation improved
 - Entry points refactored
 - Fixed issues with list, iterable, map, Params and generic class activation. Pre configuration is not required any more.
+- Removed params object and arg customization functionality
+- Huge refactoring performed
+- README.md project description refactored
 
 ## v0.0.21
 - Bugfix and pubspec update
