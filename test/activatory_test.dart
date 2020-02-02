@@ -1,3 +1,4 @@
+@TestOn('vm')
 import 'dart:collection';
 
 import 'package:activatory/activatory.dart';
@@ -361,9 +362,19 @@ void main() {
       for (var node1 in tree.children) {
         _assertTreeNode(node1, 3);
         for (var node2 in node1.children) {
-          _assertTreeNode(node2, 3);
-          for (var node3 in node2.children) {
-            _assertTreeNode(node3, 0);
+          _assertTreeNode(node2, 0);
+        }
+      }
+    });
+
+    test('for array with recursive object', () {
+      var list = _activatory.get<List<TreeNode>>();
+      for (var node in list) {
+        _assertTreeNode(node, 3);
+        for (var node1 in node.children) {
+          _assertTreeNode(node1, 3);
+          for (var node2 in node1.children) {
+            _assertTreeNode(node2, 0);
           }
         }
       }
@@ -377,10 +388,7 @@ void main() {
         for (var node2 in node1.children) {
           _assertTreeNode(node2, 3);
           for (var node3 in node2.children) {
-            _assertTreeNode(node3, 3);
-            for (var node4 in node3.children) {
-              _assertTreeNode(node4, 0);
-            }
+            _assertTreeNode(node3, 0);
           }
         }
       }
@@ -518,7 +526,7 @@ void main() {
 
     test('recursion limit per type', () {
       var expectedArrayRecursionLimit = 5;
-      var expectedRefRecursionLimit = 0;
+      var expectedRefRecursionLimit = 2;
       _activatory.customize<TreeNode>().maxRecursionLevel = expectedArrayRecursionLimit;
       _activatory.customize<LinkedNode>().maxRecursionLevel = expectedRefRecursionLimit;
 
@@ -531,16 +539,14 @@ void main() {
         for (var node2 in node1.children) {
           _assertTreeNode(node2, 3);
           for (var node3 in node2.children) {
-            _assertTreeNode(node3, 3);
-            for (var node4 in node3.children) {
-              _assertTreeNode(node4, 0);
-            }
+            _assertTreeNode(node3, 0);
           }
         }
       }
 
       expect(linkedNode, isNotNull);
-      expect(linkedNode.next, isNull);
+      expect(linkedNode.next, isNotNull);
+      expect(linkedNode.next.next, isNull);
     });
   });
 

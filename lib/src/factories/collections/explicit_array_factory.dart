@@ -5,6 +5,7 @@ class ExplicitArrayFactory<T> extends Factory<List<T>> {
   @override
   List<T> get(ActivationContext context) {
     List<T> value = getDefaultValue();
+    // Prevent from creating array of nulls.
     if (context.isVisitLimitReached(T)) {
       return value;
     }

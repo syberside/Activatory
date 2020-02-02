@@ -12,6 +12,7 @@ class ReflectiveMapFactory<TKey, TValue> implements Factory<Map<TKey, TValue>> {
   @override
   Map<TKey, TValue> get(ActivationContext context) {
     final result = createEmptyMap();
+    // Prevent from creating array of nulls.
     if (context.isVisitLimitReached(_keyType) || context.isVisitLimitReached(_valueType)) {
       return result;
     }

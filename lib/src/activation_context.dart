@@ -28,7 +28,7 @@ class ActivationContext implements ValueGenerator {
   DefaultValuesHandlingStrategy defaultValuesHandlingStrategy(Type type) =>
       _customizationsRegistry.getCustomization(type, key: key).defaultValuesHandlingStrategy;
 
-  int countVisits(Type type) => _stackTrace.where((t) => t == type).length;
+  int _countVisits(Type type) => _stackTrace.where((t) => t == type).length;
 
   @override
   Object createUntyped(Type type, ActivationContext context) => _valueGenerator.createUntyped(type, this);
@@ -38,7 +38,7 @@ class ActivationContext implements ValueGenerator {
 
   bool isVisitLimitReached(Type type) {
     final customization = _customizationsRegistry.getCustomization(type, key: key);
-    return countVisits(type) > customization.maxRecursionLevel;
+    return _countVisits(type) >= customization.maxRecursionLevel;
   }
 
   void notifyVisited(Type type) => _stackTrace.removeAt(_stackTrace.lastIndexOf(type));

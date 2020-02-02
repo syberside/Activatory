@@ -31,7 +31,7 @@ main() {
 
   // Recursive graphs are also supported.
   final myLinkedList = activatory.get<LinkedNode<int>>();
-  assert(myLinkedList.next.next.next.value != null); // Default recursion limit is 3.
+  assert(myLinkedList.next.next.value != null); // Default recursion limit is 3.
 
   // Activatory can create multiple objects at one call.
   var intArray = activatory.getMany<int>();

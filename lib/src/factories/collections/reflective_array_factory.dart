@@ -11,6 +11,7 @@ class ReflectiveArrayFactory extends Factory<List<Object>> {
   @override
   List get(ActivationContext context) {
     final value = getDefaultValue();
+    // Prevent from creating array of nulls.
     if (context.isVisitLimitReached(_type)) {
       return value;
     }
