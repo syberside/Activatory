@@ -94,14 +94,12 @@ void main() {
   // In some cases you may require different strategies for different activation calls.
   // This can be accomplished with using key parameter of customization/activation methods.
   activatory.useSingleton(42, key: 'good number');
-  activatory.useSingleton(10, key: 'not good number');
-  //TODO: Lines below should works without key specification. See https://github.com/syberside/Activatory/issues/30 for details.
-  activatory.useFunction((ctx) => ctx.create<int>().toString(), key: 'good number');
-  activatory.useFunction((ctx) => ctx.create<int>().toString(), key: 'not good number');
+  activatory.useSingleton(13, key: 'not good number');
+  activatory.useFunction((ctx) => ctx.create<int>().toString());
   final String goodNumberStr = activatory.get<String>('good number');
   assert(goodNumberStr == '42');
   final String notGoodNumberStr = activatory.get<String>('not good number');
-  assert(notGoodNumberStr == '10');
+  assert(notGoodNumberStr == '13');
   // Key can be any type of object. It's value can be accessed through ActivationContext if required.
   final DateTime now = DateTime.now();
   activatory.useFunction((ctx) => ctx.key as DateTime, key: now);

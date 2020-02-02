@@ -215,7 +215,7 @@ void main() {
       expect(result, isNot(equals(result2)));
     });
 
-    test('defined values to use', () {
+    test('generated values to use', () {
       const key1 = 'key1';
       const key2 = 'key2';
       _activatory.useGeneratedSingleton<String>(key: key1);
@@ -238,6 +238,21 @@ void main() {
       expect(resultA, isNot(equals(resultK1A)));
       expect(resultA, isNot(equals(resultK2A)));
     });
+  });
+
+  test('Keyless setup is used if no matching keyed setup exists', () {
+    const value1 = 42;
+    const value2 = 13;
+    const key1 = 'key1';
+    const key2 = 'key2';
+    _activatory.useSingleton(value1, key: key1);
+    _activatory.useSingleton(value2, key: key2);
+    _activatory.useFunction((ctx) => ctx.create<int>().toString());
+
+    final result1 = _activatory.get<String>(key1);
+    final result2 = _activatory.get<String>(key2);
+    expect(result1, equals(value1.toString()));
+    expect(result2, equals(value2.toString()));
   });
 
   group('Can create array', () {

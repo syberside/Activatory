@@ -35,8 +35,14 @@ class FactoriesRegistry {
 
   Factory getFactory(Type type, Object key) {
     final affectedType = _aliasesRegistry.getAlias(type);
+
     final storeKey = new ResolveKey(affectedType, key);
     var factories = _store.find(storeKey);
+
+    if (factories == null && key != null) {
+      final typeOnlyStoreKey = new ResolveKey(affectedType, null);
+      factories = _store.find(typeOnlyStoreKey);
+    }
     if (factories != null) {
       final customization = _customizationsRegistry.getCustomization(affectedType, key: key);
       final ctorResolveStrategy = _ctorResolveStrategyFactory.getResolver(customization.resolvingStrategy);
