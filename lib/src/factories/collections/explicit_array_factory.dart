@@ -1,9 +1,9 @@
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class ExplicitArrayFactory<T> extends Factory<List<T>> {
   @override
-  List<T> get(ActivationContext context) {
+  List<T> get(InternalActivationContext context) {
     List<T> value = getDefaultValue();
     // Prevent from creating array of nulls.
     if (context.isVisitLimitReached(T)) {

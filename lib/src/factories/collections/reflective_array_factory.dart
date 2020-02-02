@@ -1,7 +1,7 @@
 import 'dart:mirrors';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class ReflectiveArrayFactory extends Factory<List<Object>> {
   final Type _type;
@@ -9,7 +9,7 @@ class ReflectiveArrayFactory extends Factory<List<Object>> {
   ReflectiveArrayFactory(this._type);
 
   @override
-  List get(ActivationContext context) {
+  List get(InternalActivationContext context) {
     final value = getDefaultValue();
     // Prevent from creating array of nulls.
     if (context.isVisitLimitReached(_type)) {

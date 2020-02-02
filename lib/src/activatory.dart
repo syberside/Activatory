@@ -1,7 +1,6 @@
 import 'dart:core';
 import 'dart:math';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/customization/factory-resolving/factory_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
@@ -11,6 +10,7 @@ import 'package:activatory/src/factories-registry/factories_store.dart';
 import 'package:activatory/src/factories/explicit/explicit_factory.dart';
 import 'package:activatory/src/factories/explicit/factory_delegate.dart';
 import 'package:activatory/src/factories/singleton_factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 import 'package:activatory/src/post-activation/reflective_fields_filler.dart';
 import 'package:activatory/src/type-aliasing/reflective_type_alias_registry.dart';
 import 'package:activatory/src/value-generator/value_generator_impl.dart';
@@ -30,7 +30,7 @@ class Activatory {
     var backendFactory = new FactoriesFactory(_random);
     _backendRegistry = new FactoriesRegistry(
         backendFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry, new FactoriesStore());
-    _valueGenerator = new ValueGeneratorImpl(_backendRegistry, new FieldsFiller());
+    _valueGenerator = new ValueGeneratorImpl(_backendRegistry, new ReflectiveFieldsFiller());
   }
 
   // region Activation members
@@ -128,6 +128,6 @@ class Activatory {
 
   //endregion
 
-  ActivationContext _createContext(Object key) =>
-      new ActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
+  InternalActivationContext _createContext(Object key) =>
+      new InternalActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
 }

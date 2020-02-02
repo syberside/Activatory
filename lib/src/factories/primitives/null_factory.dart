@@ -1,9 +1,9 @@
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class NullFactory implements Factory<Null> {
   @override
-  Null get(ActivationContext context) => null;
+  Null get(InternalActivationContext context) => null;
 
   @override
   Null getDefaultValue() => null;

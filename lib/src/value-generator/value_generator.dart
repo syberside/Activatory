@@ -1,7 +1,7 @@
-import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 abstract class ValueGenerator {
-  Object createUntyped(Type type, ActivationContext context);
+  Object createUntyped(Type type, InternalActivationContext context);
 
-  T create<T>(ActivationContext context);
+  T create<T>(InternalActivationContext context);
 }

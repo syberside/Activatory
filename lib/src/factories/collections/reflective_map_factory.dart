@@ -1,7 +1,7 @@
 import 'dart:mirrors';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class ReflectiveMapFactory<TKey, TValue> implements Factory<Map<TKey, TValue>> {
   final Type _keyType;
@@ -10,7 +10,7 @@ class ReflectiveMapFactory<TKey, TValue> implements Factory<Map<TKey, TValue>> {
   ReflectiveMapFactory(this._keyType, this._valueType);
 
   @override
-  Map<TKey, TValue> get(ActivationContext context) {
+  Map<TKey, TValue> get(InternalActivationContext context) {
     final result = createEmptyMap();
     // Prevent from creating array of nulls.
     if (context.isVisitLimitReached(_keyType) || context.isVisitLimitReached(_valueType)) {

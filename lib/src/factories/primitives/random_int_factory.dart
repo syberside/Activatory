@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class RandomIntFactory implements Factory<int> {
   final Random _random;
@@ -10,7 +10,7 @@ class RandomIntFactory implements Factory<int> {
   RandomIntFactory(this._random);
 
   @override
-  int get(ActivationContext context) => _random.nextInt(_maxValue);
+  int get(InternalActivationContext context) => _random.nextInt(_maxValue);
 
   @override
   int getDefaultValue() => 0;

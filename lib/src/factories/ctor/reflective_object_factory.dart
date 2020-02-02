@@ -1,9 +1,9 @@
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
 import 'package:activatory/src/factories/ctor/argument_info.dart';
 import 'package:activatory/src/factories/ctor/ctor_info.dart';
 import 'package:activatory/src/factories/ctor/ctor_type.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class ReflectiveObjectFactory implements Factory<Object> {
   final CtorInfo _ctorInfo;
@@ -15,7 +15,7 @@ class ReflectiveObjectFactory implements Factory<Object> {
   CtorType get ctorType => _ctorInfo.type;
 
   @override
-  Object get(ActivationContext context) {
+  Object get(InternalActivationContext context) {
     final positionalArguments = <Object>[];
     final namedArguments = new Map<Symbol, Object>();
     for (final arg in _ctorInfo.args) {
@@ -31,7 +31,7 @@ class ReflectiveObjectFactory implements Factory<Object> {
     return result.reflectee;
   }
 
-  Object _generateValues(ArgumentInfo arg, ActivationContext context) {
+  Object _generateValues(ArgumentInfo arg, InternalActivationContext context) {
     final defaultValuesStrategy = context.defaultValuesHandlingStrategy(_ctorInfo.classType);
     switch (defaultValuesStrategy) {
       case DefaultValuesHandlingStrategy.UseAll:

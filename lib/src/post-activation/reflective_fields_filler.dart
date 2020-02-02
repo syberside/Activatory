@@ -1,10 +1,10 @@
 import 'dart:mirrors';
 
-import 'package:activatory/src/activation_context.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 import 'package:activatory/src/post-activation/fields_auto_filling_strategy.dart';
 
-class FieldsFiller {
-  void fill(Object object, ActivationContext ctx) {
+class ReflectiveFieldsFiller {
+  void fill(Object object, InternalActivationContext ctx) {
     var fieldsStrategy = ctx.fieldsAutoFill(object.runtimeType);
     if (fieldsStrategy == FieldsAutoFillingStrategy.None) {
       return;

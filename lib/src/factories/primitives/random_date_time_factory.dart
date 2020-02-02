@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class RandomDateTimeFactory implements Factory<DateTime> {
   final Random _random;
@@ -11,7 +11,7 @@ class RandomDateTimeFactory implements Factory<DateTime> {
   RandomDateTimeFactory(this._random);
 
   @override
-  DateTime get(ActivationContext context) {
+  DateTime get(InternalActivationContext context) {
     var days = _random.nextInt(_maxDays);
     var milliseconds = _random.nextInt(_maxMilliseconds);
     return DateTime.fromMillisecondsSinceEpoch(0).add(new Duration(days: days, milliseconds: milliseconds));

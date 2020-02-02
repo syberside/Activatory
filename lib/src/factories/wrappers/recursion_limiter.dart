@@ -1,6 +1,6 @@
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
 import 'package:activatory/src/factories/wrappers/factory_wrapper.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class RecursionLimiter implements Factory<Object>, FactoryWrapper<Object> {
   final Type _type;
@@ -12,7 +12,7 @@ class RecursionLimiter implements Factory<Object>, FactoryWrapper<Object> {
   );
 
   @override
-  Object get(ActivationContext context) {
+  Object get(InternalActivationContext context) {
     if (context.isVisitLimitReached(_type)) {
       return wrapped.getDefaultValue();
     }

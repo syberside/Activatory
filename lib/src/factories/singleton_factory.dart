@@ -1,5 +1,5 @@
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class SingletonFactory<T> implements Factory<T> {
   final T _value;
@@ -7,7 +7,7 @@ class SingletonFactory<T> implements Factory<T> {
   SingletonFactory(this._value);
 
   @override
-  T get(ActivationContext context) {
+  T get(InternalActivationContext context) {
     return _value;
   }
 

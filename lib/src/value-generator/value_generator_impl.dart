@@ -1,11 +1,11 @@
-import 'package:activatory/activatory.dart';
 import 'package:activatory/src/factories-registry/factories_registry.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 import 'package:activatory/src/post-activation/reflective_fields_filler.dart';
 import 'package:activatory/src/value-generator/value_generator.dart';
 
 class ValueGeneratorImpl implements ValueGenerator {
   final FactoriesRegistry _factoriesRegistry;
-  final FieldsFiller _fieldsFiller;
+  final ReflectiveFieldsFiller _fieldsFiller;
 
   ValueGeneratorImpl(
     this._factoriesRegistry,
@@ -13,13 +13,13 @@ class ValueGeneratorImpl implements ValueGenerator {
   );
 
   @override
-  Object createUntyped(Type type, ActivationContext context) {
-    var backend = _factoriesRegistry.getFactory(type, context.key);
-    var value = backend.get(context);
+  Object createUntyped(Type type, InternalActivationContext context) {
+    var factory = _factoriesRegistry.getFactory(type, context.key);
+    var value = factory.get(context);
     _fieldsFiller.fill(value, context);
     return value;
   }
 
   @override
-  T create<T>(ActivationContext context) => createUntyped(T, context);
+  T create<T>(InternalActivationContext context) => createUntyped(T, context);
 }

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
+import 'package:activatory/src/internal_activation_context.dart';
 
 class RandomDoubleFactory implements Factory<double> {
   final Random _random;
@@ -9,7 +9,7 @@ class RandomDoubleFactory implements Factory<double> {
   RandomDoubleFactory(this._random);
 
   @override
-  double get(ActivationContext context) {
+  double get(InternalActivationContext context) {
     return _random.nextDouble();
   }
 
