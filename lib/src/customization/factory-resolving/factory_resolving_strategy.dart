@@ -1,11 +1,11 @@
 import 'package:activatory/src/activation_exception.dart';
 
 /// Defines strategy of selecting backend for activation.
-enum BackendResolutionStrategy {
-  /// Take first available backend. If overrides was provided latest one will be used.
-  /// If no overrides are provided will be used:
-  ///  - random value generator for primitive types;
-  ///  - random value generator enums;
+enum FactoryResolvingStrategy {
+  /// Take first available factory. If overrides was provided latest one will be used.
+  /// If no overrides was provided will be used:
+  ///  - random value factory for primitive types;
+  ///  - random value factory enums;
   ///  - fist defined ctor for complex type.
   TakeFirstDefined,
 
@@ -13,11 +13,11 @@ enum BackendResolutionStrategy {
   /// If type doesn't have public named ctor or type is not complex [ActivationException] will be thrown.
   TakeRandomNamedCtor,
 
-  /// Take random available backend. If overrides was provided random backend will be chosen from overrides.
+  /// Take random available factory. If overrides was provided random one will be chosen from overrides.
   /// If no overrides are provided will be used:
-  ///  - random value generator for primitive types;
-  ///  - random value generator enums;
-  ///  - random defined ctor for complex type.
+  ///  - random value factory for primitive types;
+  ///  - random value factory enums;
+  ///  - random ctor for complex type.
   TakeRandom,
 
   /// Take default ctor for complex type.

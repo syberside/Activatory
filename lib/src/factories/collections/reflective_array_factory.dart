@@ -16,7 +16,7 @@ class ReflectiveArrayFactory extends Factory<List<Object>> {
     }
 
     for (int i = 0; i < context.arraySize(_type); i++) {
-      value.add(context.create(_type, context));
+      value.add(context.createUntyped(_type, context));
     }
     return value;
   }

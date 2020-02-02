@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:mirrors';
 
-import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/factories/collections/explicit_array_factory.dart';
 import 'package:activatory/src/factories/collections/reflective_array_factory.dart';
@@ -18,19 +17,19 @@ import 'package:activatory/src/factories/primitives/random_double_factory.dart';
 import 'package:activatory/src/factories/primitives/random_int_factory.dart';
 import 'package:activatory/src/factories/primitives/random_string_factory.dart';
 import 'package:activatory/src/factories/random_array_item_factory.dart';
-import 'package:activatory/src/type_helper.dart';
+import 'package:activatory/src/helpers/type_helper.dart';
 
 typedef Factory _GeneratorBackendFactory();
 
-class BackendsFactory {
+class FactoriesFactory {
   static const _emptySymbol = const Symbol('');
-  Random _random;
+  final Random _random;
   final Map<Type, _GeneratorBackendFactory> _predefinedFactories = new Map<Type, _GeneratorBackendFactory>();
 
   final _listMirror = reflectClass(List);
   final _mapMirror = reflectClass(Map);
 
-  BackendsFactory(this._random) {
+  FactoriesFactory(this._random) {
     _predefinedFactories[bool] = () => new RandomBoolFactory(_random);
     _predefinedFactories[int] = () => new RandomIntFactory(_random);
     _predefinedFactories[double] = () => new RandomDoubleFactory(_random);
@@ -47,7 +46,7 @@ class BackendsFactory {
     _predefinedFactories[getType<List<Null>>()] = () => new ExplicitArrayFactory<Null>();
   }
 
-  List<Factory> create(Type type, ActivationContext context) {
+  List<Factory> create(Type type) {
     var predefinedFactory = _predefinedFactories[type];
     if (predefinedFactory != null) {
       return [predefinedFactory()];
@@ -56,11 +55,11 @@ class BackendsFactory {
     if (classMirror.isEnum) {
       return [_createEnumBackend(classMirror)];
     } else {
-      return _createComplexObjectBackend(classMirror, type);
+      return _createObjectReflectiveFactories(classMirror, type);
     }
   }
 
-  List<Factory> _createComplexObjectBackend(ClassMirror classMirror, Type type) {
+  List<Factory> _createObjectReflectiveFactories(ClassMirror classMirror, Type type) {
     // We need to make sure that we are using original class mirror, not generic subtype
     // Otherwise subtype check will return false
     final originalClassMirror = reflectClass(type);

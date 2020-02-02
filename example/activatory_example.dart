@@ -76,7 +76,7 @@ main() {
   assert(goodNumber == 42);
   // Function accept activation context that can be used in complex scenarios to activate other types, read settings and etc.
   activatory.useFunction((ActivationContext ctx) => 'This string contains 34 characters');
-  activatory.useFunction((ActivationContext ctx) => ctx.createTyped<String>(ctx).length);
+  activatory.useFunction((ActivationContext ctx) => ctx.create<String>(ctx).length);
   var thirtyFour = activatory.get<int>();
   assert(thirtyFour == 34);
   // 2.1. With singleton value generated automatically
@@ -93,8 +93,8 @@ main() {
   activatory.useSingleton(42, key: 'good number');
   activatory.useSingleton(10, key: 'not good number');
   //TODO: Lines below should works without key specification. See https://github.com/syberside/Activatory/issues/30 for details.
-  activatory.useFunction((ctx) => ctx.createTyped<int>(ctx).toString(), key: 'good number');
-  activatory.useFunction((ctx) => ctx.createTyped<int>(ctx).toString(), key: 'not good number');
+  activatory.useFunction((ctx) => ctx.create<int>(ctx).toString(), key: 'good number');
+  activatory.useFunction((ctx) => ctx.create<int>(ctx).toString(), key: 'not good number');
   var goodNumberStr = activatory.get<String>('good number');
   assert(goodNumberStr == '42');
   var notGoodNumberStr = activatory.get<String>('not good number');
@@ -112,7 +112,7 @@ main() {
     ..defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceAll
     ..fieldsAutoFillingStrategy = FieldsAutoFillingStrategy.FieldsAndSetters
     ..maxRecursionLevel = 10
-    ..resolutionStrategy = BackendResolutionStrategy.TakeRandomNamedCtor;
+    ..resolvingStrategy = FactoryResolvingStrategy.TakeRandomNamedCtor;
 
   //See activatory_test.dart for more examples
 }

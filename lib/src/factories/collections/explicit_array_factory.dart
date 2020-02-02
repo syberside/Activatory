@@ -10,7 +10,7 @@ class ExplicitArrayFactory<T> extends Factory<List<T>> {
     }
 
     for (int i = 0; i < context.arraySize(T); i++) {
-      value.add(context.create(T, context));
+      value.add(context.createUntyped(T, context));
     }
     return value;
   }

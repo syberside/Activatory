@@ -17,8 +17,8 @@ class ReflectiveMapFactory<TKey, TValue> implements Factory<Map<TKey, TValue>> {
     }
 
     for (var i = 0; i < context.arraySize(_valueType); i++) {
-      final key = context.create(_keyType, context);
-      final value = context.create(_valueType, context);
+      final key = context.createUntyped(_keyType, context);
+      final value = context.createUntyped(_valueType, context);
       result[key] = value;
     }
     return result;

@@ -3,9 +3,9 @@ import 'dart:collection';
 import 'package:activatory/activatory.dart';
 import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/activatory.dart';
-import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
-import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
+import 'package:activatory/src/customization/factory-resolving/factory_resolving_strategy.dart';
+import 'package:activatory/src/post-activation/fields_auto_filling_strategy.dart';
 import 'package:test/test.dart';
 
 import 'test_classes.dart';
@@ -348,7 +348,7 @@ void main() {
     });
 
     test('with overrided factory recursion call', () {
-      _activatory.useFunction<LinkedNode>((ctx) => ctx.create(LinkedNode, ctx));
+      _activatory.useFunction<LinkedNode>((ctx) => ctx.createUntyped(LinkedNode, ctx));
       var linked = _activatory.get<LinkedNode>();
 
       expect(linked, isNull);
@@ -392,8 +392,8 @@ void main() {
       group('without overrides', () {
         test('take first for complex type to take first ctor', () {
           _activatory.useSingleton('E');
-          _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy =
-              BackendResolutionStrategy.TakeFirstDefined;
+          _activatory.customize<NamedCtorsAndDefaultCtor>().resolvingStrategy =
+              FactoryResolvingStrategy.TakeFirstDefined;
 
           var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
@@ -403,8 +403,8 @@ void main() {
         });
 
         test('take random named ctor', () {
-          _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy =
-              BackendResolutionStrategy.TakeRandomNamedCtor;
+          _activatory.customize<NamedCtorsAndDefaultCtor>().resolvingStrategy =
+              FactoryResolvingStrategy.TakeRandomNamedCtor;
 
           var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
           var result = SplayTreeSet.from(items.map((item) => item.field));
@@ -414,7 +414,7 @@ void main() {
         });
 
         test('take random for complex type to take random ctor', () {
-          _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy = BackendResolutionStrategy.TakeRandom;
+          _activatory.customize<NamedCtorsAndDefaultCtor>().resolvingStrategy = FactoryResolvingStrategy.TakeRandom;
           _activatory.useSingleton<String>('E');
 
           var items = List.generate(200, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
@@ -425,8 +425,8 @@ void main() {
         });
 
         test('take default ctor for type with default ctor', () {
-          _activatory.customize<NamedCtorsAndDefaultCtor>().resolutionStrategy =
-              BackendResolutionStrategy.TakeDefaultCtor;
+          _activatory.customize<NamedCtorsAndDefaultCtor>().resolvingStrategy =
+              FactoryResolvingStrategy.TakeDefaultCtor;
           _activatory.useSingleton<String>('E');
 
           var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
@@ -437,7 +437,7 @@ void main() {
         });
 
         test('take default for class with factory', () {
-          _activatory.customize<NamedCtorsAndFactory>().resolutionStrategy = BackendResolutionStrategy.TakeDefaultCtor;
+          _activatory.customize<NamedCtorsAndFactory>().resolvingStrategy = FactoryResolvingStrategy.TakeDefaultCtor;
           _activatory.useSingleton<String>('E');
 
           var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndFactory>());
@@ -448,8 +448,7 @@ void main() {
         });
 
         test('take default for class with const ctor', () {
-          _activatory.customize<NamedCtorsAndConstCtor>().resolutionStrategy =
-              BackendResolutionStrategy.TakeDefaultCtor;
+          _activatory.customize<NamedCtorsAndConstCtor>().resolvingStrategy = FactoryResolvingStrategy.TakeDefaultCtor;
           _activatory.useSingleton<String>('E');
 
           var items = List.generate(15, (_) => _activatory.get<NamedCtorsAndConstCtor>());
@@ -468,7 +467,7 @@ void main() {
           _activatory.useFunction((ctx) => 40);
           _activatory.customize<int>()
             ..arraySize = 30
-            ..resolutionStrategy = BackendResolutionStrategy.TakeRandom;
+            ..resolvingStrategy = FactoryResolvingStrategy.TakeRandom;
 
           final generated = _activatory.get<List<int>>();
           var result = SplayTreeSet.from(generated);
@@ -484,7 +483,7 @@ void main() {
           _activatory.useFunction((ctx) => 40);
           _activatory.customize<int>()
             ..arraySize = 15
-            ..resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
+            ..resolvingStrategy = FactoryResolvingStrategy.TakeFirstDefined;
 
           final generated = _activatory.get<List<int>>();
           var result = SplayTreeSet.from(generated);
@@ -583,7 +582,7 @@ void main() {
     });
   });
 
-  group('Type aliases', () {
+  group('Type type-aliasing', () {
     test('allow iterable of primitive type activation', () {
       var result = _activatory.get<PrimitiveIterableInCtor>();
 

@@ -1,7 +1,7 @@
 import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
-import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
+import 'package:activatory/src/post-activation/fields_auto_filling_strategy.dart';
 
 class FieldsFiller {
   void fill(Object object, ActivationContext ctx) {
@@ -17,7 +17,7 @@ class FieldsFiller {
         .where((VariableMirror v) => v.isFinal == false && v.isStatic == false && v.isPrivate == false)
         .toList();
     for (var field in publicFields) {
-      var value = ctx.create(field.type.reflectedType, ctx);
+      var value = ctx.createUntyped(field.type.reflectedType, ctx);
       reflected.setField(field.simpleName, value);
     }
     if (fieldsStrategy == FieldsAutoFillingStrategy.Fields) {
@@ -36,7 +36,7 @@ class FieldsFiller {
       name = name.substring(0, name.length - 1);
       var symbol = MirrorSystem.getSymbol(name);
 
-      var value = ctx.create(setter.parameters.first.type.reflectedType, ctx);
+      var value = ctx.createUntyped(setter.parameters.first.type.reflectedType, ctx);
       reflected.setField(symbol, value);
     }
   }

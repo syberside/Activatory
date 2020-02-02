@@ -1,8 +1,8 @@
 import 'dart:mirrors';
 
-import 'package:activatory/src/type_helper.dart';
+import 'package:activatory/src/helpers/type_helper.dart';
 
-class TypeAliasesRegistry {
+class ReflectiveTypeAliasesRegistry {
   final Map<Type, Type> _aliases = {
     getType<Iterable<bool>>(): getType<List<bool>>(),
     getType<Iterable<int>>(): getType<List<int>>(),

@@ -37,9 +37,9 @@ class ReflectiveObjectFactory implements Factory<Object> {
       case DefaultValuesHandlingStrategy.UseAll:
         return arg.defaultValue;
       case DefaultValuesHandlingStrategy.ReplaceNulls:
-        return arg.defaultValue != null ? arg.defaultValue : context.create(arg.type, context);
+        return arg.defaultValue != null ? arg.defaultValue : context.createUntyped(arg.type, context);
       case DefaultValuesHandlingStrategy.ReplaceAll:
-        return context.create(arg.type, context);
+        return context.createUntyped(arg.type, context);
       default:
         throw new UnsupportedError('${defaultValuesStrategy.toString()} is not supported');
     }

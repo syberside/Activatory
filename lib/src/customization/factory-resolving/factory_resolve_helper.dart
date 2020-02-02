@@ -1,9 +1,9 @@
 import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/factories/factory.dart';
-import 'package:activatory/src/factories/factory_wrapper.dart';
+import 'package:activatory/src/factories/wrappers/factory_wrapper.dart';
 
-void assertBackendsNotEmpty(List<Factory> ctors) {
-  if (ctors.isEmpty) {
+void assertAnyFactoryFound(List<Factory> factories) {
+  if (factories.isEmpty) {
     throw ActivationException('Cant resolve ctor strategy because no matching ctors found');
   }
 }

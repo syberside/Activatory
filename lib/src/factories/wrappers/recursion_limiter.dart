@@ -2,7 +2,7 @@ import 'dart:mirrors';
 
 import 'package:activatory/src/activation_context.dart';
 import 'package:activatory/src/factories/factory.dart';
-import 'package:activatory/src/factories/factory_wrapper.dart';
+import 'package:activatory/src/factories/wrappers/factory_wrapper.dart';
 
 class RecursionLimiter implements Factory<Object>, FactoryWrapper<Object> {
   final Type _type;
@@ -16,7 +16,7 @@ class RecursionLimiter implements Factory<Object>, FactoryWrapper<Object> {
     if (context.isVisitLimitReached(_type)) {
       return wrapped.getDefaultValue();
     }
-    
+
     context.notifyVisiting(_type);
     final result = wrapped.get(context);
     context.notifyVisited(_type);

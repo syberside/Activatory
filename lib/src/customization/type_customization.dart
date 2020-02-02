@@ -1,14 +1,17 @@
-import 'package:activatory/src/customization/backend_resolution_strategy.dart';
 import 'package:activatory/src/customization/default_values_handling_strategy.dart';
-import 'package:activatory/src/post_activation/fields_auto_filling_strategy.dart';
+import 'package:activatory/src/customization/factory-resolving/factory_resolving_strategy.dart';
+import 'package:activatory/src/post-activation/fields_auto_filling_strategy.dart';
 
 /// Defines customization for type.
 class TypeCustomization {
-  BackendResolutionStrategy resolutionStrategy = BackendResolutionStrategy.TakeFirstDefined;
+  static const int _defaultRecursionLevel = 3;
+  static const int _defaultArraySize = 3;
 
-  int arraySize = 3;
+  FactoryResolvingStrategy resolvingStrategy = FactoryResolvingStrategy.TakeFirstDefined;
 
-  int maxRecursionLevel = 3;
+  int arraySize = _defaultArraySize;
+
+  int maxRecursionLevel = _defaultRecursionLevel;
 
   DefaultValuesHandlingStrategy defaultValuesHandlingStrategy = DefaultValuesHandlingStrategy.ReplaceNulls;
 
@@ -18,7 +21,7 @@ class TypeCustomization {
     return new TypeCustomization()
       ..arraySize = arraySize
       ..maxRecursionLevel = maxRecursionLevel
-      ..resolutionStrategy = resolutionStrategy
+      ..resolvingStrategy = resolvingStrategy
       ..defaultValuesHandlingStrategy = defaultValuesHandlingStrategy
       ..fieldsAutoFillingStrategy = fieldsAutoFillingStrategy;
   }
