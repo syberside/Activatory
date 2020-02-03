@@ -106,6 +106,11 @@ void main() {
   final DateTime today = activatory.get<DateTime>(now);
   assert(today == now);
 
+  // Super classes can be replaced with subtypes.
+  activatory.replaceSupperClass<AbstractClass, AbstractClassInheritor>();
+  final notSoAbstractInstance = activatory.get<AbstractClass>();
+  assert(notSoAbstractInstance.runtimeType == AbstractClassInheritor);
+
   // Activation behavior can be customized for all types or per type.
   final TypeCustomization defaultCustomization = activatory.defaultCustomization;
   defaultCustomization
@@ -114,6 +119,13 @@ void main() {
     ..fieldsAutoFillingStrategy = FieldsAutoFillingStrategy.FieldsAndSetters
     ..maxRecursionLevel = 10
     ..resolvingStrategy = FactoryResolvingStrategy.TakeRandomNamedCtor;
+
+  // Activatory contains helpful methods
+  // To take random item(s) from array
+  final fromOneToFive = activatory.take([1, 2, 3, 4, 5]);
+  assert(fromOneToFive >= 1 && fromOneToFive <= 5);
+  final threeItemsFromOneToFive = activatory.takeMany(3, [1, 2, 4, 5]);
+  assert(threeItemsFromOneToFive.length == 3);
 
   //See activatory_test.dart for more examples
 }
@@ -195,3 +207,7 @@ class LinkedNode<T> {
 
   LinkedNode(this.value, this.next);
 }
+
+abstract class AbstractClass {}
+
+class AbstractClassInheritor extends AbstractClass {}

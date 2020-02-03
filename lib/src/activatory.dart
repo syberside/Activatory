@@ -77,7 +77,11 @@ class Activatory {
   List<Object> takeManyUntyped(int count, Iterable variations) => List.generate(count, (_) => takeUntyped(variations));
 
   /// Returns random items from iterable.  [variations] value will be iterated while choosing item.
-  List<T> takeMany<T>(int count, Iterable<T> variations) => takeManyUntyped(count, variations) as List<T>;
+  List<T> takeMany<T>(int count, Iterable<T> variations) {
+    final dynamicResult = takeManyUntyped(count, variations);
+    //Cast result from List<dynamic> to List<T> through array creation
+    return new List<T>.from(dynamicResult);
+  }
 
   // endregion
 
