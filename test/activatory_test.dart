@@ -11,6 +11,7 @@ import 'package:test/test.dart';
 
 import 'test_classes.dart';
 
+/// TODO: Tests MUST BE refactored: https://github.com/syberside/Activatory/issues/33
 void main() {
   Type _getType<T>() => T;
 
