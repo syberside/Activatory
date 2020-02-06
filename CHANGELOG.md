@@ -1,3 +1,7 @@
+## v0.0.24
+- README.md huge update
+- Extra tests added
+
 ## v0.0.23
 - Analyser options configured. Analyzer issues fixed.
 - Activation contexts mismatch fixed
