@@ -10,9 +10,9 @@ Simplifies unit testing and Test-Driven Development.
 This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/AutoFixture) library.
 
 ## Overview
-When we are writing tests we need some way to create random data. It starts from using Random class to receive some int/double/bool and continues to handwritten helper methods with big amount of parameters to create complex object graphs. Helpers become more complex and require more maintenance while time passing. This makes them not flexible, inferrable and annoying.
+While writing tests developers need some way to create random data. It starts from using `Random` class to receive some `int`/`double`/`bool` and continues to handwritten helper methods with big amount of optional parameters to create complex object graphs. Helpers become more complex and require more maintenance while time passing. This makes them not flexible, but inferrable and annoying.
 
-Activatory allow you to use ready-from-the-box class which can do the same as handwritten boilerplate code and don't waste your time writing them. Keep in mind: **less code in tests is less code to maintain and understand**
+Activatory allow you to use ready-from-the-box class which can do the same as handwritten boilerplate code and don't waste your time on writing them. Keep in mind: **less code in tests is less code to maintain and understand**.
 
 ### Basic usage
 To create activatory instance just call a constructor
@@ -41,7 +41,7 @@ Any constructor arguments and public fields/setter values will be created, fille
 ### Typed VS untyped API
 Activatory support both styles of passing type parameters:
  * with generic class argument,
- * with regular Type object method parameter.
+ * with regular `Type` object method parameter.
 In general, **typed API is preferable** because of generic code robustness and readability.
 
 Suppose to use
@@ -55,14 +55,15 @@ final AlmostAnyClass instance = activatory.getUntyped(AlmostAnyClass) as AlmostA
 Untyped API can be helpful in case when class type itself is resolved at runtime (for instance, it could be taken from array of types in foreach loop).
 
 ## Customization
-Most of activation behaviors can be customized
+Most of activation behaviors can be customized.
 
-### Replacing underlying factories for types
+### Replacing underlying factories per type
 
 #### With user defined function
-Sometimes one this situations can occur:
+One of following situations can occur:
 - creating of instance has some logic behind (e.g. filling with special values),
 - type is not supported by activatory directly right now.
+
 In this situation default factories can be replaced with explicit user defined function call by `useFunction` method.
 ```dart
 // Overriding with explicit function call.
@@ -78,7 +79,7 @@ final int goodNumber = activatory.get<String>(); // "42"
 ```
 
 #### With user defined value
-If test data requires multiple instances of one class with the same value `useSingleton` method can be used to use single value for all activations of given type.
+If test scenario requires multiple instances of one class with the same value `useSingleton` method can be used to pin single value for all activations of given type.
 ```dart
 activatory.useSingleton(42);
 final int fourtyTwo1 = activatory.get<int>(); // 42
@@ -96,32 +97,128 @@ final contact = new ContactInfo()
   ..name = 'Joe'; // or activatory.get<String>()
 activatory.useSingleton(contact);
 final List<ReportItem> report = activatory.getMany<ReportItem>();
-final contactsCount = report.map((r)=>r.contact).toSet().length; // 1
-final reportItemsCount = report.map((r)=>r.itemName).toSet().length; // 3
+final contactsCount = report.map((r) => r.contact).toSet().length; // 1
+final reportItemsCount = report.map((r) => r.itemName).toSet().length; // 3
 ```
-In this example activatory will create 3 instances of ReportItem, each will receive different values for `itemName` but all thee instances will share `ContactInfo` instance.
+In this example activatory will create 3 instances of `ReportItem` each of which will receive different values for `itemName`. But all 3 instances will share one `ContactInfo` instance.
 
 #### With activatory created random value
-If test requires to use same value for all type instances but there is no need to create it by hand `useGeneratedSingleton` method can be used.
+If test scenario requires same value for all type instances but there is no need to create it by hand `useGeneratedSingleton` method can be used.
 
-Let's rewrite sample below. In this code snipped we don't depend on contact id and name values, so thay can be created without user defined code.
+Let's rewrite sample below. In this code snipped we don't depend on contact id and name values, so them could be created without user defined code.
 ```dart
 activatory.useGeneratedSingleton<ContactInfo>();
 final List<ReportItem> report = activatory.getMany<ReportItem>();
-final contactsCount = report.map((r)=>r.contact).toSet().length; // 1
-final reportItemsCount = report.map((r)=>r.itemName).toSet().length; // 3
+final contactsCount = report.map((r) => r.contact).toSet().length; // 1
+final reportItemsCount = report.map((r) => r.itemName).toSet().length; // 3
 ```
 ### Changing factory resolving strategy
-By default activatory takes first defined factory for class. This means that first founded by reflection public constructor will be used if no overrides was provided. If any overrides was provided latest one will be used.
+By default activatory takes first defined factory for class. This means first founded by reflection public constructor will be used if no overrides were provided. If any overrides was provided latest one will be used.
  
 ```dart
 activatory.customize<MyClass>().resolvingStrategy = FactoryResolvingStrategy.TakeRandomNamedCtor;
 ```
+
 Available strategies are:
- - select first defined factory (default), 
- - take random factory,
- - take random named constructor,
- - take default constructor.
+ - TakeFirstDefined (default one), 
+ - TakeRandomNamedCtor,
+ - TakeRandom,
+ - TakeDefaultCtor.
+
+In following strategies descriptions in this section `SomeClassWithConstructors` class will be used as an example.
+```dart
+class SomeClassWithConstructors {
+  final String value;
+
+  SomeClassWithConstructors.named1() : this('named1');
+
+  SomeClassWithConstructors(this.value);
+
+  SomeClassWithConstructors.named2() : this('named2');
+}
+```
+
+#### Using TakeFirstDefined strategy
+TakeFirstDefined is default strategy. This strategy will take first available factory. If overrides was provided latest one of them will be used.
+If no overrides were provided will be used next one:
+ - random value factory for primitive types;
+ - random value factory enums;
+ - fist defined constructor for complex type.
+
+Example:
+```dart
+_activatory.customize<SomeClassWithConstructors>().resolvingStrategy = FactoryResolvingStrategy.TakeFirstDefined; // This line actually can be skipped
+final firstDefinedCtorCallCount = _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'named1').length; // 100
+```
+In this example `firstDefinedCtorCallCount` will be equals 100 because first defined constructor (named as `named1`) is used. This could looks strange, but it's common pattern to place more generic constructor first. Dart ecosystem even have a [linter rule](https://dart-lang.github.io/linter/lints/sort_unnamed_constructors_first.html) for constructor order validation. So usually first defined is more applicable to simulate random input.
+
+If you override factory with any other latest one override will be used:
+```dart
+_activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+final latestOverrideCallCount = _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello').length; // 100
+```
+This behavior is used to match expected behavior on override call. So `latestOverrideCallCount` will be equals 100.
+
+#### Using TakeRandomNamedCtor strategy
+This strategy takes random named ctor for complex type. If type doesn't have public named constructor or type is not complex `ActivationException` will be thrown.
+```dart
+_activatory.customize<SomeClassWithConstructors>().resolvingStrategy = FactoryResolvingStrategy.TakeRandomNamedCtor;
+
+final items = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+final firstNamedCtorCallsCount = items.where((x) => x.value == 'named1').length; // ~50
+final secondNamedCtorCallsCount = items.where((x) => x.value == 'named2').length; // ~50
+final totalCtorCallsCount = firstNamedCtorCallsCount + secondNamedCtorCallsCount; // 100
+```
+
+If you override factory with any other latest one override will be used:
+```dart
+_activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+final overrideUsedCount = _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello').length; // 100
+```
+ 
+ #### Using TakeRandom strategy
+ This strategy will take random available factory.
+ 
+ If no overrides are provided will be used:
+ - random value factory for primitive types;
+ - random value factory enums;
+ - random ctor for complex type.
+ 
+ ```dart
+_activatory.customize<SomeClassWithConstructors>().resolvingStrategy = FactoryResolvingStrategy.TakeRandom;
+
+final items = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+final firstNamedCtorCallsCount = items.where((x) => x.value == 'named1').length; // ~33
+final secondNamedCtorCallsCount = items.where((x) => x.value == 'named2').length; // ~33
+final defaultCtorCallsCount = items.where((x) => !x.value.startsWith('named')).length; // ~33
+final totalCtorCallCount = firstNamedCtorCallsCount + secondNamedCtorCallsCount + defaultCtorCallsCount; // 100
+```
+
+If overrides were provided random one will be chosen from overrides.
+```dart
+_activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+final items2 = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+final overrideUsedCount = items2.where((x) => x.value == 'hello').length; // ~25
+final firstNamedCtorCallsCount2 = items2.where((x) => x.value == 'named1').length; // ~25
+final secondNamedCtorCallsCount2 = items2.where((x) => x.value == 'named2').length; // ~25
+final defaultCtorCallsCount2 = items2.where((x) => x.value != 'hello' && !x.value.startsWith('named')).length; // ~25
+final totalOverrideCallsCount = overrideUsedCount + firstNamedCtorCallsCount2 + secondNamedCtorCallsCount2 + defaultCtorCallsCount2; // 100
+```
+ #### Using TakeDefaultCtor strategy
+Take default ctor for complex type. Default ctor is the one called during evaluating `new T()` expression. This can be factory, const or usual ctor. If type doesn't have public default ctor or type is not complex [ActivationException] will be thrown.
+ 
+ ```dart
+_activatory.customize<SomeClassWithConstructors>().resolvingStrategy = FactoryResolvingStrategy.TakeDefaultCtor;
+
+final items = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+final defaultCtorCallsCount = items.where((x) => !x.value.startsWith('named')).length; //100
+```
+
+If overrides were provided they will be ignored.
+```dart
+_activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+final overrideUsedCount = _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello').length; //0
+```
  
  ### Changing default values usage
  ```dart

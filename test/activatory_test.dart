@@ -783,7 +783,106 @@ void main() {
       expect(variants, contains(result));
     });
   });
+
+  group('FactoryResolvingStrategy tests', () {
+    test('TakeFirstDefined', () {
+      _activatory.customize<SomeClassWithConstructors>().resolvingStrategy =
+          FactoryResolvingStrategy.TakeFirstDefined; //Default strategy
+      final firstDefinedCtorCallCount =
+          _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'named1').length; // 100
+
+      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+      final latestOverrideCallCount =
+          _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello').length; // 100
+
+      expect(firstDefinedCtorCallCount, 100);
+      expect(latestOverrideCallCount, 100);
+    });
+
+    test('TakeRandomNamedCtor', () {
+      _activatory.customize<SomeClassWithConstructors>().resolvingStrategy =
+          FactoryResolvingStrategy.TakeRandomNamedCtor;
+
+      final items = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+      final firstNamedCtorCallsCount =
+          items.where((x) => x.value == 'named1').length; //exact count is unknown, but approximately equals 50
+      final secondNamedCtorCallsCount =
+          items.where((x) => x.value == 'named2').length; //exact count is unknown, but approximately equals 50
+      final totalCtorCallsCount = firstNamedCtorCallsCount + secondNamedCtorCallsCount; // 100
+
+      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello1'));
+      final overrideUsedCount1 =
+          _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello1').length; // 100
+
+      expect(firstNamedCtorCallsCount, greaterThan(0));
+      expect(secondNamedCtorCallsCount, greaterThan(0));
+      expect(totalCtorCallsCount, 100);
+      expect(overrideUsedCount1, 0);
+    });
+
+    test('TakeRandom', () {
+      _activatory.customize<SomeClassWithConstructors>().resolvingStrategy = FactoryResolvingStrategy.TakeRandom;
+
+      final items = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+      final firstNamedCtorCallsCount =
+          items.where((x) => x.value == 'named1').length; //exact count is unknown, but approximately equals 33
+      final secondNamedCtorCallsCount =
+          items.where((x) => x.value == 'named2').length; //exact count is unknown, but approximately equals 33
+      final defaultCtorCallsCount =
+          items.where((x) => !x.value.startsWith('named')).length; //exact count is unknown, but approximately equals 33
+      final totalCtorCallCount = firstNamedCtorCallsCount + secondNamedCtorCallsCount + defaultCtorCallsCount; // 100
+
+      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+      final items2 = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+      final overrideUsedCount =
+          items2.where((x) => x.value == 'hello').length; //exact count is unknown, but approximately equals 25
+      final firstNamedCtorCallsCount2 =
+          items2.where((x) => x.value == 'named1').length; //exact count is unknown, but approximately equals 25
+      final secondNamedCtorCallsCount2 =
+          items2.where((x) => x.value == 'named2').length; //exact count is unknown, but approximately equals 25
+      final defaultCtorCallsCount2 = items2
+          .where((x) => x.value != 'hello' && !x.value.startsWith('named'))
+          .length; //exact count is unknown, but approximately equals 25
+      final totalOverrideCallsCount =
+          overrideUsedCount + firstNamedCtorCallsCount2 + secondNamedCtorCallsCount2 + defaultCtorCallsCount2;
+
+      expect(firstNamedCtorCallsCount, greaterThan(0));
+      expect(secondNamedCtorCallsCount, greaterThan(0));
+      expect(defaultCtorCallsCount, greaterThan(0));
+      expect(totalCtorCallCount, 100);
+      expect(overrideUsedCount, greaterThan(0));
+      expect(firstNamedCtorCallsCount2, greaterThan(0));
+      expect(secondNamedCtorCallsCount2, greaterThan(0));
+      expect(defaultCtorCallsCount2, greaterThan(0));
+      expect(totalOverrideCallsCount, 100);
+    });
+
+    test('TakeDefaultCtor', () {
+      _activatory.customize<SomeClassWithConstructors>().resolvingStrategy = FactoryResolvingStrategy.TakeDefaultCtor;
+
+      final items = _activatory.getMany<SomeClassWithConstructors>(count: 100);
+      final defaultCtorCallsCount = items.where((x) => !x.value.startsWith('named')).length; //100
+
+      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+      final overrideUsedCount =
+          _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello').length; //0
+
+      expect(defaultCtorCallsCount, 100);
+      expect(overrideUsedCount, 0);
+    });
+  });
 }
+
+class SomeClassWithConstructors {
+  final String value;
+
+  SomeClassWithConstructors.named1() : this('named1');
+
+  SomeClassWithConstructors(this.value);
+
+  SomeClassWithConstructors.named2() : this('named2');
+}
+// ignore_for_file: sort_unnamed_constructors_first
 
 void _assertLinkedNode(LinkedNode linked) {
   expect(linked, isNotNull);
