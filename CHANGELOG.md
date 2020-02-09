@@ -2,6 +2,8 @@
 - Docs and samples update
 - Key parameter is allays used as named now
 - pedantic included as default analyzer config
+- fromRandom constructor added
+- Seed can now be provided from outside for repeatability
 
 ## v0.0.24
 - README.md huge update

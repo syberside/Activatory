@@ -16,28 +16,31 @@ import 'package:activatory/src/type-aliasing/reflective_type_alias_registry.dart
 import 'package:activatory/src/value_generator.dart';
 
 class Activatory {
-  final Random _random = new Random(DateTime.now().millisecondsSinceEpoch);
+  final Random _random;
+  final TypeCustomizationRegistry _customizationsRegistry;
+  final ReflectiveTypeAliasesRegistry _typeAliasesRegistry;
   ValueGenerator _valueGenerator;
   FactoriesRegistry _factoriesRegistry;
-  TypeCustomizationRegistry _customizationsRegistry;
-  FactoryResolverFactory _backendResolverFactory;
-  ReflectiveTypeAliasesRegistry _typeAliasesRegistry;
 
-  Activatory() {
-    _typeAliasesRegistry = new ReflectiveTypeAliasesRegistry();
-    _customizationsRegistry = new TypeCustomizationRegistry();
-    _backendResolverFactory = new FactoryResolverFactory(_random);
-    final factoriesProvider = new FactoriesProvider(_random);
-    final factoriesStore = new FactoriesStore();
+  /// Creates new instance of Activatory with predefined [seed].
+  ///
+  /// If [seed] is not passed current time milliseconds since epoch is used.
+  Activatory({
+    int seed,
+  }) : this.fromRandom(new Random(seed ?? DateTime.now().millisecondsSinceEpoch));
+
+  /// Create new instance of Activatory with predefined [_random] generator.
+  Activatory.fromRandom(this._random)
+      : _typeAliasesRegistry = new ReflectiveTypeAliasesRegistry(),
+        _customizationsRegistry = new TypeCustomizationRegistry() {
     _factoriesRegistry = new FactoriesRegistry(
-      factoriesProvider,
+      new FactoriesProvider(_random),
       _customizationsRegistry,
-      _backendResolverFactory,
+      new FactoryResolverFactory(_random),
       _typeAliasesRegistry,
-      factoriesStore,
+      new FactoriesStore(),
     );
-    final fieldsFiller = new ReflectiveFieldsFiller();
-    _valueGenerator = new ValueGenerator(_factoriesRegistry, fieldsFiller);
+    _valueGenerator = new ValueGenerator(_factoriesRegistry, new ReflectiveFieldsFiller());
   }
 
   // region Activation members
