@@ -124,8 +124,9 @@ void main() {
   // To take random item(s) from array
   final fromOneToFive = activatory.take([1, 2, 3, 4, 5]);
   assert(fromOneToFive >= 1 && fromOneToFive <= 5);
-  final threeItemsFromOneToFive = activatory.takeMany(3, [1, 2, 4, 5]);
-  assert(threeItemsFromOneToFive.length == 3);
+  final threeItemsFromOneToFiveButNotOne = activatory.takeMany([1, 2, 4, 5], count: 3, except: [1]);
+  assert(threeItemsFromOneToFiveButNotOne.length == 3);
+  assert(threeItemsFromOneToFiveButNotOne.contains(1) == false);
 
   //See activatory_test.dart for more examples
 }

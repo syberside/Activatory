@@ -771,17 +771,50 @@ void main() {
     });
   });
 
-  group('Can select item from predefined iterable', () {
-    test('with typed api', () {
+  group('Can select from predefined iterable', () {
+    test('single item with typed api', () {
       final variants = _activatory.getMany<int>();
+
       final result = _activatory.take<int>(variants);
+
       expect(variants, contains(result));
     });
 
-    test('with not typed api', () {
+    test('single item with not typed api', () {
       final variants = _activatory.getMany<int>();
+
       final result = _activatory.takeUntyped(variants);
+
       expect(variants, contains(result));
+    });
+
+    test('multiple item with typed api', () {
+      final variants = _activatory.getMany<int>(count: 10);
+
+      final result = _activatory.takeMany<int>(variants, count: 5);
+
+      expect(result, hasLength(5));
+      expect(variants.toSet(), containsAll(result.toSet()));
+    });
+
+    test('multiple item with not typed api', () {
+      final variants = _activatory.getMany<int>(count: 10);
+
+      final result = _activatory.takeMany(variants, count: 5);
+
+      expect(result, hasLength(5));
+      expect(variants.toSet(), containsAll(result.toSet()));
+    });
+
+    test('multiple item except one of them with typed api', () {
+      final variants = _activatory.getMany<int>(count: 10);
+      final exclude = _activatory.take(variants);
+
+      final result = _activatory.takeMany<int>(variants, count: 10, except: [exclude]);
+
+      expect(result, isNot(contains(exclude)));
+      expect(result, hasLength(10));
+      expect(variants.toSet(), containsAll(result.toSet()));
     });
   });
 

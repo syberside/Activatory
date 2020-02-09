@@ -73,6 +73,9 @@ class Activatory {
   /// Returns random item from iterable. [variations] value will be iterated while choosing item.
   Object takeUntyped(Iterable variations) {
     final items = variations.toList();
+    if (items.isEmpty) {
+      throw new ArgumentError('Cant take element from empty Iterable');
+    }
     final index = _random.nextInt(items.length);
     return items[index];
   }
@@ -81,11 +84,15 @@ class Activatory {
   T take<T>(Iterable<T> variations) => takeUntyped(variations) as T;
 
   /// Returns random items from iterable. [variations] value will be iterated while choosing item.
-  List<Object> takeManyUntyped(int count, Iterable variations) => List.generate(count, (_) => takeUntyped(variations));
+  List<Object> takeManyUntyped(Iterable variations, {int count, Iterable except}) {
+    // ignore: prefer_collection_literals
+    final filteredVariations = variations.toSet().difference(except?.toSet() ?? new Set<Object>());
+    return List.generate(count, (_) => takeUntyped(filteredVariations));
+  }
 
-  /// Returns random items from iterable.  [variations] value will be iterated while choosing item.
-  List<T> takeMany<T>(int count, Iterable<T> variations) {
-    final dynamicResult = takeManyUntyped(count, variations);
+  /// Returns random items from iterable except items in [except].  [variations] and [except] parameters value will be iterated while choosing item.
+  List<T> takeMany<T>(Iterable<T> variations, {int count, Iterable<T> except}) {
+    final dynamicResult = takeManyUntyped(variations, count: count, except: except);
     //Cast result from List<dynamic> to List<T> through array creation
     return new List<T>.from(dynamicResult);
   }
