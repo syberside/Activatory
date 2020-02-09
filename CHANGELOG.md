@@ -1,3 +1,8 @@
+## v0.0.25
+- Docs and samples update
+- Key parameter is allays used as named now
+- pedantic included as default analyzer config
+
 ## v0.0.24
 - README.md huge update
 - Extra tests added

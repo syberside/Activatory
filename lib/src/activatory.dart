@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:activatory/src/customization/factory-resolving/factory_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
-import 'package:activatory/src/factories-registry/factories_factory.dart';
+import 'package:activatory/src/factories-registry/factories_provider.dart';
 import 'package:activatory/src/factories-registry/factories_registry.dart';
 import 'package:activatory/src/factories-registry/factories_store.dart';
 import 'package:activatory/src/factories/explicit/explicit_factory.dart';
@@ -27,21 +27,28 @@ class Activatory {
     _typeAliasesRegistry = new ReflectiveTypeAliasesRegistry();
     _customizationsRegistry = new TypeCustomizationRegistry();
     _backendResolverFactory = new FactoryResolverFactory(_random);
-    final factoriesFactory = new FactoriesFactory(_random);
+    final factoriesProvider = new FactoriesProvider(_random);
+    final factoriesStore = new FactoriesStore();
     _factoriesRegistry = new FactoriesRegistry(
-        factoriesFactory, _customizationsRegistry, _backendResolverFactory, _typeAliasesRegistry, new FactoriesStore());
-    _valueGenerator = new ValueGenerator(_factoriesRegistry, new ReflectiveFieldsFiller());
+      factoriesProvider,
+      _customizationsRegistry,
+      _backendResolverFactory,
+      _typeAliasesRegistry,
+      factoriesStore,
+    );
+    final fieldsFiller = new ReflectiveFieldsFiller();
+    _valueGenerator = new ValueGenerator(_factoriesRegistry, fieldsFiller);
   }
 
   // region Activation members
 
   /// Creates and returns instance of specified type [T] filled with random data recursively.
   /// Uses [key] to select configuration.
-  T get<T>([Object key]) => getUntyped(T, key) as T;
+  T get<T>({Object key}) => getUntyped(T, key: key) as T;
 
   /// Creates and returns instance of specified [type] filled with random data recursively.
   /// Uses [key] to select configuration.
-  Object getUntyped(Type type, [Object key]) {
+  Object getUntyped(Type type, {Object key}) {
     final context = _createContext(key);
     return _valueGenerator.createUntyped(type, context);
   }
@@ -51,7 +58,7 @@ class Activatory {
   /// Uses [key] to select configuration.
   List<Object> getManyUntyped(Type type, {int count, Object key}) {
     final countToCreate = count ?? _customizationsRegistry.getCustomization(type, key: key).arraySize;
-    return List.generate(countToCreate, (int index) => getUntyped(type, key));
+    return List.generate(countToCreate, (int index) => getUntyped(type, key: key));
   }
 
   /// Creates and returns multiple instances of specified type [T] filled with random data recursively.

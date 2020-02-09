@@ -10,9 +10,18 @@ Simplifies unit testing and Test-Driven Development.
 This project is inspired by .NET [Autofixture](https://github.com/AutoFixture/AutoFixture) library.
 
 ## Overview
-While writing tests developers need some way to create random data. It starts from using `Random` class to receive some `int`/`double`/`bool` and continues to handwritten helper methods with a big amount of optional parameters to create complex object graphs. Helpers become more complex and require more maintenance while time passing. This makes them not flexible, but inferrable and annoying.
+While writing tests developers need some way to create random data. It starts from using `Random` class to receive some `int`/`double`/`bool` and continues to handwritten helper methods with a big amount of optional parameters to create complex object graphs. Helpers become more complex and require more maintenance while time passing. This makes them not flexible, but inferrable and annoying. 
 
-Activatory allows you to use ready-from-the-box class which can do the same as handwritten boilerplate code and don't waste your time on writing them. Keep in mind: **less code in tests is less code to maintain and understand**.
+Activatory allows you to use ready-from-the-box class which can do the same as handwritten boilerplate code and don't waste your time on writing them.
+
+Tests with activatory are:
+* more readable because requires less boilerplate code;
+* more sustainable to changes because all required objects in test data graph are created and wired automatically;
+* more maintainable because all relevant logic is placed in test. No more complex helpers common for all tests;
+* more flexible because activatory contains features that are hard to implement in handwritten helpers. 
+ 
+For more information please see "[Why activatory does matter](#why-activatory-does-matter)" section below.
+
 
 ### Basic usage
 To create activatory instance just call a constructor
@@ -295,3 +304,290 @@ Current implementation depends on reflection ([Mirrors package](https://api.dart
 
 ## Further improvements
 For planned features and more see [enhancements on github](https://github.com/syberside/Activatory/issues?utf8=%E2%9C%93&q=is%3Aenhancement+is%3Aopen+). 
+
+## Why activatory does matter
+Suppose we are writing unit test for following sample classes
+```dart
+class UserDto {
+  String name;
+  int id;
+  bool isActive;
+  DateTime birthDate;
+}
+
+class UserId {
+  final int value;
+
+  UserId(this.value);
+}
+
+class UserViewModel {
+  final String name;
+  final UserId id;
+  final DateTime birthDate;
+
+  UserViewModel(this.name, this.id, this.birthDate);
+}
+
+abstract class UsersAPI {
+  Future<List<UserDto>> getAll();
+}
+
+class UsersManager {
+  final UsersAPI _api;
+
+  UsersManager(this._api);
+
+  Future<List<UserViewModel>> getActiveUsers() async {
+    final allItems = await _api.getAll();
+    return allItems.where((x) => x.isActive).map(_convert).toList(growable: false);
+  }
+
+  UserViewModel _convert(UserDto x) => new UserViewModel(x.name, new UserId(x.id), x.birthDate);
+
+  Future<UserViewModel> getById(UserId id) async {
+    final allItems = await _api.getAll();
+    final userDto = allItems.firstWhere((x) => x.id == id.value);
+    return _convert(userDto);
+  }
+}
+
+class _UsersAPIMock extends Mock implements UsersAPI {}
+
+bool _isViewModelMatchUserDto(UserViewModel x, UserDto user) =>
+    x.id.value == user.id && x.name == user.name && x.birthDate == user.birthDate;
+```
+`UserAPI` class implementation is skipped for brevity. Its contract includes one method returning all available `UserDto`'s. `UserManager` is responsible for providing `UserViewModel` to views.
+
+`_UsersAPIMock` is mock class created with [mockito](https://pub.dev/packages/mockito) library.
+
+`_isViewModelMatchUserDto` is a helper for asserts, defined to brief samples.
+
+Lets now write unit tests for `UserManager`: one for`getById` method, another one for `getAll` method.
+
+### Attempt 1: using Random class inside test
+```dart
+group('Attempt #1: using Random class inside test', () {
+    Random _random;
+    _UsersAPIMock _apiMock;
+    UsersManager _manager;
+    setUp(() {
+      _random = new Random(DateTime.now().millisecondsSinceEpoch);
+      _apiMock = new _UsersAPIMock();
+      _manager = new UsersManager(_apiMock);
+    });
+
+    test('can find single user by id', () async {
+      // arrange
+      final userDtoItems = List.generate(
+        10,
+        (i) => new UserDto()
+          ..id = i
+          ..isActive = _random.nextBool()
+          ..birthDate = new DateTime(
+            _random.nextInt(100) + 1900, //1900-2000
+            _random.nextInt(12),
+            _random.nextInt(29), // minimal count of days in month - 28
+            _random.nextInt(24),
+            _random.nextInt(60),
+            _random.nextInt(60),
+          )
+          ..name = 'username $i',
+      );
+      final user = userDtoItems[_random.nextInt(10)];
+      final userId = new UserId(user.id);
+      when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
+      // act
+      final result = await _manager.getById(userId);
+      // assert
+      expect(result, predicate<UserViewModel>((x) => _isViewModelMatchUserDto(x, user)));
+    });
+
+    test('can find all active users', () async {
+      // arrange
+      final userDtoItems = List.generate(
+        10,
+        (i) => new UserDto()
+          ..id = i
+          ..isActive = false
+          ..birthDate = new DateTime(
+            _random.nextInt(100) + 1900, //1900-2000
+            _random.nextInt(12),
+            _random.nextInt(29), // minimal count of days in month - 28
+            _random.nextInt(24),
+            _random.nextInt(60),
+            _random.nextInt(60),
+          )
+          ..name = 'username $i',
+      );
+      final user = userDtoItems[_random.nextInt(10)];
+      user.isActive = true;
+      when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
+      // act
+      final result = await _manager.getActiveUsers();
+      // assert
+      expect(result, hasLength(1));
+      expect(result.first, predicate<UserViewModel>((x) => _isViewModelMatchUserDto(x, user)));
+    });
+  });
+```
+Obviously, there are a lot of duplication in this sample. Most of developers will try to extract useful helpers to reduce duplication.
+
+### Attempt 2: using handwritten helpers
+```dart
+ group('Attempt #2: using handwriten helpers', () {
+    Random _random;
+    _UsersAPIMock _apiMock;
+    UsersManager _manager;
+
+    setUp(() {
+      _random = new Random(DateTime.now().millisecondsSinceEpoch);
+      _apiMock = new _UsersAPIMock();
+      _manager = new UsersManager(_apiMock);
+    });
+
+    UserDto _createRandomUserDto(int id, {bool isActive = false}) {
+      return new UserDto()
+        ..id = id
+        ..isActive = isActive ?? _random.nextBool()
+        ..birthDate = new DateTime(
+          _random.nextInt(100) + 1900, //1900-2000
+          _random.nextInt(12),
+          _random.nextInt(29), // minimal count of days in month - 28
+          _random.nextInt(24),
+          _random.nextInt(60),
+          _random.nextInt(60),
+        )
+        ..name = 'username $id';
+    }
+
+    test('can find single user by id', () async {
+      // arrange
+      final userDtoItems = List.generate(10, _createRandomUserDto);
+      final user = userDtoItems[_random.nextInt(10)];
+      final userId = new UserId(user.id);
+      when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
+      // act
+      final result = await _manager.getById(userId);
+      // assert
+      expect(result, predicate<UserViewModel>((x) => _isViewModelMatchUserDto(x, user)));
+    });
+
+    test('can find all active users', () async {
+      // arrange
+      final userDtoItems = List.generate(10, (i) => _createRandomUserDto(i, isActive: false));
+      final user = userDtoItems[_random.nextInt(10)];
+      user.isActive = true;
+      when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
+      // act
+      final result = await _manager.getActiveUsers();
+      // assert
+      expect(result, hasLength(1));
+      expect(result.first, predicate<UserViewModel>((x) => _isViewModelMatchUserDto(x, user)));
+    });
+  });
+```
+We move `UserDto` instance creation logic to `_createRandomUserDto` and arrange section is read much easier. This is good but not enough. Lets rewrite this test using Activatory.
+
+### Attempt #3: using Activatory
+With Activatory we can not waste our time and use out-of-the-box helpers to create random instances of objects.
+```dart
+group('Attempt #3: using Activatory', () {
+    Activatory _activatory;
+    _UsersAPIMock _apiMock;
+    UsersManager _manager;
+    setUp(() {
+      _activatory = new Activatory();
+      _apiMock = new _UsersAPIMock();
+      _manager = new UsersManager(_apiMock);
+    });
+
+    test('can find single item by id', () async {
+      // arrange
+      final userDtoItems = _activatory.getMany<UserDto>(count: 10);
+      final user = _activatory.take(userDtoItems);
+      final userId = new UserId(user.id);
+      when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
+      // act
+      final result = await _manager.getById(userId);
+      // assert
+      expect(result, predicate<UserViewModel>((x) => _isViewModelMatchUserDto(x, user)));
+    });
+
+    test('can find all active users', () async {
+      // arrange
+      final userDtoItems = _activatory.getMany<UserDto>(count: 10);
+      userDtoItems.forEach((x) => x.isActive = false);
+      final user = _activatory.take(userDtoItems);
+      user.isActive = true;
+      when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
+      // act
+      final result = await _manager.getActiveUsers();
+      // assert
+      expect(result, hasLength(1));
+      expect(result.first, predicate<UserViewModel>((x) => _isViewModelMatchUserDto(x, user)));
+    });
+  });
+```
+No handwritten helpers are required. There is no need to write code describing **how** to create random instance of `UserDto`.
+
+**With activatory test code becomes more readable, brief and maintainable.** 
+
+But it is important to mention fact that tests are most useful when we are extending existing functionality.
+
+### Attempt 4: Extending `UserDto` with `UserSettingsDto`
+Lets extends our `UserDto` with extra data field `UserSettingsDto`:
+```dart
+class UserDto {
+  // other fields skipped for brief
+  UserContactsDto userContacts;
+}
+
+class UserContactsDto {
+  String email;
+  bool notificationsEnabled;
+}
+
+class UserViewModel {
+  // other fields skipped for brief
+  final String email;
+
+  UserViewModel(this.name, this.id, this.birthDate, this.email);
+}
+
+class UsersManager {
+  // other members skipped for brief
+  UserViewModel _convert(UserDto x) => new UserViewModel(x.name, new UserId(x.id), x.birthDate, x.userContacts.email);
+}
+```
+If we run tests now we will found that tests written without Activatory are failing with cryptic errors, e.g. ` NoSuchMethodError: The getter 'email' was called on null.`
+
+That's because we forgot to update our tests! In "[Attemp 2](#attempt-2-using-handwritten-helpers)" sample we need to update `_createRandomUserDto` method implementation to create randomly filled `UserSettingsDto` and pass it to `UserDto`. So most of `UserDto` extending will require the helper to be updated!
+
+**Activatory helps you to make your tests more reliable and more sustainable to changes.**
+
+Adding new data to models is just half of a story. Let's add complexity - another consumer of UsersAPI.
+
+### Attempt 5: Adding more consumers to `UsersAPI`
+Let's add `MailingRecipientsManager` class responsible for providing an email list for mailing.
+
+```dart
+class MailingRecipientsManager {
+  final UsersAPI _api;
+
+  MailingRecipientsManager(this._api);
+
+  Future<List<String>> getRecipientsList() async {
+    final items = await _api.getAll();
+    return items.map((x) => x.userContacts.email).toList(growable: false);
+  }
+}
+```
+
+If we write tests for this class we will hit the following problems with `_createRandomUserDto` helper:
+* method is private for file,
+* helper didn't allow to control creation of `UserSettingsDto`.
+
+The first problem can be resolved by moving the helper method to a separate file named `user_dto_helper.dart`. The second one can be resolved by passing `UserSettingsDto` or email as a parameter to the helper. Both fixes will make our test code more and more unmaintainable. The helper will grow to match all corner cases. So in the future, the helper will become troublemaker - it will be changed for every business logic change, changes will flow from different branches and it will harder and harder to merge them.
+
+**Activatory helps you to make your tests code more flexible and maintainable.**

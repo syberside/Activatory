@@ -19,17 +19,17 @@ import 'package:activatory/src/factories/primitives/random_string_factory.dart';
 import 'package:activatory/src/factories/random_array_item_factory.dart';
 import 'package:activatory/src/helpers/type_helper.dart';
 
-typedef _GeneratorBackendFactory = Factory Function();
+typedef _FactoryActivator = Factory Function();
 
-class FactoriesFactory {
+class FactoriesProvider {
   static const _emptySymbol = const Symbol('');
   final Random _random;
-  final Map<Type, _GeneratorBackendFactory> _predefinedFactories = <Type, _GeneratorBackendFactory>{};
+  final Map<Type, _FactoryActivator> _predefinedFactories = <Type, _FactoryActivator>{};
 
   final _listMirror = reflectClass(List);
   final _mapMirror = reflectClass(Map);
 
-  FactoriesFactory(this._random) {
+  FactoriesProvider(this._random) {
     _predefinedFactories[bool] = () => new RandomBoolFactory(_random);
     _predefinedFactories[int] = () => new RandomIntFactory(_random);
     _predefinedFactories[double] = () => new RandomDoubleFactory(_random);

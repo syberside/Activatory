@@ -1,3 +1,5 @@
+include: package:pedantic/analysis_options.yaml
+
 analyzer:
   strong-mode:
     implicit-casts: false
@@ -113,6 +115,8 @@ analyzer:
     valid_regexps: error
     void_checks: error
     unused_import: error
+    unnecessary_new: ignore
+    unnecessary_const: ignore
 
 # Lint rules and documentation, see http://dart-lang.github.io/linter/lints
 linter:

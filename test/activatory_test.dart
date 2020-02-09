@@ -172,8 +172,8 @@ void main() {
         _activatory.useSingleton(value1, key: key1);
         _activatory.useSingleton(value2, key: key2);
 
-        final result1 = _activatory.getUntyped(TValue, key1);
-        final result2 = _activatory.getUntyped(TValue, key2);
+        final result1 = _activatory.getUntyped(TValue, key: key1);
+        final result2 = _activatory.getUntyped(TValue, key: key2);
         final result = _activatory.getUntyped(TValue);
 
         expect(result1, equals(value1));
@@ -206,8 +206,8 @@ void main() {
       _activatory.useFunction<String>((ctx) => value1, key: key1);
       _activatory.useFunction<String>((ctx) => value2, key: key2);
 
-      final result1 = _activatory.getUntyped(String, key1);
-      final result2 = _activatory.getUntyped(String, key2);
+      final result1 = _activatory.getUntyped(String, key: key1);
+      final result2 = _activatory.getUntyped(String, key: key2);
       final result = _activatory.getUntyped(String);
 
       expect(result1, equals(value1));
@@ -224,10 +224,10 @@ void main() {
       //NOTE: The order does matter
       _activatory.useGeneratedSingleton<String>();
 
-      final resultK1A = _activatory.getUntyped(String, key1);
-      final resultK1B = _activatory.getUntyped(String, key1);
-      final resultK2A = _activatory.getUntyped(String, key2);
-      final resultK2B = _activatory.getUntyped(String, key2);
+      final resultK1A = _activatory.getUntyped(String, key: key1);
+      final resultK1B = _activatory.getUntyped(String, key: key1);
+      final resultK2A = _activatory.getUntyped(String, key: key2);
+      final resultK2B = _activatory.getUntyped(String, key: key2);
       final resultA = _activatory.getUntyped(String);
       final resultB = _activatory.getUntyped(String);
 
@@ -250,8 +250,8 @@ void main() {
     _activatory.useSingleton(value2, key: key2);
     _activatory.useFunction((ctx) => ctx.create<int>().toString());
 
-    final result1 = _activatory.get<String>(key1);
-    final result2 = _activatory.get<String>(key2);
+    final result1 = _activatory.get<String>(key: key1);
+    final result2 = _activatory.get<String>(key: key2);
     expect(result1, equals(value1.toString()));
     expect(result2, equals(value2.toString()));
   });
@@ -721,8 +721,8 @@ void main() {
     _activatory.customize<int>(key: 'A').arraySize = 10;
     _activatory.customize<int>(key: 'B').arraySize = 1;
 
-    final resultA = _activatory.get<List<int>>('A');
-    final resultB = _activatory.get<List<int>>('B');
+    final resultA = _activatory.get<List<int>>(key: 'A');
+    final resultB = _activatory.get<List<int>>(key: 'B');
     final resultC = _activatory.get<List<int>>();
 
     expect(resultA, hasLength(10));

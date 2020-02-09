@@ -1,6 +1,6 @@
 import 'package:activatory/src/customization/factory-resolving/factory_resolver_factory.dart';
 import 'package:activatory/src/customization/type_customization_registry.dart';
-import 'package:activatory/src/factories-registry/factories_factory.dart';
+import 'package:activatory/src/factories-registry/factories_provider.dart';
 import 'package:activatory/src/factories-registry/factories_store.dart';
 import 'package:activatory/src/factories-registry/resolve_key.dart';
 import 'package:activatory/src/factories/factory.dart';
@@ -9,7 +9,7 @@ import 'package:activatory/src/type-aliasing/reflective_type_alias_registry.dart
 
 class FactoriesRegistry {
   final FactoriesStore _store;
-  final FactoriesFactory _factory;
+  final FactoriesProvider _factory;
   final TypeCustomizationRegistry _customizationsRegistry;
   final FactoryResolverFactory _ctorResolveStrategyFactory;
   final ReflectiveTypeAliasesRegistry _aliasesRegistry;

@@ -37,7 +37,7 @@ class ReflectiveObjectFactory implements Factory<Object> {
       case DefaultValuesHandlingStrategy.UseAll:
         return arg.defaultValue;
       case DefaultValuesHandlingStrategy.ReplaceNulls:
-        return arg.defaultValue != null ? arg.defaultValue : context.createUntyped(arg.type);
+        return arg.defaultValue ?? context.createUntyped(arg.type);
       case DefaultValuesHandlingStrategy.ReplaceAll:
         return context.createUntyped(arg.type);
       default:

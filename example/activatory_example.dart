@@ -96,14 +96,14 @@ void main() {
   activatory.useSingleton(42, key: 'good number');
   activatory.useSingleton(13, key: 'not good number');
   activatory.useFunction((ctx) => ctx.create<int>().toString());
-  final String goodNumberStr = activatory.get<String>('good number');
+  final String goodNumberStr = activatory.get<String>(key: 'good number');
   assert(goodNumberStr == '42');
-  final String notGoodNumberStr = activatory.get<String>('not good number');
+  final String notGoodNumberStr = activatory.get<String>(key: 'not good number');
   assert(notGoodNumberStr == '13');
   // Key can be any type of object. It's value can be accessed through ActivationContext if required.
   final DateTime now = DateTime.now();
   activatory.useFunction((ctx) => ctx.key as DateTime, key: now);
-  final DateTime today = activatory.get<DateTime>(now);
+  final DateTime today = activatory.get<DateTime>(key: now);
   assert(today == now);
 
   // Super classes can be replaced with subtypes.
