@@ -78,7 +78,7 @@ class FactoryCtor {
   String _nonFactoryField;
 
   factory FactoryCtor(String stringField) {
-    return new FactoryCtor._internal(stringField, null);
+    return FactoryCtor._internal(stringField, null);
   }
 
   FactoryCtor._internal(this._stringField, this._nonFactoryField);
@@ -89,10 +89,10 @@ class FactoryCtor {
 }
 
 class FactoryWithFixedValues {
-  static final FactoryWithFixedValues a = new FactoryWithFixedValues._('A');
-  static final FactoryWithFixedValues b = new FactoryWithFixedValues._('B');
+  static final FactoryWithFixedValues a = FactoryWithFixedValues._('A');
+  static final FactoryWithFixedValues b = FactoryWithFixedValues._('B');
 
-  static final FactoryWithFixedValues c = new FactoryWithFixedValues._('C');
+  static final FactoryWithFixedValues c = FactoryWithFixedValues._('C');
 
   String _field;
 
@@ -105,7 +105,7 @@ class FactoryWithFixedValues {
       case 'C':
         return c;
       default:
-        throw new ArgumentError(type);
+        throw ArgumentError(type);
     }
   }
 

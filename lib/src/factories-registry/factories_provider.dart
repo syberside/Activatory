@@ -22,7 +22,7 @@ import 'package:activatory/src/helpers/type_helper.dart';
 typedef _FactoryActivator = Factory Function();
 
 class FactoriesProvider {
-  static const _emptySymbol = const Symbol('');
+  static const _emptySymbol = Symbol('');
   final Random _random;
   final Map<Type, _FactoryActivator> _predefinedFactories = <Type, _FactoryActivator>{};
 
@@ -30,20 +30,20 @@ class FactoriesProvider {
   final _mapMirror = reflectClass(Map);
 
   FactoriesProvider(this._random) {
-    _predefinedFactories[bool] = () => new RandomBoolFactory(_random);
-    _predefinedFactories[int] = () => new RandomIntFactory(_random);
-    _predefinedFactories[double] = () => new RandomDoubleFactory(_random);
-    _predefinedFactories[String] = () => new RandomStringFactory();
-    _predefinedFactories[DateTime] = () => new RandomDateTimeFactory(_random);
-    _predefinedFactories[Null] = () => new NullFactory();
+    _predefinedFactories[bool] = () => RandomBoolFactory(_random);
+    _predefinedFactories[int] = () => RandomIntFactory(_random);
+    _predefinedFactories[double] = () => RandomDoubleFactory(_random);
+    _predefinedFactories[String] = () => RandomStringFactory();
+    _predefinedFactories[DateTime] = () => RandomDateTimeFactory(_random);
+    _predefinedFactories[Null] = () => NullFactory();
 
     //TODO: Explicit factories are not required here. Reflective will works fine.
-    _predefinedFactories[getType<List<bool>>()] = () => new ExplicitArrayFactory<bool>();
-    _predefinedFactories[getType<List<int>>()] = () => new ExplicitArrayFactory<int>();
-    _predefinedFactories[getType<List<double>>()] = () => new ExplicitArrayFactory<double>();
-    _predefinedFactories[getType<List<String>>()] = () => new ExplicitArrayFactory<String>();
-    _predefinedFactories[getType<List<DateTime>>()] = () => new ExplicitArrayFactory<DateTime>();
-    _predefinedFactories[getType<List<Null>>()] = () => new ExplicitArrayFactory<Null>();
+    _predefinedFactories[getType<List<bool>>()] = () => ExplicitArrayFactory<bool>();
+    _predefinedFactories[getType<List<int>>()] = () => ExplicitArrayFactory<int>();
+    _predefinedFactories[getType<List<double>>()] = () => ExplicitArrayFactory<double>();
+    _predefinedFactories[getType<List<String>>()] = () => ExplicitArrayFactory<String>();
+    _predefinedFactories[getType<List<DateTime>>()] = () => ExplicitArrayFactory<DateTime>();
+    _predefinedFactories[getType<List<Null>>()] = () => ExplicitArrayFactory<Null>();
   }
 
   List<Factory> create(Type type) {
@@ -65,23 +65,23 @@ class FactoriesProvider {
     final originalClassMirror = reflectClass(type);
     if (originalClassMirror.isSubtypeOf(_listMirror)) {
       final typeArg = classMirror.typeArguments.first.reflectedType;
-      return [new ReflectiveArrayFactory(typeArg)];
+      return [ReflectiveArrayFactory(typeArg)];
     }
     if (originalClassMirror.isSubclassOf(_mapMirror)) {
       final typeArg1 = classMirror.typeArguments[0].reflectedType;
       final typeArg2 = classMirror.typeArguments[1].reflectedType;
-      return [new ReflectiveMapFactory(typeArg1, typeArg2)];
+      return [ReflectiveMapFactory(typeArg1, typeArg2)];
     }
     if (classMirror.isAbstract) {
-      throw new ActivationException('Cant create instance of abstract class (${classMirror})');
+      throw ActivationException('Cant create instance of abstract class (${classMirror})');
     }
 
     final constructors = _extractConstructors(classMirror, type).toList();
     if (constructors.isEmpty) {
-      throw new ActivationException('Cant find constructor for type ${classMirror}');
+      throw ActivationException('Cant find constructor for type ${classMirror}');
     }
 
-    return constructors.map((ctorInfo) => new ReflectiveObjectFactory(ctorInfo)).toList();
+    return constructors.map((ctorInfo) => ReflectiveObjectFactory(ctorInfo)).toList();
   }
 
   Factory _createEnumBackend(ClassMirror classMirror) {
@@ -90,15 +90,15 @@ class FactoriesProvider {
         .where((d) => d.isStatic && d.simpleName == #values)
         .first;
     if (declaration == null) {
-      throw new ActivationException('Declaration of values for enum ${classMirror} not found');
+      throw ActivationException('Declaration of values for enum ${classMirror} not found');
     }
 
     final allValues = classMirror.getField(declaration.simpleName).reflectee as List;
     if (allValues.isEmpty) {
-      throw new ActivationException('Enum ${classMirror} values found but empty');
+      throw ActivationException('Enum ${classMirror} values found but empty');
     }
 
-    return new RandomArrayItemFactory(allValues);
+    return RandomArrayItemFactory(allValues);
   }
 
   Iterable<CtorInfo> _extractConstructors(ClassMirror classMirror, Type type) sync* {
@@ -109,7 +109,7 @@ class FactoriesProvider {
         final arguments = method.parameters.map(constructArgumentInfo).toList();
         final name = method.constructorName;
         final ctorType = method.constructorName != _emptySymbol ? CtorType.Named : CtorType.Default;
-        yield new CtorInfo(classMirror, name, arguments, ctorType, type);
+        yield CtorInfo(classMirror, name, arguments, ctorType, type);
       }
     }
   }
@@ -118,6 +118,6 @@ class FactoriesProvider {
     final argType = parameter.type.reflectedType;
     final Object defaultValue = parameter.defaultValue?.reflectee;
     final isNamed = parameter.isNamed;
-    return new ArgumentInfo(defaultValue, isNamed, parameter.simpleName, argType);
+    return ArgumentInfo(defaultValue, isNamed, parameter.simpleName, argType);
   }
 }

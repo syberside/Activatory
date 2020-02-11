@@ -53,8 +53,8 @@ analyzer:
     library_prefixes: error
     list_remove_unrelated_type: error
     literal_only_boolean_expressions: error
-    missing_required_param: info
-    missing_return: info
+    missing_required_param: error
+    missing_return: error
     no_adjacent_strings_in_list: error
     no_duplicate_case_values: error
     non_constant_identifier_names: error
@@ -115,8 +115,9 @@ analyzer:
     valid_regexps: error
     void_checks: error
     unused_import: error
-    unnecessary_new: ignore
-    unnecessary_const: ignore
+    # Just to increase scores on pub.dev =(
+    unnecessary_new: error
+    unnecessary_const: error
 
 # Lint rules and documentation, see http://dart-lang.github.io/linter/lints
 linter:

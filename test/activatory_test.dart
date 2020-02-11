@@ -17,7 +17,7 @@ void main() {
 
   Activatory _activatory;
   setUp(() {
-    _activatory = new Activatory();
+    _activatory = Activatory();
   });
 
   void _assertComplexObjectIsNotNull(PrimitiveComplexObject obj) {
@@ -120,7 +120,7 @@ void main() {
       });
 
       test('complex type', () {
-        final expected = new DefaultCtor();
+        final expected = DefaultCtor();
         _activatory.useFunction((_) => expected);
         final result1 = _activatory.get<DefaultCtor>();
         final result2 = _activatory.get<DefaultCtor>();
@@ -156,7 +156,7 @@ void main() {
       });
 
       test('complex type', () {
-        final expected = new DefaultCtor();
+        final expected = DefaultCtor();
         _activatory.useSingleton(expected);
         final result1 = _activatory.get<DefaultCtor>();
         final result2 = _activatory.get<DefaultCtor>();
@@ -599,7 +599,7 @@ void main() {
       final result = _activatory.getMany<int>(key: key);
       expect(result, isNotNull);
       expect(result, hasLength(3));
-      final unique = new Set<int>.from(result);
+      final unique = Set<int>.from(result);
       expect(unique, equals([10]));
     });
   });
@@ -825,7 +825,7 @@ void main() {
       final firstDefinedCtorCallCount =
           _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'named1').length; // 100
 
-      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+      _activatory.useFunction((ctx) => SomeClassWithConstructors('hello'));
       final latestOverrideCallCount =
           _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello').length; // 100
 
@@ -844,7 +844,7 @@ void main() {
           items.where((x) => x.value == 'named2').length; //exact count is unknown, but approximately equals 50
       final totalCtorCallsCount = firstNamedCtorCallsCount + secondNamedCtorCallsCount; // 100
 
-      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello1'));
+      _activatory.useFunction((ctx) => SomeClassWithConstructors('hello1'));
       final overrideUsedCount1 =
           _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello1').length; // 100
 
@@ -866,7 +866,7 @@ void main() {
           items.where((x) => !x.value.startsWith('named')).length; //exact count is unknown, but approximately equals 33
       final totalCtorCallCount = firstNamedCtorCallsCount + secondNamedCtorCallsCount + defaultCtorCallsCount; // 100
 
-      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+      _activatory.useFunction((ctx) => SomeClassWithConstructors('hello'));
       final items2 = _activatory.getMany<SomeClassWithConstructors>(count: 100);
       final overrideUsedCount =
           items2.where((x) => x.value == 'hello').length; //exact count is unknown, but approximately equals 25
@@ -897,7 +897,7 @@ void main() {
       final items = _activatory.getMany<SomeClassWithConstructors>(count: 100);
       final defaultCtorCallsCount = items.where((x) => !x.value.startsWith('named')).length; //100
 
-      _activatory.useFunction((ctx) => new SomeClassWithConstructors('hello'));
+      _activatory.useFunction((ctx) => SomeClassWithConstructors('hello'));
       final overrideUsedCount =
           _activatory.getMany<SomeClassWithConstructors>(count: 100).where((x) => x.value == 'hello').length; //0
 

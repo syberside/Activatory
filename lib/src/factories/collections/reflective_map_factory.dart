@@ -6,7 +6,7 @@ import 'package:activatory/src/internal_activation_context.dart';
 class ReflectiveMapFactory implements Factory<Map<Object, Object>> {
   final Type _keyType;
   final Type _valueType;
-  static const _emptyConstructorName = const Symbol('');
+  static const _emptyConstructorName = Symbol('');
 
   ReflectiveMapFactory(this._keyType, this._valueType);
 

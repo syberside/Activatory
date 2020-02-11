@@ -18,7 +18,7 @@ class TypeCustomization {
   FieldsAutoFillingStrategy fieldsAutoFillingStrategy = FieldsAutoFillingStrategy.Fields;
 
   TypeCustomization clone() {
-    return new TypeCustomization()
+    return TypeCustomization()
       ..arraySize = arraySize
       ..maxRecursionLevel = maxRecursionLevel
       ..resolvingStrategy = resolvingStrategy

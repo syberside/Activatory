@@ -27,13 +27,13 @@ class FactoryResolverFactory {
   FactoryResolver _create(FactoryResolvingStrategy strategy) {
     switch (strategy) {
       case FactoryResolvingStrategy.TakeFirstDefined:
-        return new UseFirstFactoryResolver();
+        return UseFirstFactoryResolver();
       case FactoryResolvingStrategy.TakeRandomNamedCtor:
-        return new RandomNamedCtorFactoryResolver(_random);
+        return RandomNamedCtorFactoryResolver(_random);
       case FactoryResolvingStrategy.TakeRandom:
-        return new UseRandomFactoryResolver(_random);
+        return UseRandomFactoryResolver(_random);
       case FactoryResolvingStrategy.TakeDefaultCtor:
-        return new DefaultCtorFactoryResolver();
+        return DefaultCtorFactoryResolver();
       default:
         throw ArgumentError.value(strategy);
     }

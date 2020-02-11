@@ -5,7 +5,7 @@ set -e
 
 mkdir -p .pub-cache
 
-cat <<EOF > ~/.pub-cache/credentials.json
+cat <<EOF >~/.pub-cache/credentials.json
 {
   "accessToken":"$accessToken",
   "refreshToken":"$refreshToken",
@@ -14,5 +14,8 @@ cat <<EOF > ~/.pub-cache/credentials.json
   "expiration":$expiration
 }
 EOF
+
+# format files to match pub.dev pana analyzer
+dartfmt -w .
 
 pub publish -f

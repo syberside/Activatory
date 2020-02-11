@@ -2,7 +2,7 @@ import 'package:activatory/activatory.dart';
 // ignore_for_file: omit_local_variable_types
 
 void main() {
-  final activatory = new Activatory();
+  final activatory = Activatory();
 
   // Activatory can create primitive types instances. No pre-configuration required.
   final int randomInt = activatory.get<int>();

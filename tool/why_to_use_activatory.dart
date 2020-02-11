@@ -12,19 +12,19 @@ void main() async {
     _UsersAPIMock _apiMock;
     UsersManager _manager;
     setUp(() {
-      _random = new Random(DateTime.now().millisecondsSinceEpoch);
-      _apiMock = new _UsersAPIMock();
-      _manager = new UsersManager(_apiMock);
+      _random = Random(DateTime.now().millisecondsSinceEpoch);
+      _apiMock = _UsersAPIMock();
+      _manager = UsersManager(_apiMock);
     });
 
     test('can find single user by id', () async {
       // arrange
       final userDtoItems = List.generate(
         10,
-        (i) => new UserDto()
+        (i) => UserDto()
           ..id = i
           ..isActive = _random.nextBool()
-          ..birthDate = new DateTime(
+          ..birthDate = DateTime(
             _random.nextInt(100) + 1900, //1900-2000
             _random.nextInt(12),
             _random.nextInt(29), // minimal count of days in month - 28
@@ -35,7 +35,7 @@ void main() async {
           ..name = 'username $i',
       );
       final user = userDtoItems[_random.nextInt(10)];
-      final userId = new UserId(user.id);
+      final userId = UserId(user.id);
       when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
       // act
       final result = await _manager.getById(userId);
@@ -47,10 +47,10 @@ void main() async {
       // arrange
       final userDtoItems = List.generate(
         10,
-        (i) => new UserDto()
+        (i) => UserDto()
           ..id = i
           ..isActive = false
-          ..birthDate = new DateTime(
+          ..birthDate = DateTime(
             _random.nextInt(100) + 1900, //1900-2000
             _random.nextInt(12),
             _random.nextInt(29), // minimal count of days in month - 28
@@ -77,16 +77,16 @@ void main() async {
     UsersManager _manager;
 
     setUp(() {
-      _random = new Random(DateTime.now().millisecondsSinceEpoch);
-      _apiMock = new _UsersAPIMock();
-      _manager = new UsersManager(_apiMock);
+      _random = Random(DateTime.now().millisecondsSinceEpoch);
+      _apiMock = _UsersAPIMock();
+      _manager = UsersManager(_apiMock);
     });
 
     UserDto _createRandomUserDto(int id, {bool isActive = false}) {
-      return new UserDto()
+      return UserDto()
         ..id = id
         ..isActive = isActive ?? _random.nextBool()
-        ..birthDate = new DateTime(
+        ..birthDate = DateTime(
           _random.nextInt(100) + 1900, //1900-2000
           _random.nextInt(12),
           _random.nextInt(29), // minimal count of days in month - 28
@@ -101,7 +101,7 @@ void main() async {
       // arrange
       final userDtoItems = List.generate(10, _createRandomUserDto);
       final user = userDtoItems[_random.nextInt(10)];
-      final userId = new UserId(user.id);
+      final userId = UserId(user.id);
       when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
       // act
       final result = await _manager.getById(userId);
@@ -128,16 +128,16 @@ void main() async {
     _UsersAPIMock _apiMock;
     UsersManager _manager;
     setUp(() {
-      _activatory = new Activatory();
-      _apiMock = new _UsersAPIMock();
-      _manager = new UsersManager(_apiMock);
+      _activatory = Activatory();
+      _apiMock = _UsersAPIMock();
+      _manager = UsersManager(_apiMock);
     });
 
     test('can find single item by id', () async {
       // arrange
       final userDtoItems = _activatory.getMany<UserDto>(count: 10);
       final user = _activatory.take(userDtoItems);
-      final userId = new UserId(user.id);
+      final userId = UserId(user.id);
       when(_apiMock.getAll()).thenAnswer((_) => Future.value(userDtoItems));
       // act
       final result = await _manager.getById(userId);
@@ -206,7 +206,7 @@ class UsersManager {
     return allItems.where((x) => x.isActive).map(_convert).toList(growable: false);
   }
 
-  UserViewModel _convert(UserDto x) => new UserViewModel(x.name, new UserId(x.id), x.birthDate, x.userContacts.email);
+  UserViewModel _convert(UserDto x) => UserViewModel(x.name, UserId(x.id), x.birthDate, x.userContacts.email);
 
   Future<UserViewModel> getById(UserId id) async {
     final allItems = await _api.getAll();

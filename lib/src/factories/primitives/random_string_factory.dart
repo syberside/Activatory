@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 
 class RandomStringFactory implements Factory<String> {
   @override
-  String get(InternalActivationContext context) => new Uuid().v1();
+  String get(InternalActivationContext context) => Uuid().v1();
 
   @override
   String getDefaultValue() => '';

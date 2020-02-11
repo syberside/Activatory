@@ -24,7 +24,7 @@ class FactoriesRegistry {
 
   FactoriesRegistry clone() {
     final storeCopy = _store.clone();
-    return new FactoriesRegistry(
+    return FactoriesRegistry(
       _factory,
       _customizationsRegistry,
       _ctorResolveStrategyFactory,
@@ -36,11 +36,11 @@ class FactoriesRegistry {
   Factory getFactory(Type type, Object key) {
     final affectedType = _aliasesRegistry.getAlias(type);
 
-    final storeKey = new ResolveKey(affectedType, key);
+    final storeKey = ResolveKey(affectedType, key);
     var factories = _store.find(storeKey);
 
     if (factories == null && key != null) {
-      final typeOnlyStoreKey = new ResolveKey(affectedType, null);
+      final typeOnlyStoreKey = ResolveKey(affectedType, null);
       factories = _store.find(typeOnlyStoreKey);
     }
     if (factories != null) {
@@ -58,8 +58,8 @@ class FactoriesRegistry {
   }
 
   void _registerUntyped(Factory backend, Type type, {Object key}) {
-    final wrapped = new RecursionLimiter(type, backend);
-    final resolveKey = new ResolveKey(type, key);
+    final wrapped = RecursionLimiter(type, backend);
+    final resolveKey = ResolveKey(type, key);
     _store.store(wrapped, resolveKey);
   }
 

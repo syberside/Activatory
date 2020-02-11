@@ -10,7 +10,7 @@ class FactoriesStore {
     _factories.addAll(factories);
   }
 
-  FactoriesStore clone() => new FactoriesStore._fromMap(_factories);
+  FactoriesStore clone() => FactoriesStore._fromMap(_factories);
 
   List<Factory> find(ResolveKey key) {
     return _factories[key];

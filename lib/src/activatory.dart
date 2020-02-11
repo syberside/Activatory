@@ -27,20 +27,20 @@ class Activatory {
   /// If [seed] is not passed current time milliseconds since epoch is used.
   Activatory({
     int seed,
-  }) : this.fromRandom(new Random(seed ?? DateTime.now().millisecondsSinceEpoch));
+  }) : this.fromRandom(Random(seed ?? DateTime.now().millisecondsSinceEpoch));
 
   /// Create new instance of Activatory with predefined [_random] generator.
   Activatory.fromRandom(this._random)
-      : _typeAliasesRegistry = new ReflectiveTypeAliasesRegistry(),
-        _customizationsRegistry = new TypeCustomizationRegistry() {
-    _factoriesRegistry = new FactoriesRegistry(
-      new FactoriesProvider(_random),
+      : _typeAliasesRegistry = ReflectiveTypeAliasesRegistry(),
+        _customizationsRegistry = TypeCustomizationRegistry() {
+    _factoriesRegistry = FactoriesRegistry(
+      FactoriesProvider(_random),
       _customizationsRegistry,
-      new FactoryResolverFactory(_random),
+      FactoryResolverFactory(_random),
       _typeAliasesRegistry,
-      new FactoriesStore(),
+      FactoriesStore(),
     );
-    _valueGenerator = new ValueGenerator(_factoriesRegistry, new ReflectiveFieldsFiller());
+    _valueGenerator = ValueGenerator(_factoriesRegistry, ReflectiveFieldsFiller());
   }
 
   // region Activation members
@@ -70,14 +70,14 @@ class Activatory {
   List<T> getMany<T>({int count, Object key}) {
     final dynamicResult = getManyUntyped(T, count: count, key: key);
     //Cast result from List<dynamic> to List<T> through array creation
-    return new List<T>.from(dynamicResult);
+    return List<T>.from(dynamicResult);
   }
 
   /// Returns random item from iterable. [variations] value will be iterated while choosing item.
   Object takeUntyped(Iterable variations) {
     final items = variations.toList();
     if (items.isEmpty) {
-      throw new ArgumentError('Cant take element from empty Iterable');
+      throw ArgumentError('Cant take element from empty Iterable');
     }
     final index = _random.nextInt(items.length);
     return items[index];
@@ -89,7 +89,7 @@ class Activatory {
   /// Returns random items from iterable. [variations] value will be iterated while choosing item.
   List<Object> takeManyUntyped(Iterable variations, {int count, Iterable except}) {
     // ignore: prefer_collection_literals
-    final filteredVariations = variations.toSet().difference(except?.toSet() ?? new Set<Object>());
+    final filteredVariations = variations.toSet().difference(except?.toSet() ?? Set<Object>());
     return List.generate(count, (_) => takeUntyped(filteredVariations));
   }
 
@@ -97,7 +97,7 @@ class Activatory {
   List<T> takeMany<T>(Iterable<T> variations, {int count, Iterable<T> except}) {
     final dynamicResult = takeManyUntyped(variations, count: count, except: except);
     //Cast result from List<dynamic> to List<T> through array creation
-    return new List<T>.from(dynamicResult);
+    return List<T>.from(dynamicResult);
   }
 
   // endregion
@@ -106,7 +106,7 @@ class Activatory {
 
   /// Registers function to be called to activate instance of type [T] with [key].
   void useFunction<T>(FactoryDelegate<T> generator, {Object key}) {
-    final backend = new ExplicitFactory<T>(generator);
+    final backend = ExplicitFactory<T>(generator);
     _factoriesRegistry.register<T>(backend, key: key);
   }
 
@@ -125,7 +125,7 @@ class Activatory {
 
   /// Fixes passed [value] as a result for subsequent activation calls for type [T] with customization [key].
   void useSingleton<T>(T value, {Object key}) {
-    final factory = new SingletonFactory<T>(value);
+    final factory = SingletonFactory<T>(value);
     _factoriesRegistry.register<T>(factory, key: key);
   }
 
@@ -150,5 +150,5 @@ class Activatory {
   //endregion
 
   InternalActivationContext _createContext(Object key) =>
-      new InternalActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
+      InternalActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
 }

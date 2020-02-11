@@ -5,7 +5,7 @@ import 'package:activatory/src/internal_activation_context.dart';
 
 class ReflectiveArrayFactory extends Factory<List<Object>> {
   final Type _type;
-  static const _emptyConstructorName = const Symbol('');
+  static const _emptyConstructorName = Symbol('');
 
   ReflectiveArrayFactory(this._type);
 
