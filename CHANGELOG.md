@@ -1,3 +1,9 @@
+## v1.0.1
+- Code style fixes to increase scoring on pub.dev 
+
+## v1.0.0
+- Public release!
+
 ## v0.0.25
 - Docs and samples update
 - Key parameter is allays used as named now
