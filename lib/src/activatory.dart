@@ -73,8 +73,11 @@ class Activatory {
     return List<T>.from(dynamicResult);
   }
 
-  /// Returns random item from iterable. [variations] value will be iterated while choosing item.
-  Object takeUntyped(Iterable variations) {
+  /// Returns one random item from [variations] excluding items from [except].  [variations] and [except] will be iterated while choosing item.
+  Object takeUntyped(Iterable variations, {Iterable except}) =>
+      takeManyUntyped(variations, count: 1, except: except).first;
+
+  Object _take(Iterable variations) {
     final items = variations.toList();
     if (items.isEmpty) {
       throw ArgumentError('Cant take element from empty Iterable');
@@ -83,17 +86,17 @@ class Activatory {
     return items[index];
   }
 
-  /// Returns random item from iterable.  [variations] value will be iterated while choosing item.
-  T take<T>(Iterable<T> variations) => takeUntyped(variations) as T;
+  /// Returns one random item from [variations] excluding items from [except].  [variations] and [except] will be iterated while choosing item.
+  T take<T>(Iterable<T> variations, {Iterable<T> except}) => takeUntyped(variations, except: except) as T;
 
-  /// Returns random items from iterable. [variations] value will be iterated while choosing item.
+  /// Returns [count] random items from [variations] excluding items from [except].  [variations] and [except] will be iterated while choosing item.
   List<Object> takeManyUntyped(Iterable variations, {int count, Iterable except}) {
     // ignore: prefer_collection_literals
     final filteredVariations = variations.toSet().difference(except?.toSet() ?? Set<Object>());
-    return List.generate(count, (_) => takeUntyped(filteredVariations));
+    return List.generate(count, (_) => _take(filteredVariations));
   }
 
-  /// Returns random items from iterable except items in [except].  [variations] and [except] parameters value will be iterated while choosing item.
+  /// Returns [count] random items from [variations] excluding items from [except].  [variations] and [except] will be iterated while choosing item.
   List<T> takeMany<T>(Iterable<T> variations, {int count, Iterable<T> except}) {
     final dynamicResult = takeManyUntyped(variations, count: count, except: except);
     //Cast result from List<dynamic> to List<T> through array creation

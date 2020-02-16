@@ -1,3 +1,6 @@
+## v1.1.0
+- `except` parameter added to take and takeUntyped methods
+
 ## v1.0.1
 - Code style fixes to increase scoring on pub.dev 
 

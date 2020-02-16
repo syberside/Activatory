@@ -775,9 +775,17 @@ void main() {
     test('single item with typed api', () {
       final variants = _activatory.getMany<int>();
 
-      final result = _activatory.take<int>(variants);
+      final result = _activatory.take(variants);
 
       expect(variants, contains(result));
+    });
+
+    test('single item with typed api and expect some items', () {
+      final variants = _activatory.getMany<int>();
+
+      final result = _activatory.take(variants, except: variants.skip(1));
+
+      expect(result, equals(variants.first));
     });
 
     test('single item with not typed api', () {
