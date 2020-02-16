@@ -13,8 +13,7 @@ class ReflectiveFieldsFiller {
     final reflected = reflect(object);
     final publicFields = reflected.type.declarations.values
         .whereType<VariableMirror>()
-        .where((VariableMirror v) => v.isFinal == false && v.isStatic == false && v.isPrivate == false)
-        .toList();
+        .where((VariableMirror v) => v.isFinal == false && v.isStatic == false && v.isPrivate == false);
     for (var field in publicFields) {
       final value = ctx.createUntyped(field.type.reflectedType);
       reflected.setField(field.simpleName, value);
@@ -25,8 +24,7 @@ class ReflectiveFieldsFiller {
 
     final publicSetters = reflected.type.declarations.values
         .whereType<MethodMirror>()
-        .where((MethodMirror m) => m.isStatic == false && m.isPrivate == false && m.isSetter)
-        .toList();
+        .where((MethodMirror m) => m.isStatic == false && m.isPrivate == false && m.isSetter);
     for (var setter in publicSetters) {
       //TODO: This looks like hack, but other solutions was not found.
       //See https://github.com/dart-lang/sdk/issues/13083 for details

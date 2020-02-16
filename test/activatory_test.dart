@@ -31,11 +31,12 @@ void main() {
     expect(TestEnum.values, contains(obj.enumField));
   }
 
-  group('Can generate primitive types', () {
-    final supportedPrimitiveTypes = [String, int, bool, DateTime, double, TestEnum];
+  final supportedPrimitiveTypes = [String, int, bool, double, DateTime, Duration, TestEnum];
+  group('Can generate primitive types ${supportedPrimitiveTypes}', () {
     for (final type in supportedPrimitiveTypes) {
       test(type, () {
         final result = _activatory.getUntyped(type);
+
         expect(result, isNotNull);
         expect(result.runtimeType, same(type));
       });
@@ -45,6 +46,7 @@ void main() {
   group('Can create complex object', () {
     test('with default (implicit) ctor', () {
       final result = _activatory.get<DefaultCtor>();
+
       expect(result, isNotNull);
     });
 
@@ -55,6 +57,7 @@ void main() {
 
     test('with not only primitives in ctor parameters', () {
       final result = _activatory.get<NonPrimitiveComplexObject>();
+
       expect(result, isNotNull);
       expect(result.intField, isNotNull);
       _assertComplexObjectIsNotNull(result.primitiveComplexObject);
@@ -62,12 +65,14 @@ void main() {
 
     test('with named ctor', () {
       final result = _activatory.get<NamedCtor>();
+
       expect(result, isNotNull);
       expect(result.stringField, isNotNull);
     });
 
     test('with factory ctor', () {
       final result = _activatory.get<FactoryCtor>();
+
       expect(result, isNotNull);
       expect(result.stringField, isNotNull);
       expect(result.nonFactoryField, isNull);
@@ -88,6 +93,7 @@ void main() {
     group('positional arguments are', () {
       test('ignored if they are nulls and used if not', () {
         final result = _activatory.get<DefaultPositionalValues>();
+
         expect(result, isNotNull);
         expect(result.notNullSetStringValue, equals(DefaultPositionalValues.defaultStringValue));
         expect(result.nullSetStringValue, isNotNull);
@@ -99,6 +105,7 @@ void main() {
     group('named arguments are', () {
       test('ignored if they are nulls and used if not', () {
         final result = _activatory.get<DefaultNamedValues>();
+
         expect(result, isNotNull);
         expect(result.notNullSetString, equals(DefaultNamedValues.defaultValue));
         expect(result.nullSetString, isNotNull);
@@ -112,28 +119,33 @@ void main() {
     group('with explicit factory for', () {
       test('primitive type', () {
         final expected = _activatory.get<int>();
+
         _activatory.useFunction((_) => expected);
         final result1 = _activatory.get<int>();
         final result2 = _activatory.get<int>();
+
         expect(result1, equals(expected));
         expect(result2, equals(expected));
       });
 
       test('complex type', () {
         final expected = DefaultCtor();
+
         _activatory.useFunction((_) => expected);
         final result1 = _activatory.get<DefaultCtor>();
         final result2 = _activatory.get<DefaultCtor>();
+
         expect(result1, same(expected));
         expect(result2, same(expected));
       });
     });
 
-    group('with pin for', () {
+    group('with generated singleton value for', () {
       test('primitive type', () {
         _activatory.useGeneratedSingleton<DateTime>();
         final result1 = _activatory.get<DateTime>();
         final result2 = _activatory.get<DateTime>();
+
         expect(result1, equals(result2));
       });
 
@@ -141,27 +153,58 @@ void main() {
         _activatory.useGeneratedSingleton<DefaultCtor>();
         final result1 = _activatory.get<DefaultCtor>();
         final result2 = _activatory.get<DefaultCtor>();
+
         expect(result1, same(result2));
       });
     });
 
-    group('with pined value for', () {
+    group('with predefined value for', () {
       test('primitive type', () {
         final expected = _activatory.get<int>();
+
         _activatory.useSingleton(expected);
         final result1 = _activatory.get<int>();
         final result2 = _activatory.get<int>();
+
         expect(result1, equals(expected));
         expect(result2, equals(expected));
       });
 
       test('complex type', () {
         final expected = DefaultCtor();
+
         _activatory.useSingleton(expected);
         final result1 = _activatory.get<DefaultCtor>();
         final result2 = _activatory.get<DefaultCtor>();
+
         expect(result1, same(expected));
         expect(result2, same(expected));
+      });
+    });
+
+    group('with predefined values for', () {
+      test('primitive type', () {
+        final expected = _activatory.getMany<int>(count: 100);
+
+        _activatory.useOneOf(expected);
+        final result1 = _activatory.get<int>();
+        final result2 = _activatory.get<int>();
+
+        expect(expected, contains(result1));
+        expect(expected, contains(result2));
+        expect(result1, isNot(equals(result2)));
+      });
+
+      test('complex type', () {
+        final expected = Iterable.generate(100, (_) => DefaultCtor()).toList();
+
+        _activatory.useOneOf(expected);
+        final result1 = _activatory.get<DefaultCtor>();
+        final result2 = _activatory.get<DefaultCtor>();
+
+        expect(expected, contains(result1));
+        expect(expected, contains(result2));
+        expect(result1, isNot(equals(result2)));
       });
     });
   });
@@ -185,9 +228,11 @@ void main() {
       test('primitive key, primitive value', () {
         testLabels('key1', 10, 'key2', 22);
       });
+
       test('primitive key, complex value', () {
         final value1 = _activatory.getUntyped(PrimitiveComplexObject);
         final value2 = _activatory.getUntyped(PrimitiveComplexObject);
+
         testLabels('key1', value1, 'key2', value2);
       });
       test('complex key, complex value', () {
@@ -195,6 +240,7 @@ void main() {
         final key2 = _activatory.getUntyped(PrimitiveComplexObject);
         final value1 = _activatory.getUntyped(PrimitiveComplexObject);
         final value2 = _activatory.getUntyped(PrimitiveComplexObject);
+
         testLabels(key1, value1, key2, value2);
       });
     });
@@ -269,9 +315,10 @@ void main() {
       final primitiveArrayTypes = {
         _getType<List<String>>(): String,
         _getType<List<int>>(): int,
+        _getType<List<double>>(): double,
         _getType<List<bool>>(): bool,
         _getType<List<DateTime>>(): DateTime,
-        _getType<List<double>>(): double,
+        _getType<List<Duration>>(): Duration,
       };
       for (final type in primitiveArrayTypes.keys) {
         test(type, () {
@@ -430,7 +477,7 @@ void main() {
           _activatory.customize<NamedCtorsAndDefaultCtor>().resolvingStrategy =
               FactoryResolvingStrategy.TakeRandomNamedCtor;
 
-          final items = List.generate(15, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
+          final items = List.generate(30, (_) => _activatory.get<NamedCtorsAndDefaultCtor>());
           final result = SplayTreeSet<String>.from(items.map<String>((item) => item.field));
 
           final expected = ['A', 'B', 'C', 'D'];
@@ -573,19 +620,21 @@ void main() {
     expect(result, hasLength(_activatory.defaultCustomization.arraySize));
   });
 
-  group('Can create arrays without explicit regestration', () {
+  group('Can create arrays', () {
     test('with default length', () {
       final result = _activatory.getMany<int>();
       expect(result, isNotNull);
       expect(result, hasLength(3));
       expect(result, isNot(contains(null)));
     });
+
     test('with parametrized length', () {
       final result = _activatory.getMany<int>(count: 2);
       expect(result, isNotNull);
       expect(result, hasLength(2));
       expect(result, isNot(contains(null)));
     });
+
     test('with customized per type length', () {
       _activatory.customize<int>().arraySize = 10;
       final result = _activatory.getMany<int>();
@@ -593,6 +642,7 @@ void main() {
       expect(result, hasLength(10));
       expect(result, isNot(contains(null)));
     });
+
     test('with customized key', () {
       const key = 'key';
       _activatory.useSingleton(10, key: key);

@@ -13,7 +13,7 @@ class RandomNamedCtorFactoryResolver implements FactoryResolver {
 
   @override
   Factory resolve(List<Factory> factories) {
-    final filteredFactories = _filterWrappedFactories(factories).toList();
+    final filteredFactories = _filterWrappedFactories(factories).toList(growable: false);
     assertAnyFactoryFound(filteredFactories);
     final index = _random.nextInt(filteredFactories.length);
     return filteredFactories[index];

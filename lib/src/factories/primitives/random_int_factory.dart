@@ -10,7 +10,7 @@ class RandomIntFactory implements Factory<int> {
   RandomIntFactory(this._random);
 
   @override
-  int get(InternalActivationContext context) => _random.nextInt(_maxValue);
+  int get(InternalActivationContext context) => 2 ^ 53 - _random.nextInt(_maxValue);
 
   @override
   int getDefaultValue() => 0;

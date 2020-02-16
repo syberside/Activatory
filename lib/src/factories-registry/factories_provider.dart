@@ -14,6 +14,7 @@ import 'package:activatory/src/factories/primitives/null_factory.dart';
 import 'package:activatory/src/factories/primitives/random_bool_factory.dart';
 import 'package:activatory/src/factories/primitives/random_date_time_factory.dart';
 import 'package:activatory/src/factories/primitives/random_double_factory.dart';
+import 'package:activatory/src/factories/primitives/random_duration_factory.dart';
 import 'package:activatory/src/factories/primitives/random_int_factory.dart';
 import 'package:activatory/src/factories/primitives/random_string_factory.dart';
 import 'package:activatory/src/factories/random_array_item_factory.dart';
@@ -35,6 +36,7 @@ class FactoriesProvider {
     _predefinedFactories[double] = () => RandomDoubleFactory(_random);
     _predefinedFactories[String] = () => RandomStringFactory();
     _predefinedFactories[DateTime] = () => RandomDateTimeFactory(_random);
+    _predefinedFactories[Duration] = () => RandomDurationFactory(_random);
     _predefinedFactories[Null] = () => NullFactory();
 
     //TODO: Explicit factories are not required here. Reflective will works fine.
@@ -76,12 +78,14 @@ class FactoriesProvider {
       throw ActivationException('Cant create instance of abstract class (${classMirror})');
     }
 
-    final constructors = _extractConstructors(classMirror, type).toList();
+    final constructors = _extractConstructors(classMirror, type)
+        .map((ctorInfo) => ReflectiveObjectFactory(ctorInfo))
+        .toList(growable: false);
     if (constructors.isEmpty) {
       throw ActivationException('Cant find constructor for type ${classMirror}');
     }
 
-    return constructors.map((ctorInfo) => ReflectiveObjectFactory(ctorInfo)).toList();
+    return constructors;
   }
 
   Factory _createEnumBackend(ClassMirror classMirror) {
@@ -106,7 +110,7 @@ class FactoriesProvider {
 
     for (var method in constructors) {
       if (method is MethodMirror && method.isConstructor && !method.isPrivate) {
-        final arguments = method.parameters.map(constructArgumentInfo).toList();
+        final arguments = method.parameters.map(constructArgumentInfo).toList(growable: false);
         final name = method.constructorName;
         final ctorType = method.constructorName != _emptySymbol ? CtorType.Named : CtorType.Default;
         yield CtorInfo(classMirror, name, arguments, ctorType, type);

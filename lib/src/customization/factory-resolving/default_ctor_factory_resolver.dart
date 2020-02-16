@@ -7,7 +7,7 @@ import 'package:activatory/src/factories/factory.dart';
 class DefaultCtorFactoryResolver implements FactoryResolver {
   @override
   Factory resolve(List<Factory> factories) {
-    final filtered = _filterWrappedFactories(factories).toList();
+    final filtered = _filterWrappedFactories(factories).toList(growable: false);
     assertAnyFactoryFound(filtered);
     return filtered[0];
   }

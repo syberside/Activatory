@@ -19,7 +19,17 @@ class CtorWithTwoStringArgs {
   String get b => _b;
 }
 
-class DefaultCtor {}
+class DefaultCtor {
+  static int _counter = 0;
+  final int value;
+
+  DefaultCtor() : value = _counter++;
+
+  @override
+  String toString() {
+    return value.toString();
+  }
+}
 
 class DefaultNamedValues {
   static const String defaultValue = 'defaultValue is not generated';

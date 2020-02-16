@@ -9,11 +9,13 @@ import 'package:activatory/src/factories-registry/factories_registry.dart';
 import 'package:activatory/src/factories-registry/factories_store.dart';
 import 'package:activatory/src/factories/explicit/explicit_factory.dart';
 import 'package:activatory/src/factories/explicit/factory_delegate.dart';
-import 'package:activatory/src/factories/singleton_factory.dart';
+import 'package:activatory/src/factories/predefined_instances/singleton_factory.dart';
 import 'package:activatory/src/internal_activation_context.dart';
 import 'package:activatory/src/post-activation/reflective_fields_filler.dart';
 import 'package:activatory/src/type-aliasing/reflective_type_alias_registry.dart';
 import 'package:activatory/src/value_generator.dart';
+
+import 'factories/predefined_instances/one_of_factory.dart';
 
 class Activatory {
   final Random _random;
@@ -78,7 +80,7 @@ class Activatory {
       takeManyUntyped(variations, count: 1, except: except).first;
 
   Object _take(Iterable variations) {
-    final items = variations.toList();
+    final items = variations.toList(growable: false);
     if (items.isEmpty) {
       throw ArgumentError('Cant take element from empty Iterable');
     }
@@ -129,6 +131,11 @@ class Activatory {
   /// Fixes passed [value] as a result for subsequent activation calls for type [T] with customization [key].
   void useSingleton<T>(T value, {Object key}) {
     final factory = SingletonFactory<T>(value);
+    _factoriesRegistry.register<T>(factory, key: key);
+  }
+
+  void useOneOf<T>(Iterable<T> values, {Object key}) {
+    final factory = OneOfFactory<T>(_random, values.toList(growable: false));
     _factoriesRegistry.register<T>(factory, key: key);
   }
 
