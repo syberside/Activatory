@@ -18,7 +18,7 @@ import 'package:activatory/src/value_generator.dart';
 import 'factories/predefined_instances/one_of_factory.dart';
 
 class Activatory {
-  final Random _random;
+  final Random random;
   final TypeCustomizationRegistry _customizationsRegistry;
   final ReflectiveTypeAliasesRegistry _typeAliasesRegistry;
   ValueGenerator _valueGenerator;
@@ -31,14 +31,14 @@ class Activatory {
     int seed,
   }) : this.fromRandom(Random(seed ?? DateTime.now().millisecondsSinceEpoch));
 
-  /// Create new instance of Activatory with predefined [_random] generator.
-  Activatory.fromRandom(this._random)
+  /// Create new instance of Activatory with predefined [random] generator.
+  Activatory.fromRandom(this.random)
       : _typeAliasesRegistry = ReflectiveTypeAliasesRegistry(),
         _customizationsRegistry = TypeCustomizationRegistry() {
     _factoriesRegistry = FactoriesRegistry(
-      FactoriesProvider(_random),
+      FactoriesProvider(random),
       _customizationsRegistry,
-      FactoryResolverFactory(_random),
+      FactoryResolverFactory(random),
       _typeAliasesRegistry,
       FactoriesStore(),
     );
@@ -84,7 +84,7 @@ class Activatory {
     if (items.isEmpty) {
       throw ArgumentError('Cant take element from empty Iterable');
     }
-    final index = _random.nextInt(items.length);
+    final index = random.nextInt(items.length);
     return items[index];
   }
 
@@ -135,7 +135,7 @@ class Activatory {
   }
 
   void useOneOf<T>(Iterable<T> values, {Object key}) {
-    final factory = OneOfFactory<T>(_random, values.toList(growable: false));
+    final factory = OneOfFactory<T>(random, values.toList(growable: false));
     _factoriesRegistry.register<T>(factory, key: key);
   }
 
@@ -160,5 +160,5 @@ class Activatory {
   //endregion
 
   InternalActivationContext _createContext(Object key) =>
-      InternalActivationContext(_valueGenerator, _random, key, _customizationsRegistry);
+      InternalActivationContext(_valueGenerator, random, key, _customizationsRegistry);
 }
