@@ -110,6 +110,24 @@ final reportItemsCount = report.map((r) => r.itemName).toSet().length; // 3
 ```
 In this example activatory will create 3 instances of `ReportItem` each of which will receive different values for `itemName`. But all 3 instances will share one `ContactInfo` instance.
 
+#### With user defined values collection
+If test scenario requires to pass one of predefined values as activation result `useOneOf` method can be used. Also, `useOneOf` is great to use with types, that have predefined list of instances, e.g. enum-like classes.
+```dart
+class Gender{
+  final String value;
+  const Gender._(this.value);
+  static const Gender male = Gender._('M');
+  static const Gender female = Gender._('W');
+  static const Gender other = Gender._('Unknown');
+  // Other members are skipped for brief
+  static const List<Gender> values => [male, female, other];
+}
+...
+activatory.useOneOf(Gender.values);
+final gender = activatory.get<Gender>();
+gender.value; // M, W or Unknown
+```
+
 #### With activatory created random value
 If a test scenario requires the same value for all type instances but there is no need to create it by hand `useGeneratedSingleton` method can be used.
 

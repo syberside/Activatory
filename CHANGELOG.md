@@ -1,5 +1,10 @@
 ## v1.1.0
 - `except` parameter added to take and takeUntyped methods
+- Implemented correct activation for `Duration` type
+- Changed implementation of `DateTime` factory - now it uses same range as `Duration`
+- Changed implementation of `int` factory - now it can return negative number
+- `Random` instance used inside `Activatory` can be now accessed from outside
+- Added `useOneOf` factory overriding method to setup available collection of instances
 
 ## v1.0.1
 - Code style fixes to increase scoring on pub.dev 

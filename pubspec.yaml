@@ -1,6 +1,6 @@
 name: activatory
 description: Test data generator for Dart ecosystem. Simplifies unit testing and Test-Driven Development.
-version: 1.0.1
+version: 1.1.0
 homepage: https://github.com/syberside/Activatory
 
 environment:
