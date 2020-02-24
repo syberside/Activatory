@@ -963,6 +963,22 @@ void main() {
       expect(overrideUsedCount, 0);
     });
   });
+
+  group('set tests', () {
+    test('Can use for class with set in ctor', () {
+      final result = _activatory.get<SetInCtor>();
+
+      expect(result.values, isNotNull);
+      expect(result.values, hasLength(3));
+    });
+
+    test('Can use for set', () {
+      final result = _activatory.get<Set<String>>();
+
+      expect(result, isNotNull);
+      expect(result, hasLength(3));
+    });
+  });
 }
 
 class SomeClassWithConstructors {

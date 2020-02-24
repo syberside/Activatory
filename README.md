@@ -40,7 +40,7 @@ final AlmostAnyClass instance = activatory.get<AlmostAnyClass>();
 Activatory can be used to create:
 - random values of primitive types (String, int, double, bool, DateTime, enums, Null);
 - random values of complex types using all [Dart constructor](https://dart.dev/guides/language/language-tour#constructors) types;
-- List, Iterables and Maps;
+- List, Set, Iterable and Map;
 - random values of recursive types (trees, linked lists and etc);
 - random values of generic classes;
 - any not listed above type with a bit setup code.

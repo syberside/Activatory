@@ -292,3 +292,9 @@ class FiledsWithPublicSetters {
 
   set publicProperty(String value) => _publicProperty = value; //ignore: unnecessary_getters_setters
 }
+
+class SetInCtor {
+  final Set<String> values;
+
+  SetInCtor(this.values);
+}

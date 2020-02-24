@@ -5,6 +5,7 @@ import 'package:activatory/src/activation_exception.dart';
 import 'package:activatory/src/factories/collections/explicit_array_factory.dart';
 import 'package:activatory/src/factories/collections/reflective_array_factory.dart';
 import 'package:activatory/src/factories/collections/reflective_map_factory.dart';
+import 'package:activatory/src/factories/collections/reflective_set_factory.dart';
 import 'package:activatory/src/factories/ctor/argument_info.dart';
 import 'package:activatory/src/factories/ctor/ctor_info.dart';
 import 'package:activatory/src/factories/ctor/ctor_type.dart';
@@ -28,6 +29,7 @@ class FactoriesProvider {
   final Map<Type, _FactoryActivator> _predefinedFactories = <Type, _FactoryActivator>{};
 
   final _listMirror = reflectClass(List);
+  final _setMirror = reflectClass(Set);
   final _mapMirror = reflectClass(Map);
 
   FactoriesProvider(this._random) {
@@ -69,11 +71,18 @@ class FactoriesProvider {
       final typeArg = classMirror.typeArguments.first.reflectedType;
       return [ReflectiveArrayFactory(typeArg)];
     }
+
+    if (originalClassMirror.isSubclassOf(_setMirror)) {
+      final typeArg = classMirror.typeArguments.first.reflectedType;
+      return [ReflectiveSetFactory(typeArg)];
+    }
+
     if (originalClassMirror.isSubclassOf(_mapMirror)) {
       final typeArg1 = classMirror.typeArguments[0].reflectedType;
       final typeArg2 = classMirror.typeArguments[1].reflectedType;
       return [ReflectiveMapFactory(typeArg1, typeArg2)];
     }
+
     if (classMirror.isAbstract) {
       throw ActivationException('Cant create instance of abstract class (${classMirror})');
     }

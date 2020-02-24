@@ -1,3 +1,7 @@
+## v1.2.0
+- Implemented support of Set class
+- \#45 bugfix - iterable is no more substitution for every iterable subclass
+
 ## v1.1.0
 - `except` parameter added to take and takeUntyped methods
 - Implemented correct activation for `Duration` type

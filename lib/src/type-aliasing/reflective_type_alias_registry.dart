@@ -21,7 +21,7 @@ class ReflectiveTypeAliasesRegistry {
     }
 
     final classMirror = reflectClass(type);
-    if (classMirror.isSubclassOf(_iterableMirror)) {
+    if (classMirror == _iterableMirror) {
       final typeArg = reflectType(type).typeArguments.first.reflectedType;
       final listType = reflectType(List, [typeArg]).reflectedType;
       _aliases[type] = listType;
