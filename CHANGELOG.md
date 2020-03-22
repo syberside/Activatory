@@ -1,3 +1,6 @@
+## v1.2.1
+- Added unit test for \#42 issue, docs adjusted
+
 ## v1.2.0
 - Implemented support of Set class
 - \#45 bugfix - iterable is no more substitution for every iterable subclass

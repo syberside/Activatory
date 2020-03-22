@@ -323,6 +323,10 @@ Current implementation depends on reflection ([Mirrors package](https://api.dart
 ## Further improvements
 For planned features and more see [enhancements on github](https://github.com/syberside/Activatory/issues?utf8=%E2%9C%93&q=is%3Aenhancement+is%3Aopen+). 
 
+## Known limitations
+* Current version supports only VM platform. For more details see  "[Supported platforms](#supported-platforms)" section above.
+* Private classes (e.g. class with name prefixed by underscore) can't be activated without explicit setup due to private constructor unavailability for external package.
+
 ## Why activatory does matter
 Suppose we are writing unit test for following sample classes
 ```dart

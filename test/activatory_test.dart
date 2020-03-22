@@ -979,6 +979,18 @@ void main() {
       expect(result, hasLength(3));
     });
   });
+
+  test('Can not activate private class', () {
+    expect(() => _activatory.get<_PrivateClass>(), throwsA(const TypeMatcher<ActivationException>()));
+  });
+}
+
+class _PrivateClass {
+  final String value;
+
+  _PrivateClass(this.value);
+
+  _PrivateClass.publicCtor(String value) : this(value);
 }
 
 class SomeClassWithConstructors {
