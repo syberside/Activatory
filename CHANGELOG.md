@@ -1,3 +1,6 @@
+## v1.2.2
+- Bug \#49 fixed: incorrect max integer replaced with 2^31
+
 ## v1.2.1
 - Added unit test for \#42 issue, docs adjusted
 
